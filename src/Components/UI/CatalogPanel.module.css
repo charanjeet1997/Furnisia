@@ -1,0 +1,53 @@
+.panel {
+  width: 270px;
+  flex-shrink: 0;
+  background: var(--color-surface);
+  border-left: 1px solid var(--color-border);
+  padding: 1.25rem;
+  overflow-y: auto;
+  box-sizing: border-box;
+}
+
+.title {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin: 0 0 1.1rem;
+  color: var(--color-text);
+}
+
+.categoryGroup {
+  margin-bottom: 1.25rem;
+}
+
+.categoryTitle {
+  font-size: 0.72rem;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  margin: 0 0 0.5rem;
+}
+
+.itemGrid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.5rem;
+}
+
+.itemButton {
+  padding: 0.65rem 0.5rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: var(--color-bg);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  color: var(--color-text);
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+}
+
+.itemButton:hover {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent-hover);
+}

@@ -1,0 +1,91 @@
+.backButton {
+  position: absolute;
+  top: 1rem;
+  left: 1rem;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 500;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background: var(--color-bg);
+}
+
+.floatingStack {
+  position: absolute;
+  bottom: 1.5rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.itemToolbar {
+  display: flex;
+  align-items: stretch;
+  gap: 0.15rem;
+  padding: 0.5rem;
+  background: var(--color-dark);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-md);
+}
+
+.itemButton,
+.itemButtonActive,
+.itemButtonDanger {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.25rem;
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: var(--radius-pill);
+  background: transparent;
+  color: rgba(255, 255, 255, 0.85);
+  font-size: 0.7rem;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s ease, color 0.15s ease;
+}
+
+.itemButton svg,
+.itemButtonActive svg,
+.itemButtonDanger svg {
+  width: 18px;
+  height: 18px;
+}
+
+.itemButton:hover {
+  background: var(--color-dark-hover);
+  color: #ffffff;
+}
+
+.itemButtonActive {
+  background: var(--color-accent);
+  color: #ffffff;
+}
+
+.itemButtonDanger:hover {
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+}
+
+.itemDivider {
+  width: 1px;
+  align-self: stretch;
+  background: rgba(255, 255, 255, 0.15);
+  margin: 0.4rem 0.1rem;
+}

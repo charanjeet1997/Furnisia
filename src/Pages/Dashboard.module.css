@@ -1,0 +1,119 @@
+.page {
+  max-width: 1040px;
+  margin: 0 auto;
+  padding: 3.5rem 1.5rem 4rem;
+  font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
+  color: var(--color-text);
+}
+
+.hero {
+  text-align: center;
+  padding: 2.75rem 1.5rem;
+  margin-bottom: 2.5rem;
+  border-radius: var(--radius-lg);
+  background: linear-gradient(150deg, var(--color-accent-soft) 0%, var(--color-bg) 70%);
+}
+
+.heroTitle {
+  font-size: 2.25rem;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  margin: 0 0 0.6rem;
+  color: var(--color-text);
+}
+
+.heroSubtitle {
+  color: var(--color-text-muted);
+  font-size: 1.05rem;
+  margin: 0;
+}
+
+.startCards {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  margin-bottom: 3rem;
+}
+
+.startCard {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: 1.5rem;
+  text-align: left;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+.startCard:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-2px);
+}
+
+.startCard h2 {
+  margin: 0 0 0.4rem;
+  font-size: 1.15rem;
+  color: var(--color-text);
+}
+
+.startCard p {
+  margin: 0 0 0.8rem;
+  color: var(--color-text-muted);
+  font-size: 0.9rem;
+}
+
+.dimensionInputs {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 0.8rem;
+}
+
+.dimensionLabel {
+  display: flex;
+  flex-direction: column;
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
+  gap: 0.25rem;
+}
+
+.dimensionLabel input {
+  padding: 0.4rem 0.5rem;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.9rem;
+  width: 5rem;
+  background: var(--color-bg);
+  color: var(--color-text);
+}
+
+.submitButton {
+  padding: 0.6rem 1.2rem;
+  background: var(--color-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-sm);
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.15s ease;
+}
+
+.submitButton:hover {
+  background: var(--color-accent-hover);
+}
+
+.sectionTitle {
+  font-size: 1.3rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: var(--color-text);
+}
+
+.roomGrid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 1.1rem;
+}
