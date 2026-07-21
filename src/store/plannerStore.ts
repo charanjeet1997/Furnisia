@@ -37,9 +37,9 @@ export const usePlannerStore = create<PlannerState>((set) => ({
   addItem: (catalogId) =>
     set((state) => {
       const id = `${catalogId}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      const position = findPlacement(state.room, state.placedItems, catalogId);
+      const { position, rotationY } = findPlacement(state.room, state.placedItems, catalogId);
       return {
-        placedItems: [...state.placedItems, { id, catalogId, position, rotationY: 0 }],
+        placedItems: [...state.placedItems, { id, catalogId, position, rotationY }],
         selectedId: id,
       };
     }),
@@ -49,8 +49,9 @@ export const usePlannerStore = create<PlannerState>((set) => ({
       const source = state.placedItems.find((item) => item.id === state.selectedId);
       if (!source) return state;
       const id = `${source.catalogId}-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-      const position = findPlacement(state.room, state.placedItems, source.catalogId);
+      const { position } = findPlacement(state.room, state.placedItems, source.catalogId);
       return {
+        // Duplicate inherits the original's rotation so it lands in the same orientation.
         placedItems: [...state.placedItems, { id, catalogId: source.catalogId, position, rotationY: source.rotationY }],
         selectedId: id,
       };
