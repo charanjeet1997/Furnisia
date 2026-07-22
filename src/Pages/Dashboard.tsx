@@ -1,6 +1,5 @@
-import { type FormEvent, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { defaultRoom, roomPresets, type RoomPreset } from '../Data/RoomPresets';
+import { defaultRoom, roomPresets, type RoomShape } from '../Data/RoomShape';
 import { usePlannerStore } from '../store/plannerStore';
 import { RoomCard } from '../Components/UI/RoomCard';
 import styles from './Dashboard.module.css';
@@ -8,17 +7,10 @@ import styles from './Dashboard.module.css';
 export function Dashboard() {
   const navigate = useNavigate();
   const setRoom = usePlannerStore((state) => state.setRoom);
-  const [customWidth, setCustomWidth] = useState(4);
-  const [customLength, setCustomLength] = useState(4);
 
-  function goToRoom(room: RoomPreset) {
+  function goToRoom(room: RoomShape) {
     setRoom(room);
     navigate('/planner');
-  }
-
-  function handleBuildRoom(event: FormEvent) {
-    event.preventDefault();
-    goToRoom({ id: 'custom', name: 'Custom Room', width: customWidth, length: customLength, height: 2.5 });
   }
 
   return (
@@ -32,41 +24,22 @@ export function Dashboard() {
 
       <section className={styles.startCards}>
         <button type="button" className={styles.startCard} onClick={() => goToRoom(defaultRoom)}>
+          <svg className={styles.startCardIcon} width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <path d="M13 2 4 14h6l-1 8 9-12h-6l1-8Z" stroke="var(--color-accent)" strokeWidth={1.6} strokeLinejoin="round" strokeLinecap="round" />
+          </svg>
           <h2>Quick start</h2>
           <p>Jump into a default room and start placing furniture.</p>
         </button>
 
-        <form className={styles.startCard} onSubmit={handleBuildRoom}>
+        <button type="button" className={styles.startCard} onClick={() => navigate('/room-builder')}>
+          <svg className={styles.startCardIcon} width="28" height="28" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+            <rect x="3" y="3" width="18" height="18" rx="2" stroke="var(--color-accent)" strokeWidth={1.6} />
+            <path d="M8 3v18M3 8h5" stroke="var(--color-accent)" strokeWidth={1.6} strokeLinecap="round" />
+            <path d="M15 12h4M17 10v4" stroke="var(--color-accent)" strokeWidth={1.6} strokeLinecap="round" />
+          </svg>
           <h2>Build a room</h2>
-          <p>Set your own dimensions.</p>
-          <div className={styles.dimensionInputs}>
-            <label className={styles.dimensionLabel}>
-              Width (m)
-              <input
-                type="number"
-                min={2}
-                max={15}
-                step={0.1}
-                value={customWidth}
-                onChange={(event) => setCustomWidth(Number(event.target.value))}
-              />
-            </label>
-            <label className={styles.dimensionLabel}>
-              Length (m)
-              <input
-                type="number"
-                min={2}
-                max={15}
-                step={0.1}
-                value={customLength}
-                onChange={(event) => setCustomLength(Number(event.target.value))}
-              />
-            </label>
-          </div>
-          <button type="submit" className={styles.submitButton}>
-            Build room
-          </button>
-        </form>
+          <p>Choose a shape, set dimensions, add doors and windows, and pick a style.</p>
+        </button>
       </section>
 
       <section>

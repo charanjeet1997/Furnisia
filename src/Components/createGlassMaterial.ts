@@ -1,20 +1,20 @@
 import { MeshStandardMaterial, type MeshStandardMaterialParameters } from 'three';
 import type { ClipUniforms } from './createClippedMaterial';
 
-// Same room-side clip as createClippedMaterial, plus a fresnel term so the window reads as
-// glass: near-transparent head-on, brighter/more reflective toward grazing edges. Injected
-// into MeshStandardMaterial's own shader (vertex needs a world-position varying added; the
-// fragment shader already computes a lit `normal` we can reuse for the fresnel dot product).
+// Same room-side clip as createClippedMaterial (see that file for the generalized dot-product
+// explanation), plus a fresnel term so the window reads as glass: near-transparent head-on,
+// brighter/more reflective toward grazing edges. Injected into MeshStandardMaterial's own
+// shader (vertex needs a world-position varying added; the fragment shader already computes
+// a lit `normal` we can reuse for the fresnel dot product).
 export function createGlassMaterial(
   params: MeshStandardMaterialParameters,
   threshold: number,
-  wallSign: number,
   fadeWidth = 0.12,
 ): { material: MeshStandardMaterial; uniforms: ClipUniforms } {
   const uniforms: ClipUniforms = {
     cameraAxisValue: { value: 0 },
+    targetAxisValue: { value: 0 },
     threshold: { value: threshold },
-    wallSign: { value: wallSign },
     fadeWidth: { value: fadeWidth },
   };
 
@@ -33,8 +33,8 @@ export function createGlassMaterial(
     shader.fragmentShader =
       `
       uniform float cameraAxisValue;
+      uniform float targetAxisValue;
       uniform float threshold;
-      uniform float wallSign;
       uniform float fadeWidth;
       varying vec3 vGlassWorldPosition;
       ` + shader.fragmentShader;
@@ -42,8 +42,9 @@ export function createGlassMaterial(
     shader.fragmentShader = shader.fragmentShader.replace(
       '#include <dithering_fragment>',
       `#include <dithering_fragment>
-      float clipD = wallSign * (cameraAxisValue - threshold);
-      float clipAlpha = smoothstep(-fadeWidth, fadeWidth, clipD);
+      float camOutside = 1.0 - smoothstep(-fadeWidth, fadeWidth, threshold - cameraAxisValue);
+      float targetInside = smoothstep(-fadeWidth, fadeWidth, threshold - targetAxisValue);
+      float clipAlpha = 1.0 - camOutside * targetInside;
       if (clipAlpha < 0.02) discard;
 
       vec3 glassViewDir = normalize(cameraPosition - vGlassWorldPosition);

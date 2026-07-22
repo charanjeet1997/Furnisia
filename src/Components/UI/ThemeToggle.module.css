@@ -1,0 +1,29 @@
+.toggle {
+  position: fixed;
+  top: 1rem;
+  right: 1rem;
+  z-index: 50;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  color: var(--color-text);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: box-shadow 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+}
+
+.toggle:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-1px);
+}
+
+/* On the planner, inset past the catalog panel's fixed 270px right-hand column
+   (CatalogPanel.module.css) so the toggle never sits on top of its content. */
+.toggleOnPlanner {
+  right: calc(270px + 1rem);
+}

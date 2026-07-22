@@ -1,34 +1,32 @@
-import type { RoomPreset } from '../Data/RoomPresets';
+import type { RoomShape } from '../Data/RoomShape';
 import { furnitureCatalog, type ModelForward } from '../Data/FurnitureCatalog';
+import { computeEdges, boundingBox, type WallEdge } from '../Components/polygonGeometry';
 import type { PlacedItem } from './plannerStore';
 
-const WALL_MARGIN = 0.15;    // matches FurnitureModel clamp margin
-const ITEM_GAP   = 0.10;    // breathing room between pieces
-const GRID_STEP  = 0.25;    // interior fallback grid resolution
+const WALL_MARGIN = 0.15; // matches FurnitureModel clamp margin
+const ITEM_GAP = 0.10; // breathing room between pieces
+const GRID_STEP = 0.25; // interior fallback grid resolution
+const DOOR_CLEAR_Z = 1.0; // metres of clearance kept in front of every door
 
-// WALL_ROTATION is calibrated so that a model whose front faces 'north' (-Z)
-// ends up facing INTO the room after placement. forwardToOffset maps any other
-// native forward direction to the extra rotation needed to reach that baseline.
+// forwardToOffset maps a model's own native "forward" direction to the extra rotation
+// needed so that, after adding a wall's own facing rotation, the model ends up facing
+// into the room. Baseline: a model whose front already faces -Z needs no correction.
 const forwardToOffset: Record<ModelForward, number> = {
-  north: 0,              // already faces -Z — no correction needed
-  south: Math.PI,        // faces +Z → flip 180° to face -Z
-  east:  Math.PI / 2,   // faces +X → rotate 90° CW  to face -Z
-  west: -Math.PI / 2,   // faces -X → rotate 90° CCW to face -Z
+  north: 0,
+  south: Math.PI,
+  east: Math.PI / 2,
+  west: -Math.PI / 2,
 };
 
-const DOOR_WIDTH    = 0.9;   // must match Room.tsx
-const DOOR_CLEAR_Z  = 1.0;   // metres of clearance in front of the door
-
 interface Box {
-  minX: number; maxX: number;
-  minZ: number; maxZ: number;
+  minX: number;
+  maxX: number;
+  minZ: number;
+  maxZ: number;
 }
 
 function footprintOf(catalogId: string) {
-  return (
-    furnitureCatalog.find((e) => e.id === catalogId)?.footprint ??
-    { width: 0.6, depth: 0.6 }
-  );
+  return furnitureCatalog.find((e) => e.id === catalogId)?.footprint ?? { width: 0.6, depth: 0.6 };
 }
 
 function boxAt(cx: number, cz: number, w: number, d: number): Box {
@@ -36,42 +34,42 @@ function boxAt(cx: number, cz: number, w: number, d: number): Box {
 }
 
 function overlaps(a: Box, b: Box, gap: number) {
-  return (
-    a.minX < b.maxX + gap && a.maxX > b.minX - gap &&
-    a.minZ < b.maxZ + gap && a.maxZ > b.minZ - gap
-  );
+  return a.minX < b.maxX + gap && a.maxX > b.minX - gap && a.minZ < b.maxZ + gap && a.maxZ > b.minZ - gap;
 }
 
-// Approximate rotated footprint: swap width/depth for 90° / 270° rotations.
+// Approximate rotated footprint: swap width/depth for 90°/270° rotations.
 function rotatedFootprint(w: number, d: number, rotationY: number) {
   const angle = Math.abs(rotationY % Math.PI);
   if (angle > Math.PI / 4 && angle < (3 * Math.PI) / 4) return { w: d, d: w };
   return { w, d };
 }
 
-// Returns true when the candidate box would block the door opening on the south wall.
-// The door is 0.9 m wide at x=0, and we want DOOR_CLEAR_Z metres of clearance in front.
-function blocksDoor(candidate: Box, maxZ: number) {
-  const doorMinX = -DOOR_WIDTH / 2;
-  const doorMaxX =  DOOR_WIDTH / 2;
-  const doorClearMinZ = maxZ - DOOR_CLEAR_Z; // start of the clearance zone in world space
-
-  // Overlap in X with the door AND within the clearance zone in Z
-  return (
-    candidate.minX < doorMaxX &&
-    candidate.maxX > doorMinX &&
-    candidate.maxZ > doorClearMinZ
-  );
+// Keeps candidates out of the clearance zone in front of every door, on any wall/angle —
+// approximated as an axis-aligned box centered a little way inward from the door along that
+// wall's own normal (good enough for a "don't block the door" heuristic, not exact geometry).
+function blocksAnyDoor(candidate: Box, room: RoomShape, edges: WallEdge[]): boolean {
+  for (const opening of room.openings) {
+    if (opening.kind !== 'door') continue;
+    const edge = edges[opening.edgeIndex];
+    if (!edge) continue;
+    const t = (opening.offset + opening.width / 2) / edge.length;
+    const doorX = edge.start.x + (edge.end.x - edge.start.x) * t;
+    const doorZ = edge.start.z + (edge.end.z - edge.start.z) * t;
+    const clearX = doorX - edge.normal.x * (DOOR_CLEAR_Z / 2);
+    const clearZ = doorZ - edge.normal.z * (DOOR_CLEAR_Z / 2);
+    const doorBox = boxAt(clearX, clearZ, Math.max(opening.width, DOOR_CLEAR_Z), DOOR_CLEAR_Z);
+    if (overlaps(candidate, doorBox, 0)) return true;
+  }
+  return false;
 }
 
-// Build evenly-spread sample positions along an axis: centre first, then alternating out.
-// `count` total samples, `halfRange` is the ± limit.
+// Centre first, then alternating outward — same sampling shape as the old fixed-wall version.
 function wallSamples(halfRange: number, count: number): number[] {
   if (halfRange <= 0) return [0];
   const step = (halfRange * 1.6) / Math.max(count - 1, 1);
   const result = [0];
   for (let i = 1; result.length < count; i++) {
-    result.push( i * step);
+    result.push(i * step);
     if (result.length < count) result.push(-i * step);
   }
   return result.filter((v) => Math.abs(v) <= halfRange);
@@ -82,33 +80,16 @@ export interface Placement {
   rotationY: number;
 }
 
-// Rotation that makes a model face into the room when placed against each wall.
-// Three.js models whose "front" points toward +Z at rotationY=0:
-//   North wall (z = -maxZ) → face south (+Z) → 0
-//   South wall (z = +maxZ) → face north (-Z) → π
-//   West  wall (x = -maxX) → face east  (+X) → -π/2
-//   East  wall (x = +maxX) → face west  (-X) → +π/2
-const WALL_ROTATION = {
-  north: Math.PI,   // model front faces -Z; rotate π so it faces into room (+Z)
-  south: 0,         // model front already faces into room (-Z toward north)
-  west: -Math.PI / 2,  // front rotated to face +X (east, into room)
-  east:  Math.PI / 2,  // front rotated to face -X (west, into room)
-} as const;
-
-export function findPlacement(
-  room: RoomPreset,
-  existing: PlacedItem[],
-  newCatalogId: string,
-): Placement {
+export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalogId: string): Placement {
   const entry = furnitureCatalog.find((e) => e.id === newCatalogId);
   const { width: iW, depth: iD } = entry?.footprint ?? { width: 0.6, depth: 0.6 };
   const rotOff = forwardToOffset[entry?.forward ?? 'north'];
 
-  // Maximum centres so the item stays inside the room.
-  const maxX = Math.max(0, room.width  / 2 - iW / 2 - WALL_MARGIN);
-  const maxZ = Math.max(0, room.length / 2 - iD / 2 - WALL_MARGIN);
+  const edges = computeEdges(room.vertices);
+  const bbox = boundingBox(room.vertices);
+  const maxX = Math.max(0, (bbox.maxX - bbox.minX) / 2 - iW / 2 - WALL_MARGIN);
+  const maxZ = Math.max(0, (bbox.maxZ - bbox.minZ) / 2 - iD / 2 - WALL_MARGIN);
 
-  // Build collision boxes for already-placed items, respecting their rotation.
   const existingBoxes = existing.map((item) => {
     const fp = footprintOf(item.catalogId);
     const { w, d } = rotatedFootprint(fp.width, fp.depth, item.rotationY);
@@ -117,49 +98,53 @@ export function findPlacement(
 
   function isFree(x: number, z: number): boolean {
     const candidate = boxAt(x, z, iW, iD);
-    if (blocksDoor(candidate, room.length / 2)) return false;
+    if (blocksAnyDoor(candidate, room, edges)) return false;
     return existingBoxes.every((box) => !overlaps(candidate, box, ITEM_GAP));
   }
 
-  // --- Wall-adjacent candidate generation ---
-  // Interleave slots from all four walls so the room fills evenly,
-  // rather than exhausting one wall completely before trying the next.
-  // Each entry: [x, z, rotationY]
+  // --- Wall-hugging candidates, one wall at a time so the room fills evenly ---
+  // Diagonal edges (from Cut/Beveled corners) are skipped — hugging a chamfered wall would
+  // need the item rotated to match an arbitrary angle, out of scope for this heuristic; the
+  // interior grid fallback below still covers that floor area.
   const SAMPLES = 7;
-  const northZ = -maxZ; // north wall (window side)
-  const southZ =  maxZ; // south wall (door side)
-  const westX  = -maxX;
-  const eastX  =  maxX;
+  const wallCandidateLists: [number, number, number][][] = edges.map((edge) => {
+    const dirX = (edge.end.x - edge.start.x) / edge.length;
+    const dirZ = (edge.end.z - edge.start.z) / edge.length;
+    const isAxisAligned = Math.abs(dirX) < 0.01 || Math.abs(dirZ) < 0.01;
+    if (!isAxisAligned) return [];
 
-  const xSamples = wallSamples(maxX, SAMPLES);
-  const zSamples = wallSamples(maxZ, SAMPLES);
+    const inset = iW / 2 + WALL_MARGIN;
+    const halfRange = edge.length / 2 - inset;
+    if (halfRange <= 0) return [];
 
-  const northSlots: [number, number, number][] = xSamples.map((x) => [x, northZ, WALL_ROTATION.north + rotOff]);
-  const southSlots: [number, number, number][] = xSamples.map((x) => [x, southZ, WALL_ROTATION.south + rotOff]);
-  const westSlots:  [number, number, number][] = zSamples.map((z) => [westX, z,  WALL_ROTATION.west  + rotOff]);
-  const eastSlots:  [number, number, number][] = zSamples.map((z) => [eastX, z,  WALL_ROTATION.east  + rotOff]);
+    const pushIn = iD / 2 + WALL_MARGIN;
+    const rotation = edge.angle + rotOff;
 
-  // Interleave: pick one slot from each wall in turn so placement spreads around the room.
+    return wallSamples(halfRange, SAMPLES).map((s): [number, number, number] => {
+      const x = edge.midpoint.x + dirX * s - edge.normal.x * pushIn;
+      const z = edge.midpoint.z + dirZ * s - edge.normal.z * pushIn;
+      return [x, z, rotation];
+    });
+  });
+
   const wallCandidates: [number, number, number][] = [];
-  const maxLen = Math.max(northSlots.length, southSlots.length, westSlots.length, eastSlots.length);
+  const maxLen = Math.max(0, ...wallCandidateLists.map((list) => list.length));
   for (let i = 0; i < maxLen; i++) {
-    if (i < northSlots.length) wallCandidates.push(northSlots[i]);
-    if (i < southSlots.length) wallCandidates.push(southSlots[i]);
-    if (i < westSlots.length)  wallCandidates.push(westSlots[i]);
-    if (i < eastSlots.length)  wallCandidates.push(eastSlots[i]);
+    for (const list of wallCandidateLists) {
+      if (i < list.length) wallCandidates.push(list[i]);
+    }
   }
 
   for (const [x, z, rot] of wallCandidates) {
     if (isFree(x, z)) return { position: [x, 0, z], rotationY: rot };
   }
 
-  // --- Interior grid fallback ---
+  // --- Interior grid fallback (bounding box, not the exact polygon) ---
   for (let x = -maxX; x <= maxX; x += GRID_STEP) {
     for (let z = -maxZ; z <= maxZ; z += GRID_STEP) {
       if (isFree(x, z)) return { position: [x, 0, z], rotationY: rotOff };
     }
   }
 
-  // Last resort: room centre
   return { position: [0, 0, 0], rotationY: rotOff };
 }

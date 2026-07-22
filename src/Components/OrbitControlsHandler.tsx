@@ -2,12 +2,14 @@ import { OrbitControls } from '@react-three/drei';
 import { useEffect, useRef } from 'react';
 import type { OrbitControls as OrbitControlsImpl } from 'three-stdlib';
 import { usePlannerStore } from '../store/plannerStore';
+import { boundingBox } from './polygonGeometry';
 
 const MIN_DISTANCE = 1.5;
 
 export function OrbitControlsHandler() {
   const room = usePlannerStore((state) => state.room);
-  const maxDistance = MIN_DISTANCE + Math.max(room.width, room.length, 3) * 2;
+  const bbox = boundingBox(room.vertices);
+  const maxDistance = MIN_DISTANCE + Math.max(bbox.maxX - bbox.minX, bbox.maxZ - bbox.minZ, 3) * 2;
   const orbitRef = useRef<OrbitControlsImpl>(null);
 
   // Set the orbit pivot to the room's geometric centre [0, height/2, 0] imperatively

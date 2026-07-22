@@ -4,6 +4,7 @@ import { Box3, Vector3, type Group, type Mesh } from 'three';
 import { usePlannerStore, type PlacedItem } from '../store/plannerStore';
 import { furnitureCatalog } from '../Data/FurnitureCatalog';
 import { GizmoAnchor } from './GizmoAnchor';
+import { boundingBox } from './polygonGeometry';
 
 const WALL_MARGIN = 0.15;
 
@@ -48,8 +49,14 @@ export function FurnitureModel({ item }: FurnitureModelProps) {
 
   if (!catalogEntry) return null;
 
-  const maxX = Math.max(0, room.width  / 2 - halfWidth  - WALL_MARGIN);
-  const maxZ = Math.max(0, room.length / 2 - halfDepth  - WALL_MARGIN);
+  // Room shapes can be non-rectangular; furniture clamps to the shape's axis-aligned
+  // bounding box rather than true point-in-polygon containment (see plan's "Known
+  // simplification" — vertices are always centered, so the bbox is symmetric around origin).
+  const bbox = boundingBox(room.vertices);
+  const roomWidth = bbox.maxX - bbox.minX;
+  const roomDepth = bbox.maxZ - bbox.minZ;
+  const maxX = Math.max(0, roomWidth / 2 - halfWidth - WALL_MARGIN);
+  const maxZ = Math.max(0, roomDepth / 2 - halfDepth - WALL_MARGIN);
 
   return (
     <>

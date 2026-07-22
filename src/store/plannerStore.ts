@@ -1,5 +1,5 @@
 import { create } from 'zustand';
-import { defaultRoom, type RoomPreset } from '../Data/RoomPresets';
+import { defaultRoom, type RoomShape } from '../Data/RoomShape';
 import { findPlacement } from './findPlacement';
 
 export interface PlacedItem {
@@ -12,11 +12,11 @@ export interface PlacedItem {
 export type GizmoMode = 'translate' | 'rotate';
 
 interface PlannerState {
-  room: RoomPreset;
+  room: RoomShape;
   placedItems: PlacedItem[];
   selectedId: string | null;
   gizmoMode: GizmoMode;
-  setRoom: (room: RoomPreset) => void;
+  setRoom: (room: RoomShape) => void;
   addItem: (catalogId: string) => void;
   duplicateSelected: () => void;
   selectItem: (id: string | null) => void;
