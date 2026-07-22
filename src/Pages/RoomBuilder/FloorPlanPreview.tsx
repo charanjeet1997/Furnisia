@@ -21,6 +21,10 @@ interface FloorPlanPreviewProps {
   onVertexDragStart?: (vertexIndex: number) => void;
   onVertexDrag?: (vertexIndex: number, dx: number, dz: number) => void;
   onVertexDragEnd?: () => void;
+  // Revit-style inline dimension editing: clicking a wall's length label turns it into a
+  // text box; committing calls this with the wall's new length in METERS (always meters,
+  // regardless of the `units` display toggle, to keep parsing unambiguous).
+  onEdgeLengthChange?: (edgeIndex: number, newLength: number) => void;
 }
 
 const PAD = 1.1; // room for the outside dimension lines
@@ -64,6 +68,7 @@ export function FloorPlanPreview({
   onVertexDragStart,
   onVertexDrag,
   onVertexDragEnd,
+  onEdgeLengthChange,
 }: FloorPlanPreviewProps) {
   const edges = computeEdges(vertices);
   const bbox = boundingBox(vertices);
@@ -89,6 +94,16 @@ export function FloorPlanPreview({
   // could coexist with dragging if both are ever enabled at once.
   const movedRef = useRef(false);
 
+  // Which wall's dimension label is currently an editable text box (Revit-style).
+  const [editingEdge, setEditingEdge] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  function commitEdit(edgeIndex: number, raw: string) {
+    const value = parseFloat(raw);
+    if (Number.isFinite(value) && value > 0) onEdgeLengthChange?.(edgeIndex, value);
+    setEditingEdge(null);
+  }
+
   function pxScale(): number {
     const svg = svgRef.current;
     if (!svg) return 1;
@@ -98,6 +113,20 @@ export function FloorPlanPreview({
     // what's actually on screen while dragging.
     const [, , vbW, vbH] = viewBox.split(' ').map(Number);
     return Math.min(rect.width / vbW, rect.height / vbH);
+  }
+
+  // Maps an SVG user-space point (meters) to CSS px relative to the svg element's own box —
+  // used to position the plain-HTML edit input (see below) directly over a dimension label.
+  // preserveAspectRatio "xMidYMid meet" letterboxes on the shorter axis, hence the offsetX/Y.
+  function svgToLocalPx(x: number, z: number): { left: number; top: number } {
+    const svg = svgRef.current;
+    if (!svg) return { left: 0, top: 0 };
+    const rect = svg.getBoundingClientRect();
+    const [vbX, vbY, vbW, vbH] = viewBox.split(' ').map(Number);
+    const scale = Math.min(rect.width / vbW, rect.height / vbH);
+    const offsetX = (rect.width - vbW * scale) / 2;
+    const offsetY = (rect.height - vbH * scale) / 2;
+    return { left: offsetX + (x - vbX) * scale, top: offsetY + (z - vbY) * scale };
   }
 
   function beginDrag(e: React.PointerEvent<SVGElement>, state: DragState) {
@@ -132,13 +161,40 @@ export function FloorPlanPreview({
     else onVertexDragEnd?.();
   }
 
+  // Screen-space anchor + rotation for the active edit box, computed fresh each render from
+  // the current edges/viewBox (cheap, and keeps it correct through the frozen-viewBox drag
+  // logic above without needing its own effect).
+  let editBox: { left: number; top: number; angleDeg: number } | null = null;
+  if (editingEdge !== null && edges[editingEdge]) {
+    const edge = edges[editingEdge];
+    const lx = edge.midpoint.x + edge.normal.x * (DIM_OFFSET + 0.28);
+    const ly = edge.midpoint.z + edge.normal.z * (DIM_OFFSET + 0.28);
+    const { left, top } = svgToLocalPx(lx, ly);
+    let angleDeg = (Math.atan2(edge.end.z - edge.start.z, edge.end.x - edge.start.x) * 180) / Math.PI;
+    if (angleDeg > 90 || angleDeg <= -90) angleDeg += 180;
+    editBox = { left, top, angleDeg };
+  }
+
   return (
-    <svg ref={svgRef} viewBox={viewBox} style={{ width: '100%', height: '100%' }} preserveAspectRatio="xMidYMid meet">
-      <polygon points={points} fill={FLOOR_FILL} stroke="none" />
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      <svg ref={svgRef} viewBox={viewBox} style={{ width: '100%', height: '100%' }} preserveAspectRatio="xMidYMid meet">
+        <polygon points={points} fill={FLOOR_FILL} stroke="none" />
 
       {/* Walls */}
       {edges.map((edge, i) => {
         const isHighlighted = highlightedEdgeIndex === i;
+        // The wall's drag hit-line is trimmed inward at each end when corner handles are
+        // present, so the two hit zones never overlap — without this, a click near a corner
+        // meant to slide the wall could be captured by the corner handle instead, moving
+        // only ONE endpoint and tilting the wall (looks like the wall "rotated" from a drag
+        // that should only ever translate it).
+        const dirX = (edge.end.x - edge.start.x) / edge.length;
+        const dirZ = (edge.end.z - edge.start.z) / edge.length;
+        const trim = onVertexDrag ? Math.min(0.3, edge.length / 2 - 0.05) : 0;
+        const hx1 = edge.start.x + dirX * trim;
+        const hz1 = edge.start.z + dirZ * trim;
+        const hx2 = edge.end.x - dirX * trim;
+        const hz2 = edge.end.z - dirZ * trim;
         return (
           <g key={i}>
             <line
@@ -146,16 +202,16 @@ export function FloorPlanPreview({
               y1={edge.start.z}
               x2={edge.end.x}
               y2={edge.end.z}
-              stroke={isHighlighted ? 'var(--color-accent)' : '#1f1f1f'}
+              stroke={isHighlighted ? 'var(--color-accent)' : 'var(--color-text)'}
               strokeWidth={WALL_STROKE}
               strokeLinecap="square"
             />
             {(onEdgeClick || onEdgeDrag) && (
               <line
-                x1={edge.start.x}
-                y1={edge.start.z}
-                x2={edge.end.x}
-                y2={edge.end.z}
+                x1={hx1}
+                y1={hz1}
+                x2={hx2}
+                y2={hz2}
                 stroke="transparent"
                 strokeWidth={0.45}
                 style={{ cursor: onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
@@ -196,18 +252,26 @@ export function FloorPlanPreview({
             <line x1={x1} y1={y1} x2={x2} y2={y2} />
             <line x1={x1 - tx} y1={y1 - tz} x2={x1 + tx} y2={y1 + tz} />
             <line x1={x2 - tx} y1={y2 - tz} x2={x2 + tx} y2={y2 + tz} />
-            <text
-              x={lx}
-              y={ly}
-              transform={`rotate(${angle} ${lx} ${ly})`}
-              fontSize={0.24}
-              fill="var(--color-text)"
-              stroke="none"
-              textAnchor="middle"
-              dominantBaseline="middle"
-            >
-              {formatLength(edge.length, units)}
-            </text>
+            {editingEdge !== i && (
+              <text
+                x={lx}
+                y={ly}
+                transform={`rotate(${angle} ${lx} ${ly})`}
+                fontSize={0.24}
+                fill="var(--color-text)"
+                stroke="none"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{ cursor: onEdgeLengthChange ? 'text' : undefined }}
+                onClick={() => {
+                  if (!onEdgeLengthChange) return;
+                  setEditValue(edge.length.toFixed(2));
+                  setEditingEdge(i);
+                }}
+              >
+                {formatLength(edge.length, units)}
+              </text>
+            )}
           </g>
         );
       })}
@@ -238,7 +302,7 @@ export function FloorPlanPreview({
       {onVertexDrag &&
         vertices.map((v, i) => (
           <g key={i}>
-            <circle cx={v.x} cy={v.z} r={0.11} fill="#ffffff" stroke="#1f1f1f" strokeWidth={0.035} />
+            <circle cx={v.x} cy={v.z} r={0.11} fill="var(--color-surface)" stroke="var(--color-text)" strokeWidth={0.035} />
             <circle
               cx={v.x}
               cy={v.z}
@@ -255,6 +319,38 @@ export function FloorPlanPreview({
             />
           </g>
         ))}
-    </svg>
+      </svg>
+      {editBox && editingEdge !== null && (
+        <input
+          autoFocus
+          type="number"
+          step="0.1"
+          min="0.1"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          onBlur={(e) => commitEdit(editingEdge, e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') e.currentTarget.blur();
+            if (e.key === 'Escape') setEditingEdge(null);
+          }}
+          style={{
+            position: 'absolute',
+            left: editBox.left,
+            top: editBox.top,
+            transform: `translate(-50%, -50%) rotate(${editBox.angleDeg}deg)`,
+            width: 64,
+            textAlign: 'center',
+            fontSize: 13,
+            padding: '3px 4px',
+            border: '1px solid var(--color-accent)',
+            borderRadius: 4,
+            background: 'var(--color-surface)',
+            color: 'var(--color-text)',
+            boxSizing: 'border-box',
+          }}
+        />
+      )}
+    </div>
   );
 }

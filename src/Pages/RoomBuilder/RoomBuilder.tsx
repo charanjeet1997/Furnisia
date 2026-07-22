@@ -8,7 +8,6 @@ import {
   generateVertices,
   centerVertices,
   type RoomShapeType,
-  type ShapeParams,
   type RoomOpening,
   type RoomVertex,
 } from '../../Data/RoomShape';
@@ -25,10 +24,9 @@ export function RoomBuilder() {
 
   const [step, setStep] = useState(0);
   const [shapeType, setShapeType] = useState<RoomShapeType>('rectangular');
-  const [params, setParams] = useState<ShapeParams>(SHAPE_DEFAULT_PARAMS.rectangular);
-  // Vertices are STATE, not derived: params only seed the polygon (on shape pick or field
-  // edit) — wall/corner drags in Step 2 then edit the vertex list directly, so moving one
-  // wall never disturbs the others (IKEA-style free-form editing).
+  // Vertices are STATE, not derived from params: a shape pick seeds the polygon, then Step 2's
+  // wall/corner drags and inline dimension edits mutate the vertex list directly, so moving
+  // one wall never disturbs the others (IKEA/Revit-style free-form editing).
   const [vertices, setVertices] = useState<RoomVertex[]>(() =>
     generateVertices('rectangular', SHAPE_DEFAULT_PARAMS.rectangular),
   );
@@ -38,15 +36,8 @@ export function RoomBuilder() {
 
   function handleShapeSelect(type: RoomShapeType) {
     setShapeType(type);
-    setParams(SHAPE_DEFAULT_PARAMS[type]);
     setVertices(generateVertices(type, SHAPE_DEFAULT_PARAMS[type]));
     setOpenings([]); // edge indices are shape-specific, so a shape change invalidates them
-  }
-
-  // Field edits rebuild the base shape from params (discarding any free-form drag tweaks).
-  function handleParamsChange(next: ShapeParams) {
-    setParams(next);
-    setVertices(generateVertices(shapeType, next));
   }
 
   function handleFinish() {
@@ -70,9 +61,7 @@ export function RoomBuilder() {
 
       <div className={styles.stepBody}>
         {step === 0 && <StepShape shapeType={shapeType} onSelect={handleShapeSelect} />}
-        {step === 1 && (
-          <StepDimensions params={params} vertices={vertices} onParamsChange={handleParamsChange} onVerticesChange={setVertices} />
-        )}
+        {step === 1 && <StepDimensions vertices={vertices} onVerticesChange={setVertices} />}
         {step === 2 && <StepOpenings vertices={vertices} openings={openings} onOpeningsChange={setOpenings} />}
         {step === 3 && (
           <StepStyle

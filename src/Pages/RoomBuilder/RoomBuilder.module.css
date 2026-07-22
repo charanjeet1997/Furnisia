@@ -104,29 +104,6 @@
   align-items: start;
 }
 
-.paramGrid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 0.8rem;
-}
-
-.paramLabel {
-  display: flex;
-  flex-direction: column;
-  gap: 0.3rem;
-  font-size: 0.8rem;
-  color: var(--color-text-muted);
-}
-
-.paramLabel input {
-  padding: 0.5rem 0.6rem;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  font-size: 0.9rem;
-  background: var(--color-bg);
-  color: var(--color-text);
-}
-
 .previewPane {
   aspect-ratio: 1;
   background: var(--color-surface);

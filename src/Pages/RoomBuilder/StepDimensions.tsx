@@ -1,24 +1,20 @@
 import { useRef, useState } from 'react';
-import { SHAPE_PARAM_LABELS, type ShapeParams } from '../../Data/RoomShape';
 import { computeEdges, type WallEdge } from '../../Components/polygonGeometry';
 import { FloorPlanPreview, type PlanUnits } from './FloorPlanPreview';
 import type { RoomVertex } from '../../Data/RoomShape';
 import styles from './RoomBuilder.module.css';
 
 interface StepDimensionsProps {
-  params: ShapeParams;
   vertices: RoomVertex[];
-  onParamsChange: (params: ShapeParams) => void;
   onVerticesChange: (vertices: RoomVertex[]) => void;
 }
 
-const MIN_EDGE = 0.3; // reject drags that would collapse a wall
+const MIN_EDGE = 0.3; // reject edits/drags that would collapse a wall
 
-// Proper segment intersection (excluding shared endpoints) — used below to reject drags
+// Proper segment intersection (excluding shared endpoints) — used below to reject edits
 // that push a wall through a non-adjacent wall, e.g. a notch wall dragged past the outer
-// wall it's parallel to. Without this, only the dragged wall's own length was checked, so
-// the polygon could self-intersect into a degenerate bowtie (a thin sliver, as seen when
-// a leg's inner wall gets dragged past the opposite outer wall).
+// wall it's parallel to. Without this, only the edited wall's own length was checked, so
+// the polygon could self-intersect into a degenerate bowtie (a thin sliver).
 function segmentsIntersect(a1: RoomVertex, a2: RoomVertex, b1: RoomVertex, b2: RoomVertex): boolean {
   const d1x = a2.x - a1.x;
   const d1z = a2.z - a1.z;
@@ -51,7 +47,7 @@ function edgesValid(vertices: RoomVertex[]): boolean {
 
 const snap = (v: number) => Math.round(v * 10) / 10; // 0.1m grid, keeps dimensions clean
 
-export function StepDimensions({ params, vertices, onParamsChange, onVerticesChange }: StepDimensionsProps) {
+export function StepDimensions({ vertices, onVerticesChange }: StepDimensionsProps) {
   const [units, setUnits] = useState<PlanUnits>('m');
 
   // Snapshot at drag start: drags apply (snapshot + total delta), so clamped/rejected moves
@@ -71,23 +67,8 @@ export function StepDimensions({ params, vertices, onParamsChange, onVerticesCha
       <div>
         <h2 className={styles.stepTitle}>Adjust your dimensions</h2>
         <p className={styles.stepSubtitle}>
-          Drag a wall or corner in the plan. The size fields rebuild the base shape.
+          Drag a wall or corner in the plan, or click a dimension to type an exact length.
         </p>
-        <div className={styles.paramGrid}>
-          {Object.keys(params).map((key) => (
-            <label key={key} className={styles.paramLabel}>
-              {SHAPE_PARAM_LABELS[key] ?? key}
-              <input
-                type="number"
-                min={0.5}
-                max={15}
-                step={0.1}
-                value={params[key]}
-                onChange={(event) => onParamsChange({ ...params, [key]: Number(event.target.value) })}
-              />
-            </label>
-          ))}
-        </div>
         <p className={styles.stepSubtitle}>Units shown on the plan</p>
         <div className={styles.kindToggle}>
           <button type="button" className={units === 'm' ? styles.pillActive : styles.pill} onClick={() => setUnits('m')}>
@@ -131,6 +112,22 @@ export function StepDimensions({ params, vertices, onParamsChange, onVerticesCha
             if (edgesValid(next)) onVerticesChange(next);
           }}
           onVertexDragEnd={endDrag}
+          onEdgeLengthChange={(edgeIndex, newLength) => {
+            // Revit-style typed edit: keep the wall's START vertex fixed and place its END
+            // vertex exactly `newLength` away along the wall's existing direction. The
+            // neighboring wall that shares that end vertex follows (same as a corner drag).
+            const n = vertices.length;
+            const edge = computeEdges(vertices)[edgeIndex];
+            const dirX = (edge.end.x - edge.start.x) / edge.length;
+            const dirZ = (edge.end.z - edge.start.z) / edge.length;
+            const endIdx = (edgeIndex + 1) % n;
+            const next = vertices.map((v, vi) =>
+              vi === endIdx
+                ? { x: snap(edge.start.x + dirX * newLength), z: snap(edge.start.z + dirZ * newLength) }
+                : v,
+            );
+            if (edgesValid(next)) onVerticesChange(next);
+          }}
         />
       </div>
     </div>
