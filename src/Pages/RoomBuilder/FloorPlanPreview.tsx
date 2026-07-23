@@ -105,6 +105,10 @@ const DIM_TICK = 0.12; // half-length of the tick marks at dimension line ends
 const FLOOR_FILL = '#dcc49c'; // light wood tone
 const SNAP_DISTANCE = 0.3; // meters — how close an interior-wall endpoint must get to a
 // boundary wall before it magnetically snaps onto it
+// Closing a loop (e.g. finishing a room-extension bay) depends on two independent wall TIPS
+// actually catching each other — that's a harder click to land than dragging onto the middle
+// of a long wall, so tips get a more generous catch radius than SNAP_DISTANCE.
+const ENDPOINT_SNAP_DISTANCE = 0.5;
 
 const snapDraw = (v: number) => Math.round(v * 10) / 10; // 0.1m grid, matches every other edit path
 
@@ -212,6 +216,14 @@ export function FloorPlanPreview({
     });
     interiorWalls.forEach((wall) => {
       if (wall.id === excludeWallId) return;
+      // Tip-to-tip first, with the wider radius — checked before the general along-the-wall
+      // projection below so a point that's genuinely closer to the LINE than to either tip
+      // (the normal T-junction case) still prefers the line, while a point that's only close
+      // to a tip specifically gets that tip's more generous catch.
+      for (const [t, point] of [[0, wall.start] as const, [1, wall.end] as const]) {
+        const dist = Math.hypot(p.x - point.x, p.z - point.z);
+        if (dist <= ENDPOINT_SNAP_DISTANCE && (!best || dist < best.dist)) best = { host: 'interior', wallId: wall.id, t, point, dist };
+      }
       const abx = wall.end.x - wall.start.x;
       const abz = wall.end.z - wall.start.z;
       const lenSq = abx * abx + abz * abz || 1;

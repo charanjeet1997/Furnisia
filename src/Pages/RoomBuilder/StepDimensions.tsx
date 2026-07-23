@@ -503,6 +503,37 @@ export function StepDimensions({
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [attachments, joints, interiorWalls, vertices]);
 
+  // Safety net: two FREE (non-boundary) endpoints on different walls that ended up this close
+  // are almost certainly meant to be the same point — e.g. a live drag/draw that landed just
+  // outside the snap radius, leaving what looks like a closed loop but is actually two
+  // coincidentally-overlapping tips instead of a real joint (the room-extension merge above,
+  // and the plain black-dot coloring, both depend on a REAL joint to ever notice them as
+  // connected). Nudges the second point onto the first and joins them — 0.15m is tight enough
+  // (1.5x the 0.1m placement grid) that unrelated nearby walls essentially never trigger it.
+  useEffect(() => {
+    const AUTO_JOIN_TOLERANCE = 0.15;
+    for (let i = 0; i < interiorWalls.length; i++) {
+      const wallA = interiorWalls[i];
+      for (const endA of ['start', 'end'] as const) {
+        if (attachments[wallA.id]?.[endA]) continue;
+        const pA = endA === 'start' ? wallA.start : wallA.end;
+        for (let j = i + 1; j < interiorWalls.length; j++) {
+          const wallB = interiorWalls[j];
+          for (const endB of ['start', 'end'] as const) {
+            if (attachments[wallB.id]?.[endB]) continue;
+            const pB = endB === 'start' ? wallB.start : wallB.end;
+            if (Math.hypot(pA.x - pB.x, pA.z - pB.z) > AUTO_JOIN_TOLERANCE) continue;
+            if (jointMembers(wallA.id, endA).some((m) => m.wallId === wallB.id && m.end === endB)) continue;
+            onInteriorWallsChange(interiorWalls.map((w) => (w.id === wallB.id ? { ...w, [endB]: pA } : w)));
+            joinEndpoints({ wallId: wallA.id, end: endA }, { wallId: wallB.id, end: endB });
+            return;
+          }
+        }
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [interiorWalls, attachments, joints]);
+
   // One or more boundary corners were inserted starting at `insertedAt` (addWall, a fresh
   // snap-attach, or drawing a wall whose endpoint(s) snapped onto the boundary) — every
   // existing attachment pointing at or past that index needs to shift up by `count` so it
