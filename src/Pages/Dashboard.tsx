@@ -1,18 +1,49 @@
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { defaultRoom, roomPresets, type RoomShape } from '../Data/RoomShape';
 import { usePlannerStore } from '../store/plannerStore';
+import { useAuth } from '../store/AuthContext';
+import { deleteRoom, listRooms, type SavedRoom } from '../store/rooms';
 import { RoomCard } from '../Components/UI/RoomCard';
+import { SavedRoomCard } from '../Components/UI/SavedRoomCard';
 import { Header } from '../Components/UI/Header';
 import { Footer } from '../Components/UI/Footer';
 import styles from './Dashboard.module.css';
 
 export function Dashboard() {
   const navigate = useNavigate();
+  const { user } = useAuth();
   const setRoom = usePlannerStore((state) => state.setRoom);
+  const loadRoom = usePlannerStore((state) => state.loadRoom);
+  const [savedRooms, setSavedRooms] = useState<SavedRoom[]>([]);
+  const [loadingSaved, setLoadingSaved] = useState(false);
+
+  useEffect(() => {
+    if (!user) {
+      setSavedRooms([]);
+      return;
+    }
+    setLoadingSaved(true);
+    listRooms(user.uid)
+      .then(setSavedRooms)
+      .finally(() => setLoadingSaved(false));
+  }, [user]);
 
   function goToRoom(room: RoomShape) {
     setRoom(room);
     navigate('/planner');
+  }
+
+  function openSavedRoom(saved: SavedRoom) {
+    loadRoom(saved.room, saved.placedItems);
+    navigate('/planner');
+  }
+
+  async function removeSavedRoom(saved: SavedRoom) {
+    if (!user) return;
+    if (!window.confirm(`Delete "${saved.name}"? This can't be undone.`)) return;
+    await deleteRoom(user.uid, saved.id);
+    setSavedRooms((rooms) => rooms.filter((r) => r.id !== saved.id));
   }
 
   return (
@@ -44,6 +75,31 @@ export function Dashboard() {
           <h2>Build a room</h2>
           <p>Choose a shape, set dimensions, add doors and windows, and pick a style.</p>
         </button>
+      </section>
+
+      <section>
+        <h2 className={styles.sectionTitle}>My rooms</h2>
+        {!user && (
+          <p className={styles.savedRoomsHint}>
+            <Link to="/login">Sign in</Link> to save your rooms and pick up where you left off, on any device.
+          </p>
+        )}
+        {user && loadingSaved && <p className={styles.savedRoomsHint}>Loading your rooms…</p>}
+        {user && !loadingSaved && savedRooms.length === 0 && (
+          <p className={styles.savedRoomsHint}>You haven't saved any rooms yet — open the Planner and hit "Save room".</p>
+        )}
+        {user && savedRooms.length > 0 && (
+          <div className={styles.roomGrid}>
+            {savedRooms.map((saved) => (
+              <SavedRoomCard
+                key={saved.id}
+                saved={saved}
+                onSelect={() => openSavedRoom(saved)}
+                onDelete={() => removeSavedRoom(saved)}
+              />
+            ))}
+          </div>
+        )}
       </section>
 
       <section>

@@ -8,6 +8,12 @@
   border-bottom: 1px solid var(--color-border);
 }
 
+@media (max-width: 640px) {
+  .header {
+    padding: 0.75rem 1rem;
+  }
+}
+
 .brand {
   display: flex;
   align-items: center;
@@ -23,4 +29,87 @@
   height: 20px;
   border-radius: var(--radius-sm);
   background: var(--color-accent);
+}
+
+.actions {
+  display: flex;
+  align-items: center;
+  gap: 0.9rem;
+}
+
+.account {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.accountLink {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  min-width: 44px;
+  min-height: 44px;
+  text-decoration: none;
+  border-radius: var(--radius-pill);
+  padding: 0.2rem 0.5rem 0.2rem 0.2rem;
+}
+
+.accountLink:hover {
+  background: var(--color-bg);
+}
+
+.accountAvatar {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  object-fit: cover;
+  flex-shrink: 0;
+}
+
+.accountAvatarFallback {
+  width: 26px;
+  height: 26px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.signOutButton {
+  min-height: 44px;
+  padding: 0.4rem 0.85rem;
+  border-radius: var(--radius-pill);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface-2);
+  color: var(--color-text);
+  font-size: 0.8rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: border-color var(--duration-hover) var(--ease-standard);
+}
+
+.signOutButton:hover {
+  border-color: var(--color-accent);
+}
+
+.signInLink {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  padding: 0.45rem 1rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  text-decoration: none;
+}
+
+.signInLink:hover {
+  background: var(--color-accent-hover);
 }

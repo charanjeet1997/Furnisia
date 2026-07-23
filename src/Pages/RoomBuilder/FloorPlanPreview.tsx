@@ -1,9 +1,17 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { computeEdges, boundingBox } from '../../Components/polygonGeometry';
-import type { RoomOpening, RoomVertex } from '../../Data/RoomShape';
+import type { InteriorWall, RoomOpening, RoomVertex } from '../../Data/RoomShape';
 import styles from './FloorPlanPreview.module.css';
 
 export type PlanUnits = 'm' | 'ft';
+
+// Where an interior-wall endpoint snapped to — either a boundary wall (the existing
+// edgeIndex/t addressing) or ANOTHER interior wall (addressed by its own id/t instead). Both
+// carry the resolved snap `point` so every consumer that only cares about "where" can ignore
+// which kind of host it is.
+export type SnapTarget =
+  | { host: 'boundary'; edgeIndex: number; t: number; point: RoomVertex }
+  | { host: 'interior'; wallId: string; t: number; point: RoomVertex };
 
 interface FloorPlanPreviewProps {
   vertices: RoomVertex[];
@@ -37,6 +45,57 @@ interface FloorPlanPreviewProps {
   onOpeningDragStart?: (openingIndex: number) => void;
   onOpeningDrag?: (openingIndex: number, delta: number) => void;
   onOpeningDragEnd?: () => void;
+  // Splits the wall at `edgeIndex` into two by inserting a new corner at its midpoint.
+  onWallAdd?: (edgeIndex: number) => void;
+  // Deletes the corner at `vertexIndex`, merging its two walls into one straight wall.
+  onVertexRemove?: (vertexIndex: number) => void;
+  // Free-standing interior walls (partitions) — independent of the boundary polygon, drawn
+  // anywhere on the plan.
+  interiorWalls?: InteriorWall[];
+  onInteriorWallRemove?: (id: string) => void;
+  // Splits an interior wall into two at its midpoint — same idea as onWallAdd above, for
+  // interior walls instead of boundary ones.
+  onInteriorWallSplit?: (id: string) => void;
+  // Click-to-place a door/window on an interior wall (Step 3) — same rejection-message
+  // contract as onEdgeClick above.
+  onInteriorWallClick?: (id: string) => string | void;
+  // Dragging an interior wall's endpoint. Snaps magnetically onto a boundary wall within
+  // SNAP_DISTANCE — `attach` reports where (so the caller can keep it pinned to that wall as
+  // it moves); `attach: null` means it ended up free-floating in open space.
+  onInteriorWallEndpointDragStart?: (wallId: string, end: 'start' | 'end') => void;
+  onInteriorWallEndpointChange?: (
+    wallId: string,
+    end: 'start' | 'end',
+    point: RoomVertex,
+    attach: SnapTarget | null,
+  ) => void;
+  // Whether a given endpoint is currently attached to a boundary wall — drives the black
+  // (attached, behaves like a real corner) vs. gray (free-floating) coloring.
+  isEndpointAttached?: (wallId: string, end: 'start' | 'end') => boolean;
+  // Explicit "Separate" control shown on an attached (black) endpoint — detaches it back to a
+  // free point without moving it, as an alternative to dragging it away.
+  onInteriorWallEndpointDetach?: (wallId: string, end: 'start' | 'end') => void;
+  // A free (unattached) endpoint was clicked (not dragged) — continuous-drawing: lets the user
+  // start a brand-new wall segment picking up exactly where a free end left off, without going
+  // back to the "Draw a wall" toggle. Reports which wall/end it came from so the caller can
+  // join the new segment to it as a real shared point.
+  onFreeEndpointClick?: (wallId: string, end: 'start' | 'end', point: RoomVertex) => void;
+  // Other wall endpoints that are the SAME physical point as this one (a continuous-drawing
+  // elbow) — used to make them visually follow together during a live drag, not just after
+  // the drag commits.
+  jointedEndpoints?: (wallId: string, end: 'start' | 'end') => { wallId: string; end: 'start' | 'end' }[];
+  // Click-move-click draw: click anywhere to start, move freely (live dashed preview + length
+  // follow the cursor), click again to place the end. Purely additive — never touches the
+  // room's boundary (`vertices`). `drawMode` arms it; it disarms itself after one placement or
+  // Escape.
+  drawMode?: boolean;
+  onWallDrawComplete?: (
+    start: RoomVertex,
+    end: RoomVertex,
+    startSnap: SnapTarget | null,
+    endSnap: SnapTarget | null,
+  ) => void;
+  onWallDrawCancel?: () => void;
 }
 
 const PAD = 1.1; // room for the outside dimension lines
@@ -44,6 +103,10 @@ const WALL_STROKE = 0.18;
 const DIM_OFFSET = 0.45; // dimension line distance from the wall
 const DIM_TICK = 0.12; // half-length of the tick marks at dimension line ends
 const FLOOR_FILL = '#dcc49c'; // light wood tone
+const SNAP_DISTANCE = 0.3; // meters — how close an interior-wall endpoint must get to a
+// boundary wall before it magnetically snaps onto it
+
+const snapDraw = (v: number) => Math.round(v * 10) / 10; // 0.1m grid, matches every other edit path
 
 function formatLength(meters: number, units: PlanUnits): string {
   if (units === 'm') return `${meters.toFixed(1)}m`;
@@ -86,9 +149,91 @@ export function FloorPlanPreview({
   onOpeningDragStart,
   onOpeningDrag,
   onOpeningDragEnd,
+  onWallAdd,
+  onVertexRemove,
+  interiorWalls = [],
+  onInteriorWallRemove,
+  onInteriorWallSplit,
+  onInteriorWallClick,
+  onInteriorWallEndpointDragStart,
+  onInteriorWallEndpointChange,
+  isEndpointAttached,
+  onInteriorWallEndpointDetach,
+  onFreeEndpointClick,
+  jointedEndpoints,
+  drawMode = false,
+  onWallDrawComplete,
+  onWallDrawCancel,
 }: FloorPlanPreviewProps) {
   const edges = computeEdges(vertices);
-  const bbox = boundingBox(vertices);
+  // The plan must fit whatever's actually drawn, not just the boundary — a wall drawn well
+  // outside it (e.g. extending out from a corner) would otherwise get clipped by the viewBox
+  // instead of scrolling the view out to show it.
+  const bbox = boundingBox([...vertices, ...interiorWalls.flatMap((w) => [w.start, w.end])]);
+  const centroid = { x: (bbox.minX + bbox.maxX) / 2, z: (bbox.minZ + bbox.maxZ) / 2 };
+
+  // Dragging an interior wall's own endpoint (separate from the boundary drag machinery below
+  // since this one needs absolute cursor tracking + live snap detection, not relative deltas).
+  const [draggingEndpoint, setDraggingEndpoint] = useState<{ wallId: string; end: 'start' | 'end'; origin: RoomVertex } | null>(null);
+  const [endpointLive, setEndpointLive] = useState<RoomVertex | null>(null);
+  const [endpointSnap, setEndpointSnap] = useState<SnapTarget | null>(null);
+
+  // Resolves an opening's host wall geometry — either a boundary edge, or (when
+  // `interiorWallId` is set) a free-standing interior wall, computed with the same
+  // start/end/length/normal shape as a boundary WallEdge so every opening-rendering/dragging
+  // calculation below works identically regardless of which kind of wall it's on.
+  function openingHost(opening: RoomOpening): { start: RoomVertex; end: RoomVertex; length: number; normal: RoomVertex } | null {
+    if (opening.interiorWallId) {
+      const wall = interiorWalls.find((w) => w.id === opening.interiorWallId);
+      if (!wall) return null;
+      const dx = wall.end.x - wall.start.x;
+      const dz = wall.end.z - wall.start.z;
+      const length = Math.hypot(dx, dz);
+      if (length < 1e-6) return null;
+      return { start: wall.start, end: wall.end, length, normal: { x: dz / length, z: -dx / length } };
+    }
+    return edges[opening.edgeIndex] ?? null;
+  }
+
+  // Closest point to `p` on any boundary wall OR interior wall, if within SNAP_DISTANCE — the
+  // "magnetism" that lets an interior wall's endpoint attach to whichever wall it's dragged
+  // near, boundary or interior alike. `excludeWallId` keeps a wall's own endpoint from
+  // snapping onto itself (or, via its jointed partners — see callers) while being dragged.
+  function findSnap(p: RoomVertex, excludeWallId?: string): SnapTarget | null {
+    let best: (SnapTarget & { dist: number }) | null = null;
+    edges.forEach((edge, edgeIndex) => {
+      const abx = edge.end.x - edge.start.x;
+      const abz = edge.end.z - edge.start.z;
+      const lenSq = abx * abx + abz * abz || 1;
+      const t = Math.max(0, Math.min(1, ((p.x - edge.start.x) * abx + (p.z - edge.start.z) * abz) / lenSq));
+      const point = { x: edge.start.x + abx * t, z: edge.start.z + abz * t };
+      const dist = Math.hypot(p.x - point.x, p.z - point.z);
+      if (dist <= SNAP_DISTANCE && (!best || dist < best.dist)) best = { host: 'boundary', edgeIndex, t, point, dist };
+    });
+    interiorWalls.forEach((wall) => {
+      if (wall.id === excludeWallId) return;
+      const abx = wall.end.x - wall.start.x;
+      const abz = wall.end.z - wall.start.z;
+      const lenSq = abx * abx + abz * abz || 1;
+      const t = Math.max(0, Math.min(1, ((p.x - wall.start.x) * abx + (p.z - wall.start.z) * abz) / lenSq));
+      const point = { x: wall.start.x + abx * t, z: wall.start.z + abz * t };
+      const dist = Math.hypot(p.x - point.x, p.z - point.z);
+      if (dist <= SNAP_DISTANCE && (!best || dist < best.dist)) best = { host: 'interior', wallId: wall.id, t, point, dist };
+    });
+    return best;
+  }
+
+  // Click-move-click draw: first click sets the start point (anywhere — not constrained to an
+  // existing wall), mouse move previews the end, second click commits. Purely additive: this
+  // never reads or writes `vertices`, only reports the two points via onWallDrawComplete.
+  const [drawStart, setDrawStart] = useState<RoomVertex | null>(null);
+  const [drawEnd, setDrawEnd] = useState<RoomVertex | null>(null);
+  // Snap state for each click of the draw gesture — lets a wall drawn directly onto a
+  // boundary wall attach immediately, same as dragging an endpoint onto one, instead of
+  // requiring a drag-away-and-back afterward to trigger the snap.
+  const [drawStartSnap, setDrawStartSnap] = useState<SnapTarget | null>(null);
+  const [drawEndSnap, setDrawEndSnap] = useState<SnapTarget | null>(null);
+  const [hoveredInteriorWall, setHoveredInteriorWall] = useState<string | null>(null);
   const width = bbox.maxX - bbox.minX;
   const depth = bbox.maxZ - bbox.minZ;
   const viewW = width + PAD * 2;
@@ -121,10 +266,12 @@ export function FloorPlanPreview({
   // A rejected wall click (too small / already occupied): flashes that wall red and toasts
   // the reason. `token` forces the flash to restart even if the same wall is rejected twice
   // in a row (a fresh key remounts the animated element instead of a no-op re-render).
-  const [rejectedClick, setRejectedClick] = useState<{ edgeIndex: number; message: string; token: number } | null>(null);
+  // `edgeIndex` is only present for a boundary-wall rejection (drives the wall-outline flash
+  // below); an interior-wall rejection still shows the toast, just without that outline.
+  const [rejectedClick, setRejectedClick] = useState<{ edgeIndex?: number; message: string; token: number } | null>(null);
   const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
-  function flashRejection(edgeIndex: number, message: string) {
+  function flashRejection(edgeIndex: number | undefined, message: string) {
     if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
     setRejectedClick({ edgeIndex, message, token: Date.now() });
     errorTimerRef.current = setTimeout(() => setRejectedClick(null), 1300);
@@ -135,6 +282,57 @@ export function FloorPlanPreview({
     if (Number.isFinite(value) && value > 0) onEdgeLengthChange?.(edgeIndex, value);
     setEditingEdge(null);
   }
+
+  // Absolute screen→SVG-user-space mapping (unlike pxScale/svgToLocalPx above, which only
+  // handle relative deltas) — needed for the draw tool's live cursor-follow preview.
+  function clientToSvgPoint(clientX: number, clientY: number): { x: number; z: number } {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, z: 0 };
+    const pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return { x: 0, z: 0 };
+    const p = pt.matrixTransform(ctm.inverse());
+    return { x: snapDraw(p.x), z: snapDraw(p.y) };
+  }
+
+  function cancelDraw() {
+    setDrawStart(null);
+    setDrawEnd(null);
+    setDrawStartSnap(null);
+    setDrawEndSnap(null);
+    onWallDrawCancel?.();
+  }
+
+  // Continuous drawing: a free endpoint was clicked (not dragged) — pick up a new wall segment
+  // from exactly that point. Sets the local click-move-click state directly (rather than
+  // waiting for the `drawMode` prop to round-trip back from the parent) so the live preview
+  // starts immediately on this same click; the parent's callback is what actually arms
+  // `drawMode` for next render, so the follow-up click lands in onWallDrawComplete correctly.
+  // Its start is never boundary-snapped — it originates from a free interior-wall endpoint,
+  // joined to that origin separately (see continuousFrom in StepDimensions), not attached.
+  function startContinuousDraw(wallId: string, end: 'start' | 'end', point: RoomVertex) {
+    setDrawStart(point);
+    setDrawEnd(point);
+    setDrawStartSnap(null);
+    onFreeEndpointClick?.(wallId, end, point);
+  }
+
+  useEffect(() => {
+    if (!drawMode) cancelDraw();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drawMode]);
+
+  useEffect(() => {
+    if (!drawStart) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') cancelDraw();
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drawStart]);
 
   function pxScale(): number {
     const svg = svgRef.current;
@@ -229,7 +427,42 @@ export function FloorPlanPreview({
           {rejectedClick.message}
         </div>
       )}
-      <svg ref={svgRef} viewBox={viewBox} style={{ width: '100%', height: '100%' }} preserveAspectRatio="xMidYMid meet">
+      <svg
+        ref={svgRef}
+        viewBox={viewBox}
+        style={{ width: '100%', height: '100%', cursor: drawMode ? 'crosshair' : undefined }}
+        preserveAspectRatio="xMidYMid meet"
+        onMouseMove={(e) => {
+          if (!drawStart) return;
+          const p = clientToSvgPoint(e.clientX, e.clientY);
+          const snapped = findSnap(p);
+          setDrawEnd(snapped?.point ?? p);
+          setDrawEndSnap(snapped);
+        }}
+        onClick={(e) => {
+          // `drawStart` already being set (continuous drawing from a free endpoint) is treated
+          // the same as `drawMode` being armed — covers the moment right after that click,
+          // before the parent's `drawMode` prop has round-tripped back down.
+          if (!drawMode && !drawStart) return;
+          if (!drawStart) {
+            const p = clientToSvgPoint(e.clientX, e.clientY);
+            const snapped = findSnap(p);
+            setDrawStart(snapped?.point ?? p);
+            setDrawStartSnap(snapped);
+            return;
+          }
+          const p = clientToSvgPoint(e.clientX, e.clientY);
+          const snapped = findSnap(p);
+          const end = snapped?.point ?? p;
+          if (Math.hypot(end.x - drawStart.x, end.z - drawStart.z) >= 0.2) {
+            onWallDrawComplete?.(drawStart, end, drawStartSnap, snapped);
+          }
+          setDrawStart(null);
+          setDrawEnd(null);
+          setDrawStartSnap(null);
+          setDrawEndSnap(null);
+        }}
+      >
         <polygon points={points} fill={FLOOR_FILL} stroke="none" />
 
       {/* Walls */}
@@ -265,15 +498,15 @@ export function FloorPlanPreview({
                 x2={hx2}
                 y2={hz2}
                 stroke="transparent"
-                strokeWidth={0.45}
-                style={{ cursor: onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
+                strokeWidth={0.65}
+                style={{ cursor: drawMode ? 'crosshair' : onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
                 onClick={() => {
-                  if (movedRef.current) return;
+                  if (movedRef.current || drawMode) return;
                   const reason = onEdgeClick?.(i);
                   if (reason) flashRejection(i, reason);
                 }}
                 onPointerDown={(e) => {
-                  if (!onEdgeDrag) return;
+                  if (drawMode || !onEdgeDrag) return;
                   beginDrag(e, { kind: 'edge', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale(), normal: edge.normal });
                   onEdgeDragStart?.(i);
                 }}
@@ -281,6 +514,185 @@ export function FloorPlanPreview({
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
               />
+            )}
+            {onWallAdd && !drawMode && (
+              <g
+                transform={`translate(${edge.midpoint.x - edge.normal.x * 0.3} ${edge.midpoint.z - edge.normal.z * 0.3})`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => onWallAdd(i)}
+              >
+                <circle r={0.13} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.02} />
+                <path d="M-0.06,0 H0.06 M0,-0.06 V0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+              </g>
+            )}
+          </g>
+        );
+      })}
+
+      {/* Free-standing interior walls — independent of the boundary polygon. Rendered in the
+          same structural layer as the boundary so the +/× control buttons above and the
+          corner handles below always paint on top of them, never the other way round. */}
+      {interiorWalls.map((wall) => {
+        // While an endpoint is being dragged, show it (and anything jointed to it — e.g. a
+        // continuous-drawing elbow shared with another wall) following the live/snapped
+        // position instead of its last-committed one, so joined segments visibly move
+        // together DURING the drag, not just after it commits.
+        const liveTarget = draggingEndpoint ? (endpointSnap?.point ?? endpointLive) : null;
+        function isLive(thisEnd: 'start' | 'end'): boolean {
+          if (!draggingEndpoint) return false;
+          if (draggingEndpoint.wallId === wall.id && draggingEndpoint.end === thisEnd) return true;
+          const joined = jointedEndpoints?.(draggingEndpoint.wallId, draggingEndpoint.end) ?? [];
+          return joined.some((m) => m.wallId === wall.id && m.end === thisEnd);
+        }
+        const start = isLive('start') && liveTarget ? liveTarget : wall.start;
+        const end = isLive('end') && liveTarget ? liveTarget : wall.end;
+        const dx = end.x - start.x;
+        const dz = end.z - start.z;
+        const midX = (start.x + end.x) / 2;
+        const midZ = (start.z + end.z) / 2;
+        const isHovered = hoveredInteriorWall === wall.id;
+
+        function beginEndpointDrag(e: React.PointerEvent<SVGElement>, end: 'start' | 'end') {
+          e.currentTarget.setPointerCapture(e.pointerId);
+          const origin = end === 'start' ? wall.start : wall.end;
+          setDraggingEndpoint({ wallId: wall.id, end, origin });
+          setEndpointLive(origin);
+          setEndpointSnap(null);
+          onInteriorWallEndpointDragStart?.(wall.id, end);
+        }
+
+        function handleEndpointMove(e: React.PointerEvent<SVGElement>) {
+          const p = clientToSvgPoint(e.clientX, e.clientY);
+          setEndpointLive(p);
+          setEndpointSnap(findSnap(p, wall.id));
+        }
+
+        function handleEndpointUp(e: React.PointerEvent<SVGElement>) {
+          e.currentTarget.releasePointerCapture(e.pointerId);
+          if (draggingEndpoint) {
+            const finalPoint = endpointSnap?.point ?? endpointLive;
+            const attached = isEndpointAttached?.(wall.id, draggingEndpoint.end) ?? false;
+            const moved = finalPoint && Math.hypot(finalPoint.x - draggingEndpoint.origin.x, finalPoint.z - draggingEndpoint.origin.z) > 0.12;
+            if (!moved && !attached && onFreeEndpointClick) {
+              // A plain click (no real drag) on a FREE endpoint — continuous drawing: pick up
+              // a new wall segment exactly where this free end left off.
+              startContinuousDraw(wall.id, draggingEndpoint.end, draggingEndpoint.origin);
+            } else if (finalPoint) {
+              onInteriorWallEndpointChange?.(wall.id, draggingEndpoint.end, finalPoint, endpointSnap);
+            }
+          }
+          setDraggingEndpoint(null);
+          setEndpointLive(null);
+          setEndpointSnap(null);
+        }
+
+        return (
+          <g key={wall.id}>
+            <line x1={start.x} y1={start.z} x2={end.x} y2={end.z} stroke="var(--color-text)" strokeWidth={WALL_STROKE} strokeLinecap="square" />
+            {(onInteriorWallRemove || onInteriorWallClick) && (
+              <line
+                x1={start.x}
+                y1={start.z}
+                x2={end.x}
+                y2={end.z}
+                stroke="transparent"
+                strokeWidth={0.5}
+                style={{ cursor: 'pointer', touchAction: 'none' }}
+                onPointerEnter={() => setHoveredInteriorWall(wall.id)}
+                onPointerLeave={() => setHoveredInteriorWall((cur) => (cur === wall.id ? null : cur))}
+                onClick={() => {
+                  if (!onInteriorWallClick) return;
+                  const reason = onInteriorWallClick(wall.id);
+                  if (reason) flashRejection(undefined, reason);
+                }}
+              />
+            )}
+            {isHovered && onInteriorWallRemove && (
+              <g
+                transform={`translate(${midX - dz * 0.06} ${midZ + dx * 0.06})`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => onInteriorWallRemove(wall.id)}
+              >
+                <circle r={0.13} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.02} />
+                <path d="M-0.06,-0.06 L0.06,0.06 M0.06,-0.06 L-0.06,0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+              </g>
+            )}
+            {onInteriorWallSplit && (
+              <g
+                transform={`translate(${midX + dz * 0.09} ${midZ - dx * 0.09})`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => onInteriorWallSplit(wall.id)}
+              >
+                <circle r={0.13} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.02} />
+                <path d="M-0.06,0 H0.06 M0,-0.06 V0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+              </g>
+            )}
+            {onInteriorWallEndpointChange &&
+              (['start', 'end'] as const).map((endKey) => {
+                const p = endKey === 'start' ? start : end;
+                // `attached` (boundary-pinned specifically) gates INTERACTION: a boundary point
+                // has the regular corner-handle to move it, so it gets no drag circle of its
+                // own, and a plain click on it never starts continuous drawing. A joint-only
+                // point (shared with another interior wall, not the boundary) has no such
+                // corner-handle — it still needs its own drag circle, and a plain click on it
+                // can still spawn a new chained wall — but it's just as "real" a point as a
+                // boundary one, so `pinned` (this OR jointed) drives the black/gray COLOR and
+                // the Separate control alone.
+                const attached = isEndpointAttached?.(wall.id, endKey) ?? false;
+                const jointed = (jointedEndpoints?.(wall.id, endKey) ?? []).length > 0;
+                const pinned = attached || jointed;
+                return (
+                  <g key={endKey}>
+                    <circle
+                      cx={p.x}
+                      cy={p.z}
+                      r={0.1}
+                      fill={pinned ? 'var(--color-surface)' : 'var(--color-text-muted)'}
+                      stroke={pinned ? 'var(--color-text)' : 'var(--color-surface)'}
+                      strokeWidth={0.035}
+                    />
+                    {/* Once attached to the boundary, this point IS a real boundary vertex —
+                        dragging it is the regular corner-handle's job (rendered separately
+                        below, already correctly wired to move it and keep this wall in sync).
+                        A second, overlapping drag target here would just fight the corner's
+                        for clicks, and — since it doesn't know that vertex already exists —
+                        would insert a stray duplicate instead of moving it. A joint-only point
+                        has no such handle, so it keeps its own. */}
+                    {!attached && (
+                      <circle
+                        cx={p.x}
+                        cy={p.z}
+                        r={0.3}
+                        fill="transparent"
+                        style={{ cursor: 'move', touchAction: 'none' }}
+                        onPointerDown={(e) => beginEndpointDrag(e, endKey)}
+                        onPointerMove={handleEndpointMove}
+                        onPointerUp={handleEndpointUp}
+                        onPointerCancel={handleEndpointUp}
+                        // A plain click here (continuous-drawing start) must NOT also reach the
+                        // canvas's own click handler — left unstopped, that bubbled click gets
+                        // read as the draw gesture's SECOND click (at ~0 distance from where it
+                        // just started), which silently cancels the just-started draw.
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    )}
+                    {pinned && onInteriorWallEndpointDetach && (
+                      <g
+                        transform={`translate(${p.x + 0.4} ${p.z - 0.4})`}
+                        style={{ cursor: 'pointer' }}
+                        onClick={() => onInteriorWallEndpointDetach(wall.id, endKey)}
+                      >
+                        <circle r={0.13} fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth={0.025} />
+                        {/* Broken-link glyph: two short offset strokes, reads as "unlink". */}
+                        <path d="M-0.06,0.035 L0,-0.035" stroke="var(--color-text)" strokeWidth={0.03} strokeLinecap="round" />
+                        <path d="M0,0.035 L0.06,-0.035" stroke="var(--color-text)" strokeWidth={0.03} strokeLinecap="round" />
+                      </g>
+                    )}
+                  </g>
+                );
+              })}
+            {draggingEndpoint?.wallId === wall.id && endpointSnap && (
+              <circle cx={endpointSnap.point.x} cy={endpointSnap.point.z} r={0.16} fill="none" stroke="var(--color-accent)" strokeWidth={0.03} strokeDasharray="0.05 0.04" />
             )}
           </g>
         );
@@ -331,7 +743,7 @@ export function FloorPlanPreview({
       })}
 
       {openings.map((opening, i) => {
-        const edge = edges[opening.edgeIndex];
+        const edge = openingHost(opening);
         if (!edge) return null;
         const dirX = (edge.end.x - edge.start.x) / edge.length;
         const dirZ = (edge.end.z - edge.start.z) / edge.length;
@@ -362,7 +774,7 @@ export function FloorPlanPreview({
                 x2={cx + dirX * halfW + edge.normal.x * 0.11}
                 y2={cz + dirZ * halfW + edge.normal.z * 0.11}
                 stroke="transparent"
-                strokeWidth={0.5}
+                strokeWidth={0.65}
                 style={{ cursor: draggable ? edgeCursor({ x: dirX, z: dirZ }) : undefined, touchAction: 'none' }}
                 onPointerEnter={() => setHoveredOpening(i)}
                 onPointerLeave={() => setHoveredOpening((cur) => (cur === i ? null : cur))}
@@ -394,32 +806,50 @@ export function FloorPlanPreview({
 
       {/* Corner handles, drawn last so they sit on top of the walls */}
       {onVertexDrag &&
-        vertices.map((v, i) => (
-          <g key={i}>
-            <circle cx={v.x} cy={v.z} r={0.11} fill="var(--color-surface)" stroke="var(--color-text)" strokeWidth={0.035} />
-            <circle
-              cx={v.x}
-              cy={v.z}
-              r={0.24}
-              fill="transparent"
-              style={{ cursor: 'move', touchAction: 'none' }}
-              onPointerDown={(e) => {
-                beginDrag(e, { kind: 'vertex', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale() });
-                onVertexDragStart?.(i);
-              }}
-              onPointerMove={handlePointerMove}
-              onPointerUp={handlePointerUp}
-              onPointerCancel={handlePointerUp}
-            />
-          </g>
-        ))}
+        vertices.map((v, i) => {
+          // Outward direction from the room's centroid through this corner — used to place
+          // the remove button clear of the corner dot and the walls meeting there, regardless
+          // of which way those walls happen to face.
+          const ox = v.x - centroid.x;
+          const oz = v.z - centroid.z;
+          const oLen = Math.hypot(ox, oz) || 1;
+          const rx = v.x + (ox / oLen) * 0.32;
+          const rz = v.z + (oz / oLen) * 0.32;
+          return (
+            <g key={i}>
+              <circle cx={v.x} cy={v.z} r={0.11} fill="var(--color-surface)" stroke="var(--color-text)" strokeWidth={0.035} />
+              <circle
+                cx={v.x}
+                cy={v.z}
+                r={0.34}
+                fill="transparent"
+                style={{ cursor: drawMode ? 'default' : 'move', touchAction: 'none' }}
+                onPointerDown={(e) => {
+                  if (drawMode) return;
+                  beginDrag(e, { kind: 'vertex', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale() });
+                  onVertexDragStart?.(i);
+                }}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+              />
+              {onVertexRemove && !drawMode && (
+                <g transform={`translate(${rx} ${rz})`} style={{ cursor: 'pointer' }} onClick={() => onVertexRemove(i)}>
+                  <circle r={0.12} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.02} />
+                  <path d="M-0.05,-0.05 L0.05,0.05 M0.05,-0.05 L-0.05,0.05" stroke="var(--color-surface)" strokeWidth={0.028} strokeLinecap="round" />
+                </g>
+              )}
+            </g>
+          );
+        })}
 
       {/* Rejected-click outline, drawn LAST (own top-level block, not inside the walls loop)
           so a later-drawn adjacent wall can never paint over it at a shared corner. */}
       {rejectedClick &&
+        rejectedClick.edgeIndex !== undefined &&
         edges[rejectedClick.edgeIndex] &&
         (() => {
-          const edge = edges[rejectedClick.edgeIndex];
+          const edge = edges[rejectedClick.edgeIndex!];
           const dirX = (edge.end.x - edge.start.x) / edge.length;
           const dirZ = (edge.end.z - edge.start.z) / edge.length;
           // An unfilled outline hugging the wall's outer edge — NOT a solid line overlapping
@@ -451,7 +881,46 @@ export function FloorPlanPreview({
             />
           );
         })()}
+
+        {/* Live click-move-click draw preview: a plain dashed line from the start point to
+            the cursor, with a length label — the boundary is never touched by this. */}
+        {drawStart && drawEnd && (
+          <g>
+            <line
+              x1={drawStart.x}
+              y1={drawStart.z}
+              x2={drawEnd.x}
+              y2={drawEnd.z}
+              stroke="var(--color-accent)"
+              strokeWidth={0.05}
+              strokeDasharray="0.1 0.07"
+            />
+            <circle cx={drawStart.x} cy={drawStart.z} r={0.08} fill="var(--color-accent)" />
+            <circle cx={drawEnd.x} cy={drawEnd.z} r={0.09} fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth={0.035} />
+            <text
+              x={(drawStart.x + drawEnd.x) / 2}
+              y={(drawStart.z + drawEnd.z) / 2 - 0.18}
+              fontSize={0.22}
+              fill="var(--color-accent)"
+              stroke="none"
+              textAnchor="middle"
+            >
+              {formatLength(Math.hypot(drawEnd.x - drawStart.x, drawEnd.z - drawStart.z), units)}
+            </text>
+            {drawStartSnap && (
+              <circle cx={drawStart.x} cy={drawStart.z} r={0.16} fill="none" stroke="var(--color-accent)" strokeWidth={0.03} strokeDasharray="0.05 0.04" />
+            )}
+            {drawEndSnap && (
+              <circle cx={drawEnd.x} cy={drawEnd.z} r={0.16} fill="none" stroke="var(--color-accent)" strokeWidth={0.03} strokeDasharray="0.05 0.04" />
+            )}
+          </g>
+        )}
       </svg>
+      {drawMode && (
+        <div className={styles.drawHint}>
+          {drawStart ? 'Click to place the wall’s end point — Esc to cancel' : 'Click to start a new wall'}
+        </div>
+      )}
       {editBox && editingEdge !== null && (
         <input
           autoFocus

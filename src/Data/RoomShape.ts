@@ -6,11 +6,25 @@ export interface RoomVertex {
 export type OpeningKind = 'door' | 'window';
 
 export interface RoomOpening {
+  // `edgeIndex` is the BOUNDARY wall this opening sits on — used only when `interiorWallId`
+  // is unset. Kept as a plain required number (rather than folding both into one union) so
+  // existing saved rooms, which only ever had boundary openings, still parse unchanged.
   edgeIndex: number;
-  offset: number; // distance from the edge's start vertex, meters, along the edge
+  // When set, this opening belongs to a free-standing interior wall instead of the boundary;
+  // `edgeIndex` is ignored in that case.
+  interiorWallId?: string;
+  offset: number; // distance from the wall's start vertex, meters, along the wall
   width: number;
   kind: OpeningKind;
   style: string; // key into DOOR_STYLES / WINDOW_STYLES (src/Data/OpeningStyles.ts)
+}
+
+// A free-standing interior wall (partition) — independent of the room's boundary polygon.
+// Drawing one never touches `vertices`; it's purely additive.
+export interface InteriorWall {
+  id: string;
+  start: RoomVertex;
+  end: RoomVertex;
 }
 
 export interface RoomShape {
@@ -18,14 +32,17 @@ export interface RoomShape {
   name: string;
   vertices: RoomVertex[]; // ordered, closed polygon footprint
   height: number;
+  wallThickness: number;
   wallColor: string;
   floorColor: string;
   openings: RoomOpening[];
+  interiorWalls: InteriorWall[];
 }
 
 export type RoomShapeType = 'rectangular' | 'l-shape' | 't-shape' | 'u-shape' | 'cut' | 'beveled';
 
 export const DEFAULT_HEIGHT = 2.5;
+export const DEFAULT_WALL_THICKNESS = 0.1;
 export const DEFAULT_WALL_COLOR = '#f5f0e6';
 export const DEFAULT_FLOOR_COLOR = '#c9a978';
 
@@ -223,17 +240,23 @@ export function makeDefaultRoomShape(id: string, name: string, width: number, de
     name,
     vertices: makeRectangle({ width, depth }),
     height: DEFAULT_HEIGHT,
+    wallThickness: DEFAULT_WALL_THICKNESS,
     wallColor: DEFAULT_WALL_COLOR,
     floorColor: DEFAULT_FLOOR_COLOR,
     openings: defaultRectangleOpenings(width),
+    interiorWalls: [],
   };
 }
 
+// Named + sized to match the design spec's preset list (dimensions given there in feet,
+// converted to meters here since RoomVertex/makeRectangle work in meters throughout).
 export const roomPresets: RoomShape[] = [
-  makeDefaultRoomShape('neutral-standard', 'Neutral Standard', 4.5, 5.1),
-  makeDefaultRoomShape('open-spacious', 'Open Spacious', 6.5, 6.8),
-  makeDefaultRoomShape('bright-spacious', 'Bright Spacious', 4.8, 5.4),
-  makeDefaultRoomShape('cozy-contemporary', 'Cozy Contemporary', 3.8, 4.7),
+  makeDefaultRoomShape('studio-apartment', 'Studio Apartment', 6.1, 7.3), // 20 × 24 ft
+  makeDefaultRoomShape('living-room', 'Living Room', 5.5, 6.1), // 18 × 20 ft
+  makeDefaultRoomShape('master-bedroom', 'Master Bedroom', 4.3, 4.9), // 14 × 16 ft
+  makeDefaultRoomShape('home-office', 'Home Office', 3.0, 3.7), // 10 × 12 ft
+  makeDefaultRoomShape('open-kitchen', 'Open Kitchen', 4.9, 5.5), // 16 × 18 ft
+  makeDefaultRoomShape('kids-bedroom', 'Kids Bedroom', 3.7, 3.7), // 12 × 12 ft
 ];
 
 export const defaultRoom: RoomShape = makeDefaultRoomShape('custom', 'Custom Room', 4, 4);
@@ -247,4 +270,16 @@ export function sqFt(vertices: RoomVertex[]): number {
     area += a.x * b.z - b.x * a.z;
   }
   return Math.round((Math.abs(area) / 2) * 10.7639);
+}
+
+const METERS_TO_FEET = 3.28084;
+
+// "20 × 24 ft" style label from the room's bounding box — matches how preset cards label
+// dimensions in the design spec (width × depth, not total area).
+export function footprintFt(vertices: RoomVertex[]): string {
+  const xs = vertices.map((v) => v.x);
+  const zs = vertices.map((v) => v.z);
+  const width = Math.round((Math.max(...xs) - Math.min(...xs)) * METERS_TO_FEET);
+  const depth = Math.round((Math.max(...zs) - Math.min(...zs)) * METERS_TO_FEET);
+  return `${width} × ${depth} ft`;
 }

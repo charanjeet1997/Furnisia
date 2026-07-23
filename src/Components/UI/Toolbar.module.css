@@ -1,14 +1,62 @@
-.backButton {
+.topLeftStack {
   position: absolute;
   top: 1rem;
   left: 1rem;
   z-index: 10;
   display: flex;
   align-items: center;
+  gap: 0.6rem;
+}
+
+.backButton {
+  width: 40px;
+  height: 40px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.backButton:hover {
+  background: var(--color-bg);
+}
+
+.saveButton {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
   gap: 0.4rem;
   padding: 0.55rem 1rem;
   font-size: 0.85rem;
-  font-weight: 500;
+  font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: 1px solid var(--color-accent);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+}
+
+.saveButton:hover {
+  background: var(--color-accent-hover);
+}
+
+.editButton {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
   background: var(--color-surface);
   color: var(--color-text);
   border: 1px solid var(--color-border);
@@ -17,8 +65,22 @@
   cursor: pointer;
 }
 
-.backButton:hover {
+.editButton:hover {
   background: var(--color-bg);
+  border-color: var(--color-accent);
+}
+
+.topRightStack {
+  position: absolute;
+  top: 1rem;
+  right: calc(270px + 1rem);
+  z-index: 10;
+}
+
+@media (max-width: 768px) {
+  .topRightStack {
+    right: 1rem;
+  }
 }
 
 .floatingStack {
@@ -35,8 +97,8 @@
 
 .itemToolbar {
   display: flex;
-  align-items: stretch;
-  gap: 0.15rem;
+  align-items: center;
+  gap: 0.35rem;
   padding: 0.5rem;
   background: var(--color-dark);
   border-radius: var(--radius-pill);
@@ -46,26 +108,26 @@
 .itemButton,
 .itemButtonActive,
 .itemButtonDanger {
+  width: 36px;
+  height: 36px;
+  min-width: 44px;
+  min-height: 44px;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  gap: 0.25rem;
-  padding: 0.5rem 1rem;
+  justify-content: center;
   border: none;
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
   background: transparent;
   color: rgba(255, 255, 255, 0.85);
-  font-size: 0.7rem;
-  font-weight: 500;
   cursor: pointer;
-  transition: background 0.15s ease, color 0.15s ease;
+  transition: background var(--duration-hover) var(--ease-standard), color var(--duration-hover) var(--ease-standard);
 }
 
 .itemButton svg,
 .itemButtonActive svg,
 .itemButtonDanger svg {
-  width: 18px;
-  height: 18px;
+  width: 16px;
+  height: 16px;
 }
 
 .itemButton:hover {
@@ -75,7 +137,7 @@
 
 .itemButtonActive {
   background: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-on-accent);
 }
 
 .itemButtonDanger:hover {

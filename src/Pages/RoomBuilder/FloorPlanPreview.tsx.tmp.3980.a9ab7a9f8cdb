@@ -1,0 +1,639 @@
+import { useEffect, useRef, useState } from 'react';
+import { computeEdges, boundingBox } from '../../Components/polygonGeometry';
+import type { RoomOpening, RoomVertex } from '../../Data/RoomShape';
+import styles from './FloorPlanPreview.module.css';
+
+export type PlanUnits = 'm' | 'ft';
+
+interface FloorPlanPreviewProps {
+  vertices: RoomVertex[];
+  openings?: RoomOpening[];
+  // Return a short rejection message (e.g. "Wall too small for this door") to reject the
+  // click — the wall flashes red and the message toasts briefly instead of placing anything.
+  // Return nothing/undefined to accept.
+  onEdgeClick?: (edgeIndex: number) => string | void;
+  highlightedEdgeIndex?: number | null;
+  units?: PlanUnits;
+  // Wall-dragging (IKEA-style). `delta` is the TOTAL displacement since drag start, in
+  // meters along the edge's outward normal — pair with a params snapshot taken in
+  // onEdgeDragStart (see edgeDrag.applyEdgeDrag).
+  onEdgeDragStart?: (edgeIndex: number) => void;
+  onEdgeDrag?: (edgeIndex: number, delta: number) => void;
+  onEdgeDragEnd?: () => void;
+  // Corner-dragging: raw displacement in meters (dz is plan-down = world +z); the caller
+  // resolves it against the two adjacent walls' params.
+  onVertexDragStart?: (vertexIndex: number) => void;
+  onVertexDrag?: (vertexIndex: number, dx: number, dz: number) => void;
+  onVertexDragEnd?: () => void;
+  // Revit-style inline dimension editing: clicking a wall's length label turns it into a
+  // text box; committing calls this with the wall's new length in METERS (always meters,
+  // regardless of the `units` display toggle, to keep parsing unambiguous).
+  onEdgeLengthChange?: (edgeIndex: number, newLength: number) => void;
+  // Workspace-style opening editing: hover a placed door/window to reveal a × handle over it
+  // (removes it in place — no sidebar list); drag its body to slide it along its wall.
+  // `openingIndex` is the index into the `openings` array. Drag delta is the TOTAL
+  // displacement since drag start, in meters along the wall's own direction.
+  onOpeningRemove?: (openingIndex: number) => void;
+  onOpeningDragStart?: (openingIndex: number) => void;
+  onOpeningDrag?: (openingIndex: number, delta: number) => void;
+  onOpeningDragEnd?: () => void;
+  // Splits the wall at `edgeIndex` into two by inserting a new corner at its midpoint.
+  onWallAdd?: (edgeIndex: number) => void;
+  // Deletes the corner at `vertexIndex`, merging its two walls into one straight wall.
+  onVertexRemove?: (vertexIndex: number) => void;
+  // Revit-style click-move-click wall drawing: click a point on an existing wall, move the
+  // mouse freely (live dashed preview + length follow the cursor), click again to place the
+  // new corner there. `drawMode` arms it; it disarms itself after one placement or Escape.
+  drawMode?: boolean;
+  onWallDrawComplete?: (edgeIndex: number, x: number, z: number) => void;
+  onWallDrawCancel?: () => void;
+}
+
+const PAD = 1.1; // room for the outside dimension lines
+const WALL_STROKE = 0.18;
+const DIM_OFFSET = 0.45; // dimension line distance from the wall
+const DIM_TICK = 0.12; // half-length of the tick marks at dimension line ends
+const FLOOR_FILL = '#dcc49c'; // light wood tone
+
+const snapDraw = (v: number) => Math.round(v * 10) / 10; // 0.1m grid, matches every other edit path
+
+function formatLength(meters: number, units: PlanUnits): string {
+  if (units === 'm') return `${meters.toFixed(1)}m`;
+  const totalInches = meters * 39.3701;
+  let feet = Math.floor(totalInches / 12);
+  let inches = Math.round(totalInches - feet * 12);
+  if (inches === 12) {
+    feet += 1;
+    inches = 0;
+  }
+  return `${feet}' ${inches}"`;
+}
+
+// Resize cursor matching the wall's orientation (normal direction).
+function edgeCursor(normal: RoomVertex): string {
+  if (Math.abs(normal.x) > 0.92) return 'ew-resize';
+  if (Math.abs(normal.z) > 0.92) return 'ns-resize';
+  return normal.x * normal.z > 0 ? 'nwse-resize' : 'nesw-resize';
+}
+
+type DragState =
+  | { kind: 'edge'; index: number; startX: number; startY: number; scale: number; normal: RoomVertex }
+  | { kind: 'vertex'; index: number; startX: number; startY: number; scale: number }
+  | { kind: 'opening'; index: number; startX: number; startY: number; scale: number; dir: RoomVertex };
+
+export function FloorPlanPreview({
+  vertices,
+  openings = [],
+  onEdgeClick,
+  highlightedEdgeIndex = null,
+  units = 'm',
+  onEdgeDragStart,
+  onEdgeDrag,
+  onEdgeDragEnd,
+  onVertexDragStart,
+  onVertexDrag,
+  onVertexDragEnd,
+  onEdgeLengthChange,
+  onOpeningRemove,
+  onOpeningDragStart,
+  onOpeningDrag,
+  onOpeningDragEnd,
+  onWallAdd,
+  onVertexRemove,
+  drawMode = false,
+  onWallDrawComplete,
+  onWallDrawCancel,
+}: FloorPlanPreviewProps) {
+  const edges = computeEdges(vertices);
+  const bbox = boundingBox(vertices);
+  const centroid = { x: (bbox.minX + bbox.maxX) / 2, z: (bbox.minZ + bbox.maxZ) / 2 };
+
+  // First click of the click-move-click draw gesture: the point on the wall the new corner
+  // starts from. Non-null while waiting for the second click.
+  const [drawAnchor, setDrawAnchor] = useState<{ edgeIndex: number; x: number; z: number } | null>(null);
+  const [drawLive, setDrawLive] = useState<{ x: number; z: number } | null>(null);
+  const width = bbox.maxX - bbox.minX;
+  const depth = bbox.maxZ - bbox.minZ;
+  const viewW = width + PAD * 2;
+  const viewH = depth + PAD * 2;
+  const fitViewBox = `${bbox.minX - PAD} ${bbox.minZ - PAD} ${viewW} ${viewH}`;
+  const points = vertices.map((v) => `${v.x},${v.z}`).join(' ');
+
+  // While a drag is in progress the viewport is FROZEN at its drag-start fit: re-fitting
+  // live would re-scale/re-center the whole drawing, making untouched walls appear to move.
+  // On release it re-fits once (state, not ref, so releasing triggers the re-render).
+  const [frozenViewBox, setFrozenViewBox] = useState<string | null>(null);
+  const viewBox = frozenViewBox ?? fitViewBox;
+
+  const svgRef = useRef<SVGSVGElement>(null);
+  // Screen-px → svg-meters scale and the dragged edge's normal are frozen at drag start:
+  // the polygon re-fits (re-centers/re-scales) as params change mid-drag, and deriving
+  // them live would make the mapping feed back on itself.
+  const dragRef = useRef<DragState | null>(null);
+  // Suppress the click handler after an actual drag so click-to-select (StepOpenings)
+  // could coexist with dragging if both are ever enabled at once.
+  const movedRef = useRef(false);
+
+  // Which wall's dimension label is currently an editable text box (Revit-style).
+  const [editingEdge, setEditingEdge] = useState<number | null>(null);
+  const [editValue, setEditValue] = useState('');
+
+  // Which placed opening the pointer is currently over — shows its × remove handle.
+  const [hoveredOpening, setHoveredOpening] = useState<number | null>(null);
+
+  // A rejected wall click (too small / already occupied): flashes that wall red and toasts
+  // the reason. `token` forces the flash to restart even if the same wall is rejected twice
+  // in a row (a fresh key remounts the animated element instead of a no-op re-render).
+  const [rejectedClick, setRejectedClick] = useState<{ edgeIndex: number; message: string; token: number } | null>(null);
+  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function flashRejection(edgeIndex: number, message: string) {
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    setRejectedClick({ edgeIndex, message, token: Date.now() });
+    errorTimerRef.current = setTimeout(() => setRejectedClick(null), 1300);
+  }
+
+  function commitEdit(edgeIndex: number, raw: string) {
+    const value = parseFloat(raw);
+    if (Number.isFinite(value) && value > 0) onEdgeLengthChange?.(edgeIndex, value);
+    setEditingEdge(null);
+  }
+
+  // Absolute screen→SVG-user-space mapping (unlike pxScale/svgToLocalPx above, which only
+  // handle relative deltas) — needed for the draw tool's live cursor-follow preview.
+  function clientToSvgPoint(clientX: number, clientY: number): { x: number; z: number } {
+    const svg = svgRef.current;
+    if (!svg) return { x: 0, z: 0 };
+    const pt = svg.createSVGPoint();
+    pt.x = clientX;
+    pt.y = clientY;
+    const ctm = svg.getScreenCTM();
+    if (!ctm) return { x: 0, z: 0 };
+    const p = pt.matrixTransform(ctm.inverse());
+    return { x: snapDraw(p.x), z: snapDraw(p.y) };
+  }
+
+  // Closest point on segment a–b to p, kept a little clear of the endpoints so the new
+  // corner never lands exactly on top of an existing one.
+  function projectOntoSegment(p: RoomVertex, a: RoomVertex, b: RoomVertex): RoomVertex {
+    const abx = b.x - a.x;
+    const abz = b.z - a.z;
+    const lenSq = abx * abx + abz * abz || 1;
+    let t = ((p.x - a.x) * abx + (p.z - a.z) * abz) / lenSq;
+    t = Math.max(0.05, Math.min(0.95, t));
+    return { x: a.x + abx * t, z: a.z + abz * t };
+  }
+
+  function cancelDraw() {
+    setDrawAnchor(null);
+    setDrawLive(null);
+    onWallDrawCancel?.();
+  }
+
+  useEffect(() => {
+    if (!drawMode) cancelDraw();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drawMode]);
+
+  useEffect(() => {
+    if (!drawAnchor) return;
+    function onKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') cancelDraw();
+    }
+    window.addEventListener('keydown', onKeyDown);
+    return () => window.removeEventListener('keydown', onKeyDown);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drawAnchor]);
+
+  function pxScale(): number {
+    const svg = svgRef.current;
+    if (!svg) return 1;
+    const rect = svg.getBoundingClientRect();
+    // preserveAspectRatio "meet" → uniform scale, letterboxed on the longer side. Uses the
+    // CURRENT viewBox (frozen during a drag) so the px→meters mapping stays consistent with
+    // what's actually on screen while dragging.
+    const [, , vbW, vbH] = viewBox.split(' ').map(Number);
+    return Math.min(rect.width / vbW, rect.height / vbH);
+  }
+
+  // Maps an SVG user-space point (meters) to CSS px relative to the svg element's own box —
+  // used to position the plain-HTML edit input (see below) directly over a dimension label.
+  // preserveAspectRatio "xMidYMid meet" letterboxes on the shorter axis, hence the offsetX/Y.
+  function svgToLocalPx(x: number, z: number): { left: number; top: number } {
+    const svg = svgRef.current;
+    if (!svg) return { left: 0, top: 0 };
+    const rect = svg.getBoundingClientRect();
+    const [vbX, vbY, vbW, vbH] = viewBox.split(' ').map(Number);
+    const scale = Math.min(rect.width / vbW, rect.height / vbH);
+    const offsetX = (rect.width - vbW * scale) / 2;
+    const offsetY = (rect.height - vbH * scale) / 2;
+    return { left: offsetX + (x - vbX) * scale, top: offsetY + (z - vbY) * scale };
+  }
+
+  function beginDrag(e: React.PointerEvent<SVGElement>, state: DragState) {
+    setFrozenViewBox(fitViewBox);
+    dragRef.current = state;
+    movedRef.current = false;
+    e.currentTarget.setPointerCapture(e.pointerId);
+  }
+
+  function handlePointerMove(e: React.PointerEvent<SVGElement>) {
+    const drag = dragRef.current;
+    if (!drag) return;
+    const dx = (e.clientX - drag.startX) / drag.scale;
+    const dz = (e.clientY - drag.startY) / drag.scale;
+    if (Math.abs(dx) + Math.abs(dz) > 0.02) movedRef.current = true;
+    if (drag.kind === 'edge') {
+      // SVG y is world z directly (viewBox is built from z), so this is the outward-normal
+      // projection of the cursor displacement.
+      onEdgeDrag?.(drag.index, dx * drag.normal.x + dz * drag.normal.z);
+    } else if (drag.kind === 'vertex') {
+      onVertexDrag?.(drag.index, dx, dz);
+    } else {
+      onOpeningDrag?.(drag.index, dx * drag.dir.x + dz * drag.dir.z);
+    }
+  }
+
+  function handlePointerUp(e: React.PointerEvent<SVGElement>) {
+    const drag = dragRef.current;
+    if (!drag) return;
+    e.currentTarget.releasePointerCapture(e.pointerId);
+    dragRef.current = null;
+    setFrozenViewBox(null); // release → one re-fit to the final shape
+    if (drag.kind === 'edge') onEdgeDragEnd?.();
+    else if (drag.kind === 'vertex') onVertexDragEnd?.();
+    else onOpeningDragEnd?.();
+    // `movedRef` must stay true through the native "click" event that follows this same
+    // pointerup (it fires synchronously right after, and the dragged element's own onClick
+    // reads the flag to suppress acting as a click) — but clearing it only on the NEXT
+    // beginDrag left it permanently true for any element that never starts its own drag
+    // (e.g. a wall's plain onClick in Step 3, which has no onEdgeDrag). One stray pointer
+    // jitter while clicking a door would then silently swallow every wall click afterward,
+    // including new placements — even after removing that door. Deferring the reset past
+    // this task (but still before any later user interaction) scopes the flag to just this
+    // one pointer session instead of leaking into unrelated future clicks.
+    setTimeout(() => {
+      movedRef.current = false;
+    }, 0);
+  }
+
+  // Screen-space anchor + rotation for the active edit box, computed fresh each render from
+  // the current edges/viewBox (cheap, and keeps it correct through the frozen-viewBox drag
+  // logic above without needing its own effect).
+  let editBox: { left: number; top: number; angleDeg: number } | null = null;
+  if (editingEdge !== null && edges[editingEdge]) {
+    const edge = edges[editingEdge];
+    const lx = edge.midpoint.x + edge.normal.x * (DIM_OFFSET + 0.28);
+    const ly = edge.midpoint.z + edge.normal.z * (DIM_OFFSET + 0.28);
+    const { left, top } = svgToLocalPx(lx, ly);
+    let angleDeg = (Math.atan2(edge.end.z - edge.start.z, edge.end.x - edge.start.x) * 180) / Math.PI;
+    if (angleDeg > 90 || angleDeg <= -90) angleDeg += 180;
+    editBox = { left, top, angleDeg };
+  }
+
+  return (
+    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {rejectedClick && (
+        <div key={rejectedClick.token} className={styles.toast}>
+          {rejectedClick.message}
+        </div>
+      )}
+      <svg
+        ref={svgRef}
+        viewBox={viewBox}
+        style={{ width: '100%', height: '100%', cursor: drawMode ? 'crosshair' : undefined }}
+        preserveAspectRatio="xMidYMid meet"
+        onMouseMove={(e) => {
+          if (!drawAnchor) return;
+          setDrawLive(clientToSvgPoint(e.clientX, e.clientY));
+        }}
+        onClick={() => {
+          if (!drawAnchor || !drawLive) return;
+          onWallDrawComplete?.(drawAnchor.edgeIndex, drawLive.x, drawLive.z);
+          setDrawAnchor(null);
+          setDrawLive(null);
+        }}
+      >
+        <polygon points={points} fill={FLOOR_FILL} stroke="none" />
+
+      {/* Walls */}
+      {edges.map((edge, i) => {
+        const isHighlighted = highlightedEdgeIndex === i;
+        // The wall's drag hit-line is trimmed inward at each end when corner handles are
+        // present, so the two hit zones never overlap — without this, a click near a corner
+        // meant to slide the wall could be captured by the corner handle instead, moving
+        // only ONE endpoint and tilting the wall (looks like the wall "rotated" from a drag
+        // that should only ever translate it).
+        const dirX = (edge.end.x - edge.start.x) / edge.length;
+        const dirZ = (edge.end.z - edge.start.z) / edge.length;
+        const trim = onVertexDrag ? Math.min(0.3, edge.length / 2 - 0.05) : 0;
+        const hx1 = edge.start.x + dirX * trim;
+        const hz1 = edge.start.z + dirZ * trim;
+        const hx2 = edge.end.x - dirX * trim;
+        const hz2 = edge.end.z - dirZ * trim;
+        return (
+          <g key={i}>
+            <line
+              x1={edge.start.x}
+              y1={edge.start.z}
+              x2={edge.end.x}
+              y2={edge.end.z}
+              stroke={isHighlighted ? 'var(--color-accent)' : 'var(--color-text)'}
+              strokeWidth={WALL_STROKE}
+              strokeLinecap="square"
+            />
+            {(onEdgeClick || onEdgeDrag) && (
+              <line
+                x1={hx1}
+                y1={hz1}
+                x2={hx2}
+                y2={hz2}
+                stroke="transparent"
+                strokeWidth={0.65}
+                style={{ cursor: drawMode ? 'crosshair' : onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
+                onClick={(e) => {
+                  if (movedRef.current) return;
+                  if (drawMode && !drawAnchor) {
+                    const clicked = clientToSvgPoint(e.clientX, e.clientY);
+                    const anchor = projectOntoSegment(clicked, edge.start, edge.end);
+                    setDrawAnchor({ edgeIndex: i, x: anchor.x, z: anchor.z });
+                    setDrawLive(anchor);
+                    return;
+                  }
+                  const reason = onEdgeClick?.(i);
+                  if (reason) flashRejection(i, reason);
+                }}
+                onPointerDown={(e) => {
+                  if (drawMode || !onEdgeDrag) return;
+                  beginDrag(e, { kind: 'edge', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale(), normal: edge.normal });
+                  onEdgeDragStart?.(i);
+                }}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+              />
+            )}
+            {onWallAdd && !drawMode && (
+              <g
+                transform={`translate(${edge.midpoint.x - edge.normal.x * 0.3} ${edge.midpoint.z - edge.normal.z * 0.3})`}
+                style={{ cursor: 'pointer' }}
+                onClick={() => onWallAdd(i)}
+              >
+                <circle r={0.13} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.02} />
+                <path d="M-0.06,0 H0.06 M0,-0.06 V0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+              </g>
+            )}
+          </g>
+        );
+      })}
+
+      {/* Dimension lines, offset outside each wall with end ticks (IKEA-style) */}
+      {edges.map((edge, i) => {
+        const ox = edge.normal.x * DIM_OFFSET;
+        const oz = edge.normal.z * DIM_OFFSET;
+        const x1 = edge.start.x + ox;
+        const y1 = edge.start.z + oz;
+        const x2 = edge.end.x + ox;
+        const y2 = edge.end.z + oz;
+        const tx = edge.normal.x * DIM_TICK;
+        const tz = edge.normal.z * DIM_TICK;
+        // Rotate the label along the wall, flipped when it would read upside-down.
+        let angle = (Math.atan2(y2 - y1, x2 - x1) * 180) / Math.PI;
+        if (angle > 90 || angle <= -90) angle += 180;
+        const lx = edge.midpoint.x + edge.normal.x * (DIM_OFFSET + 0.28);
+        const ly = edge.midpoint.z + edge.normal.z * (DIM_OFFSET + 0.28);
+        return (
+          <g key={i} stroke="var(--color-text-muted)" strokeWidth={0.025}>
+            <line x1={x1} y1={y1} x2={x2} y2={y2} />
+            <line x1={x1 - tx} y1={y1 - tz} x2={x1 + tx} y2={y1 + tz} />
+            <line x1={x2 - tx} y1={y2 - tz} x2={x2 + tx} y2={y2 + tz} />
+            {editingEdge !== i && (
+              <text
+                x={lx}
+                y={ly}
+                transform={`rotate(${angle} ${lx} ${ly})`}
+                fontSize={0.24}
+                fill="var(--color-text)"
+                stroke="none"
+                textAnchor="middle"
+                dominantBaseline="middle"
+                style={{ cursor: onEdgeLengthChange ? 'text' : undefined }}
+                onClick={() => {
+                  if (!onEdgeLengthChange) return;
+                  setEditValue(edge.length.toFixed(2));
+                  setEditingEdge(i);
+                }}
+              >
+                {formatLength(edge.length, units)}
+              </text>
+            )}
+          </g>
+        );
+      })}
+
+      {openings.map((opening, i) => {
+        const edge = edges[opening.edgeIndex];
+        if (!edge) return null;
+        const dirX = (edge.end.x - edge.start.x) / edge.length;
+        const dirZ = (edge.end.z - edge.start.z) / edge.length;
+        const cx = edge.start.x + dirX * (opening.offset + opening.width / 2);
+        const cz = edge.start.z + dirZ * (opening.offset + opening.width / 2);
+        const halfW = opening.width / 2;
+        const draggable = Boolean(onOpeningDrag);
+        const isHovered = hoveredOpening === i;
+        // × handle sits just outside the wall, between the wall line and the dimension
+        // line, so it's always in a clear area regardless of wall orientation.
+        const hx = cx + edge.normal.x * 0.24;
+        const hz = cz + edge.normal.z * 0.24;
+        return (
+          <g key={i}>
+            <line
+              x1={cx - dirX * halfW}
+              y1={cz - dirZ * halfW}
+              x2={cx + dirX * halfW}
+              y2={cz + dirZ * halfW}
+              stroke={opening.kind === 'door' ? '#8b5e3c' : '#5b8fa8'}
+              strokeWidth={WALL_STROKE + 0.02}
+              strokeLinecap="butt"
+            />
+            {(draggable || onOpeningRemove) && (
+              <line
+                x1={cx - dirX * halfW + edge.normal.x * 0.11}
+                y1={cz - dirZ * halfW + edge.normal.z * 0.11}
+                x2={cx + dirX * halfW + edge.normal.x * 0.11}
+                y2={cz + dirZ * halfW + edge.normal.z * 0.11}
+                stroke="transparent"
+                strokeWidth={0.65}
+                style={{ cursor: draggable ? edgeCursor({ x: dirX, z: dirZ }) : undefined, touchAction: 'none' }}
+                onPointerEnter={() => setHoveredOpening(i)}
+                onPointerLeave={() => setHoveredOpening((cur) => (cur === i ? null : cur))}
+                onPointerDown={(e) => {
+                  if (!draggable) return;
+                  beginDrag(e, { kind: 'opening', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale(), dir: { x: dirX, z: dirZ } });
+                  onOpeningDragStart?.(i);
+                }}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+              />
+            )}
+            {isHovered && onOpeningRemove && (
+              <g
+                transform={`translate(${hx} ${hz})`}
+                style={{ cursor: 'pointer' }}
+                onPointerEnter={() => setHoveredOpening(i)}
+                onPointerLeave={() => setHoveredOpening((cur) => (cur === i ? null : cur))}
+                onClick={() => onOpeningRemove(i)}
+              >
+                <circle r={0.14} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.02} />
+                <path d="M-0.06,-0.06 L0.06,0.06 M0.06,-0.06 L-0.06,0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+              </g>
+            )}
+          </g>
+        );
+      })}
+
+      {/* Corner handles, drawn last so they sit on top of the walls */}
+      {onVertexDrag &&
+        vertices.map((v, i) => {
+          // Outward direction from the room's centroid through this corner — used to place
+          // the remove button clear of the corner dot and the walls meeting there, regardless
+          // of which way those walls happen to face.
+          const ox = v.x - centroid.x;
+          const oz = v.z - centroid.z;
+          const oLen = Math.hypot(ox, oz) || 1;
+          const rx = v.x + (ox / oLen) * 0.32;
+          const rz = v.z + (oz / oLen) * 0.32;
+          return (
+            <g key={i}>
+              <circle cx={v.x} cy={v.z} r={0.11} fill="var(--color-surface)" stroke="var(--color-text)" strokeWidth={0.035} />
+              <circle
+                cx={v.x}
+                cy={v.z}
+                r={0.34}
+                fill="transparent"
+                style={{ cursor: drawMode ? 'default' : 'move', touchAction: 'none' }}
+                onPointerDown={(e) => {
+                  if (drawMode) return;
+                  beginDrag(e, { kind: 'vertex', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale() });
+                  onVertexDragStart?.(i);
+                }}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+              />
+              {onVertexRemove && !drawMode && (
+                <g transform={`translate(${rx} ${rz})`} style={{ cursor: 'pointer' }} onClick={() => onVertexRemove(i)}>
+                  <circle r={0.12} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.02} />
+                  <path d="M-0.05,-0.05 L0.05,0.05 M0.05,-0.05 L-0.05,0.05" stroke="var(--color-surface)" strokeWidth={0.028} strokeLinecap="round" />
+                </g>
+              )}
+            </g>
+          );
+        })}
+
+      {/* Rejected-click outline, drawn LAST (own top-level block, not inside the walls loop)
+          so a later-drawn adjacent wall can never paint over it at a shared corner. */}
+      {rejectedClick &&
+        edges[rejectedClick.edgeIndex] &&
+        (() => {
+          const edge = edges[rejectedClick.edgeIndex];
+          const dirX = (edge.end.x - edge.start.x) / edge.length;
+          const dirZ = (edge.end.z - edge.start.z) / edge.length;
+          // An unfilled outline hugging the wall's outer edge — NOT a solid line overlapping
+          // the wall itself, which reads as "a door appeared" rather than "this click was
+          // rejected". End margin + half-thickness both sit outside the wall's own box.
+          const endMargin = 0.08;
+          const halfThick = WALL_STROKE / 2 + 0.08;
+          const sx = edge.start.x - dirX * endMargin;
+          const sz = edge.start.z - dirZ * endMargin;
+          const ex = edge.end.x + dirX * endMargin;
+          const ez = edge.end.z + dirZ * endMargin;
+          const nx = edge.normal.x * halfThick;
+          const nz = edge.normal.z * halfThick;
+          const outline = [
+            `${sx + nx},${sz + nz}`,
+            `${ex + nx},${ez + nz}`,
+            `${ex - nx},${ez - nz}`,
+            `${sx - nx},${sz - nz}`,
+          ].join(' ');
+          return (
+            <polygon
+              key={rejectedClick.token}
+              className={styles.wallFlash}
+              points={outline}
+              fill="none"
+              stroke="var(--color-danger)"
+              strokeWidth={0.06}
+              strokeLinejoin="round"
+            />
+          );
+        })()}
+
+      {/* Draw-tool live preview: dashed line from the anchor point to the cursor, with a
+          length label — drawn last so it sits above everything else while active. */}
+      {drawAnchor && drawLive && (
+        <g pointerEvents="none">
+          <line
+            x1={drawAnchor.x}
+            y1={drawAnchor.z}
+            x2={drawLive.x}
+            y2={drawLive.z}
+            stroke="var(--color-accent)"
+            strokeWidth={0.04}
+            strokeDasharray="0.08 0.08"
+          />
+          <circle cx={drawAnchor.x} cy={drawAnchor.z} r={0.08} fill="var(--color-accent)" />
+          <circle cx={drawLive.x} cy={drawLive.z} r={0.1} fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth={0.03} />
+          <text
+            x={(drawAnchor.x + drawLive.x) / 2}
+            y={(drawAnchor.z + drawLive.z) / 2 - 0.18}
+            fontSize={0.22}
+            fill="var(--color-accent)"
+            stroke="none"
+            textAnchor="middle"
+          >
+            {formatLength(Math.hypot(drawLive.x - drawAnchor.x, drawLive.z - drawAnchor.z), units)}
+          </text>
+        </g>
+      )}
+      </svg>
+      {drawMode && (
+        <div className={styles.drawHint}>
+          {drawAnchor ? 'Click to place the new corner — Esc to cancel' : 'Click a point on a wall to start drawing'}
+        </div>
+      )}
+      {editBox && editingEdge !== null && (
+        <input
+          autoFocus
+          type="number"
+          step="0.1"
+          min="0.1"
+          value={editValue}
+          onChange={(e) => setEditValue(e.target.value)}
+          onFocus={(e) => e.target.select()}
+          onBlur={(e) => commitEdit(editingEdge, e.target.value)}
+          onKeyDown={(e) => {
+            if (e.key === 'Enter') e.currentTarget.blur();
+            if (e.key === 'Escape') setEditingEdge(null);
+          }}
+          style={{
+            position: 'absolute',
+            left: editBox.left,
+            top: editBox.top,
+            transform: `translate(-50%, -50%) rotate(${editBox.angleDeg}deg)`,
+            width: 64,
+            textAlign: 'center',
+            fontSize: 13,
+            padding: '3px 4px',
+            border: '1px solid var(--color-accent)',
+            borderRadius: 4,
+            background: 'var(--color-surface)',
+            color: 'var(--color-text)',
+            boxSizing: 'border-box',
+          }}
+        />
+      )}
+    </div>
+  );
+}

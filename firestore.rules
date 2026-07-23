@@ -1,0 +1,12 @@
+rules_version = '2';
+
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Each user's rooms live at users/{uid}/rooms/{roomId}. Only the signed-in owner
+    // (request.auth.uid == userId) may read or write their own subcollection — no user
+    // can ever list, read, or write another user's saved rooms.
+    match /users/{userId}/rooms/{roomId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+  }
+}

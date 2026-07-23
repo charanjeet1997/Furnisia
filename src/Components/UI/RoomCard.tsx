@@ -1,4 +1,4 @@
-import { sqFt, type RoomShape } from '../../Data/RoomShape';
+import { footprintFt, type RoomShape } from '../../Data/RoomShape';
 import { MiniRoomIcon } from './MiniRoomIcon';
 import styles from './RoomCard.module.css';
 
@@ -14,7 +14,7 @@ export function RoomCard({ preset, onSelect }: RoomCardProps) {
         <MiniRoomIcon vertices={preset.vertices} />
       </div>
       <h3 className={styles.name}>{preset.name}</h3>
-      <p className={styles.size}>{sqFt(preset.vertices)} sq.ft</p>
+      <p className={styles.size}>{footprintFt(preset.vertices)}</p>
       <span className={styles.cta}>Design this room</span>
     </button>
   );

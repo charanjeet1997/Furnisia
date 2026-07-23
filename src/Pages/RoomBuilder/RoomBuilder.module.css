@@ -25,6 +25,27 @@
   margin-bottom: 1rem;
 }
 
+.stepProgress {
+  display: none;
+}
+
+@media (max-width: 640px) {
+  .stepProgress {
+    display: block;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--color-border);
+    overflow: hidden;
+    margin-bottom: 0.6rem;
+  }
+
+  .stepProgressBar {
+    height: 100%;
+    background: var(--color-accent);
+    transition: width var(--duration-sheet) var(--ease-standard);
+  }
+}
+
 .stepBody {
   flex: 1;
   display: flex;
@@ -55,6 +76,7 @@
 
 .backButton,
 .nextButton {
+  min-height: 44px;
   padding: 0.65rem 1.4rem;
   border-radius: var(--radius-pill);
   font-size: 0.9rem;
@@ -71,11 +93,28 @@
 .nextButton {
   background: var(--color-accent);
   border: 1px solid var(--color-accent);
-  color: #ffffff;
+  color: var(--color-on-accent);
 }
 
 .nextButton:hover {
   background: var(--color-accent-hover);
+}
+
+@media (max-width: 640px) {
+  .nav {
+    gap: 0.75rem;
+  }
+
+  .backButton,
+  .nextButton {
+    flex: 1;
+    min-height: 44px;
+    text-align: center;
+  }
+
+  .nextButton {
+    flex: 2;
+  }
 }
 
 /* Step 1: shape */
@@ -83,6 +122,39 @@
   display: grid;
   grid-template-columns: repeat(3, 1fr);
   gap: 0.9rem;
+}
+
+@media (max-width: 640px) {
+  .shapeGrid {
+    grid-template-columns: 1fr 1fr;
+  }
+}
+
+.numberField {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  max-width: 140px;
+}
+
+.numberField input {
+  width: 100%;
+  padding: 0.5rem 0.6rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--color-border);
+  background: var(--color-surface);
+  color: var(--color-text);
+  font-size: 0.9rem;
+}
+
+.numberField input:focus {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 1px;
+}
+
+.numberField span {
+  font-size: 0.8rem;
+  color: var(--color-text-muted);
 }
 
 .shapeCard,
@@ -122,6 +194,18 @@
   padding: 0.5rem;
 }
 
+@media (max-width: 860px) {
+  .dimensionsLayout {
+    grid-template-columns: 1fr;
+    gap: 1.25rem;
+  }
+
+  /* Plan first, controls below — matches how users think about the room shape before its options */
+  .previewPane {
+    order: -1;
+  }
+}
+
 /* Step 3: openings */
 .kindToggle {
   display: flex;
@@ -143,7 +227,12 @@
 .pillActive {
   background: var(--color-accent);
   border-color: var(--color-accent);
-  color: #ffffff;
+  color: var(--color-on-accent);
+}
+
+.pill:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 .styleGrid {
