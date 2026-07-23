@@ -1,13 +1,17 @@
 import { useRef, useState } from 'react';
 import { computeEdges, boundingBox } from '../../Components/polygonGeometry';
 import type { RoomOpening, RoomVertex } from '../../Data/RoomShape';
+import styles from './FloorPlanPreview.module.css';
 
 export type PlanUnits = 'm' | 'ft';
 
 interface FloorPlanPreviewProps {
   vertices: RoomVertex[];
   openings?: RoomOpening[];
-  onEdgeClick?: (edgeIndex: number) => void;
+  // Return a short rejection message (e.g. "Wall too small for this door") to reject the
+  // click — the wall flashes red and the message toasts briefly instead of placing anything.
+  // Return nothing/undefined to accept.
+  onEdgeClick?: (edgeIndex: number) => string | void;
   highlightedEdgeIndex?: number | null;
   units?: PlanUnits;
   // Wall-dragging (IKEA-style). `delta` is the TOTAL displacement since drag start, in
@@ -25,6 +29,14 @@ interface FloorPlanPreviewProps {
   // text box; committing calls this with the wall's new length in METERS (always meters,
   // regardless of the `units` display toggle, to keep parsing unambiguous).
   onEdgeLengthChange?: (edgeIndex: number, newLength: number) => void;
+  // Workspace-style opening editing: hover a placed door/window to reveal a × handle over it
+  // (removes it in place — no sidebar list); drag its body to slide it along its wall.
+  // `openingIndex` is the index into the `openings` array. Drag delta is the TOTAL
+  // displacement since drag start, in meters along the wall's own direction.
+  onOpeningRemove?: (openingIndex: number) => void;
+  onOpeningDragStart?: (openingIndex: number) => void;
+  onOpeningDrag?: (openingIndex: number, delta: number) => void;
+  onOpeningDragEnd?: () => void;
 }
 
 const PAD = 1.1; // room for the outside dimension lines
@@ -54,7 +66,8 @@ function edgeCursor(normal: RoomVertex): string {
 
 type DragState =
   | { kind: 'edge'; index: number; startX: number; startY: number; scale: number; normal: RoomVertex }
-  | { kind: 'vertex'; index: number; startX: number; startY: number; scale: number };
+  | { kind: 'vertex'; index: number; startX: number; startY: number; scale: number }
+  | { kind: 'opening'; index: number; startX: number; startY: number; scale: number; dir: RoomVertex };
 
 export function FloorPlanPreview({
   vertices,
@@ -69,6 +82,10 @@ export function FloorPlanPreview({
   onVertexDrag,
   onVertexDragEnd,
   onEdgeLengthChange,
+  onOpeningRemove,
+  onOpeningDragStart,
+  onOpeningDrag,
+  onOpeningDragEnd,
 }: FloorPlanPreviewProps) {
   const edges = computeEdges(vertices);
   const bbox = boundingBox(vertices);
@@ -97,6 +114,21 @@ export function FloorPlanPreview({
   // Which wall's dimension label is currently an editable text box (Revit-style).
   const [editingEdge, setEditingEdge] = useState<number | null>(null);
   const [editValue, setEditValue] = useState('');
+
+  // Which placed opening the pointer is currently over — shows its × remove handle.
+  const [hoveredOpening, setHoveredOpening] = useState<number | null>(null);
+
+  // A rejected wall click (too small / already occupied): flashes that wall red and toasts
+  // the reason. `token` forces the flash to restart even if the same wall is rejected twice
+  // in a row (a fresh key remounts the animated element instead of a no-op re-render).
+  const [rejectedClick, setRejectedClick] = useState<{ edgeIndex: number; message: string; token: number } | null>(null);
+  const errorTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  function flashRejection(edgeIndex: number, message: string) {
+    if (errorTimerRef.current) clearTimeout(errorTimerRef.current);
+    setRejectedClick({ edgeIndex, message, token: Date.now() });
+    errorTimerRef.current = setTimeout(() => setRejectedClick(null), 1300);
+  }
 
   function commitEdit(edgeIndex: number, raw: string) {
     const value = parseFloat(raw);
@@ -146,8 +178,10 @@ export function FloorPlanPreview({
       // SVG y is world z directly (viewBox is built from z), so this is the outward-normal
       // projection of the cursor displacement.
       onEdgeDrag?.(drag.index, dx * drag.normal.x + dz * drag.normal.z);
-    } else {
+    } else if (drag.kind === 'vertex') {
       onVertexDrag?.(drag.index, dx, dz);
+    } else {
+      onOpeningDrag?.(drag.index, dx * drag.dir.x + dz * drag.dir.z);
     }
   }
 
@@ -158,7 +192,20 @@ export function FloorPlanPreview({
     dragRef.current = null;
     setFrozenViewBox(null); // release → one re-fit to the final shape
     if (drag.kind === 'edge') onEdgeDragEnd?.();
-    else onVertexDragEnd?.();
+    else if (drag.kind === 'vertex') onVertexDragEnd?.();
+    else onOpeningDragEnd?.();
+    // `movedRef` must stay true through the native "click" event that follows this same
+    // pointerup (it fires synchronously right after, and the dragged element's own onClick
+    // reads the flag to suppress acting as a click) — but clearing it only on the NEXT
+    // beginDrag left it permanently true for any element that never starts its own drag
+    // (e.g. a wall's plain onClick in Step 3, which has no onEdgeDrag). One stray pointer
+    // jitter while clicking a door would then silently swallow every wall click afterward,
+    // including new placements — even after removing that door. Deferring the reset past
+    // this task (but still before any later user interaction) scopes the flag to just this
+    // one pointer session instead of leaking into unrelated future clicks.
+    setTimeout(() => {
+      movedRef.current = false;
+    }, 0);
   }
 
   // Screen-space anchor + rotation for the active edit box, computed fresh each render from
@@ -177,6 +224,11 @@ export function FloorPlanPreview({
 
   return (
     <div style={{ position: 'relative', width: '100%', height: '100%' }}>
+      {rejectedClick && (
+        <div key={rejectedClick.token} className={styles.toast}>
+          {rejectedClick.message}
+        </div>
+      )}
       <svg ref={svgRef} viewBox={viewBox} style={{ width: '100%', height: '100%' }} preserveAspectRatio="xMidYMid meet">
         <polygon points={points} fill={FLOOR_FILL} stroke="none" />
 
@@ -216,7 +268,9 @@ export function FloorPlanPreview({
                 strokeWidth={0.45}
                 style={{ cursor: onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
                 onClick={() => {
-                  if (!movedRef.current) onEdgeClick?.(i);
+                  if (movedRef.current) return;
+                  const reason = onEdgeClick?.(i);
+                  if (reason) flashRejection(i, reason);
                 }}
                 onPointerDown={(e) => {
                   if (!onEdgeDrag) return;
@@ -284,17 +338,57 @@ export function FloorPlanPreview({
         const cx = edge.start.x + dirX * (opening.offset + opening.width / 2);
         const cz = edge.start.z + dirZ * (opening.offset + opening.width / 2);
         const halfW = opening.width / 2;
+        const draggable = Boolean(onOpeningDrag);
+        const isHovered = hoveredOpening === i;
+        // × handle sits just outside the wall, between the wall line and the dimension
+        // line, so it's always in a clear area regardless of wall orientation.
+        const hx = cx + edge.normal.x * 0.24;
+        const hz = cz + edge.normal.z * 0.24;
         return (
-          <line
-            key={i}
-            x1={cx - dirX * halfW}
-            y1={cz - dirZ * halfW}
-            x2={cx + dirX * halfW}
-            y2={cz + dirZ * halfW}
-            stroke={opening.kind === 'door' ? '#8b5e3c' : '#5b8fa8'}
-            strokeWidth={WALL_STROKE + 0.02}
-            strokeLinecap="butt"
-          />
+          <g key={i}>
+            <line
+              x1={cx - dirX * halfW}
+              y1={cz - dirZ * halfW}
+              x2={cx + dirX * halfW}
+              y2={cz + dirZ * halfW}
+              stroke={opening.kind === 'door' ? '#8b5e3c' : '#5b8fa8'}
+              strokeWidth={WALL_STROKE + 0.02}
+              strokeLinecap="butt"
+            />
+            {(draggable || onOpeningRemove) && (
+              <line
+                x1={cx - dirX * halfW + edge.normal.x * 0.11}
+                y1={cz - dirZ * halfW + edge.normal.z * 0.11}
+                x2={cx + dirX * halfW + edge.normal.x * 0.11}
+                y2={cz + dirZ * halfW + edge.normal.z * 0.11}
+                stroke="transparent"
+                strokeWidth={0.5}
+                style={{ cursor: draggable ? edgeCursor({ x: dirX, z: dirZ }) : undefined, touchAction: 'none' }}
+                onPointerEnter={() => setHoveredOpening(i)}
+                onPointerLeave={() => setHoveredOpening((cur) => (cur === i ? null : cur))}
+                onPointerDown={(e) => {
+                  if (!draggable) return;
+                  beginDrag(e, { kind: 'opening', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale(), dir: { x: dirX, z: dirZ } });
+                  onOpeningDragStart?.(i);
+                }}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+              />
+            )}
+            {isHovered && onOpeningRemove && (
+              <g
+                transform={`translate(${hx} ${hz})`}
+                style={{ cursor: 'pointer' }}
+                onPointerEnter={() => setHoveredOpening(i)}
+                onPointerLeave={() => setHoveredOpening((cur) => (cur === i ? null : cur))}
+                onClick={() => onOpeningRemove(i)}
+              >
+                <circle r={0.14} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.02} />
+                <path d="M-0.06,-0.06 L0.06,0.06 M0.06,-0.06 L-0.06,0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+              </g>
+            )}
+          </g>
         );
       })}
 
@@ -319,6 +413,44 @@ export function FloorPlanPreview({
             />
           </g>
         ))}
+
+      {/* Rejected-click outline, drawn LAST (own top-level block, not inside the walls loop)
+          so a later-drawn adjacent wall can never paint over it at a shared corner. */}
+      {rejectedClick &&
+        edges[rejectedClick.edgeIndex] &&
+        (() => {
+          const edge = edges[rejectedClick.edgeIndex];
+          const dirX = (edge.end.x - edge.start.x) / edge.length;
+          const dirZ = (edge.end.z - edge.start.z) / edge.length;
+          // An unfilled outline hugging the wall's outer edge — NOT a solid line overlapping
+          // the wall itself, which reads as "a door appeared" rather than "this click was
+          // rejected". End margin + half-thickness both sit outside the wall's own box.
+          const endMargin = 0.08;
+          const halfThick = WALL_STROKE / 2 + 0.08;
+          const sx = edge.start.x - dirX * endMargin;
+          const sz = edge.start.z - dirZ * endMargin;
+          const ex = edge.end.x + dirX * endMargin;
+          const ez = edge.end.z + dirZ * endMargin;
+          const nx = edge.normal.x * halfThick;
+          const nz = edge.normal.z * halfThick;
+          const outline = [
+            `${sx + nx},${sz + nz}`,
+            `${ex + nx},${ez + nz}`,
+            `${ex - nx},${ez - nz}`,
+            `${sx - nx},${sz - nz}`,
+          ].join(' ');
+          return (
+            <polygon
+              key={rejectedClick.token}
+              className={styles.wallFlash}
+              points={outline}
+              fill="none"
+              stroke="var(--color-danger)"
+              strokeWidth={0.06}
+              strokeLinejoin="round"
+            />
+          );
+        })()}
       </svg>
       {editBox && editingEdge !== null && (
         <input

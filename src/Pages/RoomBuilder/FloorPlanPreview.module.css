@@ -1,0 +1,62 @@
+/* Pulses 3x fast then fades — reads as a "no" cue, not a solid color swap that could be
+   mistaken for an actual door/window being placed on the wall. */
+@keyframes wallFlash {
+  0%,
+  100% {
+    opacity: 0;
+  }
+  8%,
+  25% {
+    opacity: 1;
+  }
+  17%,
+  34% {
+    opacity: 0;
+  }
+  42% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0;
+  }
+}
+
+.wallFlash {
+  animation: wallFlash 1.1s ease-in-out;
+  pointer-events: none;
+  fill: none;
+}
+
+@keyframes toastFade {
+  0% {
+    opacity: 0;
+    transform: translate(-50%, -4px);
+  }
+  10% {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+  85% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.toast {
+  position: absolute;
+  top: 0.6rem;
+  left: 50%;
+  z-index: 5;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  font-size: 0.8rem;
+  font-weight: 600;
+  white-space: nowrap;
+  box-shadow: var(--shadow-sm);
+  animation: toastFade 1.4s ease-in-out;
+  pointer-events: none;
+}
