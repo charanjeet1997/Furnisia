@@ -16,6 +16,8 @@ import { StepShape } from './StepShape';
 import { StepDimensions } from './StepDimensions';
 import { StepOpenings } from './StepOpenings';
 import { StepStyle } from './StepStyle';
+import { Header } from '../../Components/UI/Header';
+import { Footer } from '../../Components/UI/Footer';
 import styles from './RoomBuilder.module.css';
 
 export function RoomBuilder() {
@@ -56,7 +58,9 @@ export function RoomBuilder() {
   }
 
   return (
-    <div className={styles.page}>
+    <div className={styles.appShell}>
+      <Header />
+      <div className={styles.page}>
       <div className={styles.stepIndicator}>Step {step + 1} of 4</div>
 
       <div className={styles.stepBody}>
@@ -87,6 +91,8 @@ export function RoomBuilder() {
           </button>
         )}
       </div>
+      </div>
+      <Footer />
     </div>
   );
 }

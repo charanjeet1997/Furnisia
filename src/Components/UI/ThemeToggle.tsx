@@ -1,18 +1,16 @@
-import { useLocation } from 'react-router-dom';
 import { useTheme } from '../../store/useTheme';
 import styles from './ThemeToggle.module.css';
 
-// Mounted once at the app root (see App.tsx) so it's reachable from every page.
+// Rendered inside Header (see Header.tsx) so it sits inline with the rest of the top bar
+// on every page, instead of floating over content as a fixed-position element.
 export function ThemeToggle() {
   const [theme, toggle] = useTheme();
   const isDark = theme === 'dark';
-  const { pathname } = useLocation();
-  const isPlanner = pathname === '/planner';
 
   return (
     <button
       type="button"
-      className={isPlanner ? `${styles.toggle} ${styles.toggleOnPlanner}` : styles.toggle}
+      className={styles.toggle}
       onClick={toggle}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}

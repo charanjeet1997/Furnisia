@@ -2,6 +2,8 @@ import { useNavigate } from 'react-router-dom';
 import { defaultRoom, roomPresets, type RoomShape } from '../Data/RoomShape';
 import { usePlannerStore } from '../store/plannerStore';
 import { RoomCard } from '../Components/UI/RoomCard';
+import { Header } from '../Components/UI/Header';
+import { Footer } from '../Components/UI/Footer';
 import styles from './Dashboard.module.css';
 
 export function Dashboard() {
@@ -14,13 +16,15 @@ export function Dashboard() {
   }
 
   return (
-    <div className={styles.page}>
-      <header className={styles.hero}>
+    <div className={styles.appShell}>
+      <Header />
+      <div className={styles.page}>
+      <div className={styles.hero}>
         <h1 className={styles.heroTitle}>Design your space with Furnisia</h1>
         <p className={styles.heroSubtitle}>
           Visualise, plan, and arrange furniture in a room built to your dimensions.
         </p>
-      </header>
+      </div>
 
       <section className={styles.startCards}>
         <button type="button" className={styles.startCard} onClick={() => goToRoom(defaultRoom)}>
@@ -50,6 +54,8 @@ export function Dashboard() {
           ))}
         </div>
       </section>
+      </div>
+      <Footer />
     </div>
   );
 }
