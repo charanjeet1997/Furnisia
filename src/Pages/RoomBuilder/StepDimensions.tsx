@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { FiRotateCcw } from 'react-icons/fi';
 import { computeEdges, type WallEdge } from '../../Components/polygonGeometry';
 import { FloorPlanPreview, type PlanUnits, type SnapTarget } from './FloorPlanPreview';
-import type { InteriorWall, RoomVertex } from '../../Data/RoomShape';
+import { DEFAULT_WALL_THICKNESS, type InteriorWall, type RoomOpening, type RoomVertex } from '../../Data/RoomShape';
 import styles from './RoomBuilder.module.css';
 
 interface StepDimensionsProps {
@@ -10,10 +10,17 @@ interface StepDimensionsProps {
   onVerticesChange: (vertices: RoomVertex[]) => void;
   height: number;
   onHeightChange: (height: number) => void;
-  wallThickness: number;
-  onWallThicknessChange: (thickness: number) => void;
+  // Per-boundary-edge thickness, parallel to the edge list. Edited per wall via the
+  // click-a-wall property panel (there's no room-wide thickness input anymore).
+  edgeThicknesses: number[];
+  onEdgeThicknessesChange: (thicknesses: number[]) => void;
   interiorWalls: InteriorWall[];
   onInteriorWallsChange: (walls: InteriorWall[]) => void;
+  // Doors/windows already placed (editing a saved room revisits this step AFTER Step 3 has
+  // run at some point) — every edit here that renumbers boundary edges or splits/removes an
+  // interior wall must keep them pointing at the same physical wall, or they silently vanish.
+  openings: RoomOpening[];
+  onOpeningsChange: (openings: RoomOpening[]) => void;
 }
 
 const MIN_EDGE = 0.3; // reject edits/drags that would collapse a wall
@@ -36,6 +43,32 @@ function segmentsIntersect(a1: RoomVertex, a2: RoomVertex, b1: RoomVertex, b2: R
   const t = ((b1.x - a1.x) * d2z - (b1.z - a1.z) * d2x) / denom;
   const u = ((b1.x - a1.x) * d1z - (b1.z - a1.z) * d1x) / denom;
   return t > 1e-6 && t < 1 - 1e-6 && u > 1e-6 && u < 1 - 1e-6;
+}
+
+// Like segmentsIntersect, but returns WHERE: the intersection's position and its parameter
+// `t` along a1→a2. Used by the draw tool to junction a new wall with every wall it crosses.
+// The host side (b) is inclusive of its endpoints (a wall TIP lying on the drawn line is a
+// junction too — splitInteriorWallAt resolves it to that tip instead of splitting); the drawn
+// side (a) excludes points near its own ends, which are the endpoint-snap machinery's job.
+function segmentIntersectionPoint(
+  a1: RoomVertex,
+  a2: RoomVertex,
+  b1: RoomVertex,
+  b2: RoomVertex,
+): { t: number; point: RoomVertex } | null {
+  const d1x = a2.x - a1.x;
+  const d1z = a2.z - a1.z;
+  const d2x = b2.x - b1.x;
+  const d2z = b2.z - b1.z;
+  const denom = d1x * d2z - d1z * d2x;
+  if (Math.abs(denom) < 1e-9) return null; // parallel/collinear — no single crossing point
+  const t = ((b1.x - a1.x) * d2z - (b1.z - a1.z) * d2x) / denom;
+  const u = ((b1.x - a1.x) * d1z - (b1.z - a1.z) * d1x) / denom;
+  if (t < 0 || t > 1 || u < -1e-9 || u > 1 + 1e-9) return null;
+  const point = { x: a1.x + d1x * t, z: a1.z + d1z * t };
+  if (Math.hypot(point.x - a1.x, point.z - a1.z) < 0.08) return null;
+  if (Math.hypot(point.x - a2.x, point.z - a2.z) < 0.08) return null;
+  return { t, point };
 }
 
 function edgesValid(vertices: RoomVertex[]): boolean {
@@ -81,11 +114,13 @@ type Attachments = Record<string, { start?: WallAttachment; end?: WallAttachment
 function splitInteriorWallAt(
   walls: InteriorWall[],
   atts: Attachments,
+  openings: RoomOpening[],
   hostId: string,
   point: RoomVertex,
 ): {
   walls: InteriorWall[];
   attachments: Attachments;
+  openings: RoomOpening[];
   member: { wallId: string; end: 'start' | 'end' };
   newJoin?: [{ wallId: string; end: 'start' | 'end' }, { wallId: string; end: 'start' | 'end' }];
 } | null {
@@ -94,12 +129,17 @@ function splitInteriorWallAt(
   const p = { x: snap(point.x), z: snap(point.z) };
   const distStart = Math.hypot(p.x - host.start.x, p.z - host.start.z);
   const distEnd = Math.hypot(p.x - host.end.x, p.z - host.end.z);
-  if (distStart < MIN_EDGE) return { walls, attachments: atts, member: { wallId: hostId, end: 'start' } };
-  if (distEnd < MIN_EDGE) return { walls, attachments: atts, member: { wallId: hostId, end: 'end' } };
+  if (distStart < MIN_EDGE) return { walls, attachments: atts, openings, member: { wallId: hostId, end: 'start' } };
+  if (distEnd < MIN_EDGE) return { walls, attachments: atts, openings, member: { wallId: hostId, end: 'end' } };
 
   const id1 = crypto.randomUUID();
   const id2 = crypto.randomUUID();
-  const nextWalls = [...walls.filter((w) => w.id !== hostId), { id: id1, start: host.start, end: p }, { id: id2, start: p, end: host.end }];
+  const inherited = host.thickness !== undefined ? { thickness: host.thickness } : {};
+  const nextWalls = [
+    ...walls.filter((w) => w.id !== hostId),
+    { id: id1, start: host.start, end: p, ...inherited },
+    { id: id2, start: p, end: host.end, ...inherited },
+  ];
 
   const origAtt = atts[hostId];
   const nextAtts = { ...atts };
@@ -107,12 +147,83 @@ function splitInteriorWallAt(
   if (origAtt?.start) nextAtts[id1] = { ...nextAtts[id1], start: origAtt.start };
   if (origAtt?.end) nextAtts[id2] = { ...nextAtts[id2], end: origAtt.end };
 
+  // A door/window on the host stays at its physical position: it moves to whichever half
+  // now covers it (by its center), with the second half's offsets rebased past the cut.
+  const len1 = Math.hypot(p.x - host.start.x, p.z - host.start.z);
+  const nextOpenings = openings.map((o) => {
+    if (o.interiorWallId !== hostId) return o;
+    const center = o.offset + o.width / 2;
+    return center <= len1 ? { ...o, interiorWallId: id1 } : { ...o, interiorWallId: id2, offset: o.offset - len1 };
+  });
+
   return {
     walls: nextWalls,
     attachments: nextAtts,
+    openings: nextOpenings,
     member: { wallId: id1, end: 'end' },
     newJoin: [{ wallId: id1, end: 'end' }, { wallId: id2, end: 'start' }],
   };
+}
+
+// Boundary edge `edgeIndex` was split by inserting `insertedPoints` (given in order of
+// insertion into the vertex list, i.e. in order along the edge) — remap every boundary
+// opening so it keeps its physical position: edges past the split renumber, and openings ON
+// the split edge move to whichever new sub-edge covers their center, offsets rebased.
+function remapOpeningsForEdgeSplit(
+  openings: RoomOpening[],
+  edge: WallEdge,
+  edgeIndex: number,
+  insertedPoints: RoomVertex[],
+): RoomOpening[] {
+  const cuts = insertedPoints
+    .map((p) => Math.hypot(p.x - edge.start.x, p.z - edge.start.z))
+    .sort((a, b) => a - b);
+  return openings.map((o) => {
+    if (o.interiorWallId) return o;
+    if (o.edgeIndex > edgeIndex) return { ...o, edgeIndex: o.edgeIndex + insertedPoints.length };
+    if (o.edgeIndex < edgeIndex) return o;
+    const center = o.offset + o.width / 2;
+    let seg = 0;
+    let base = 0;
+    for (const c of cuts) {
+      if (center > c) {
+        seg += 1;
+        base = c;
+      }
+    }
+    return { ...o, edgeIndex: edgeIndex + seg, offset: o.offset - base };
+  });
+}
+
+// Boundary vertex inserted at `insertedAt` splits edge insertedAt-1 — the new sub-edge(s)
+// inherit the split edge's thickness; entries after it just shift along.
+function insertEdgeThickness(t: number[], insertedAt: number, count = 1): number[] {
+  const inherited = t[insertedAt - 1] ?? DEFAULT_WALL_THICKNESS;
+  return [...t.slice(0, insertedAt), ...Array(count).fill(inherited), ...t.slice(insertedAt)];
+}
+
+// Corner `vertexIndex` removed — its two edges merge, keeping the FIRST one's thickness
+// (matching how the merged edge keeps that edge's openings offsets too).
+function removeEdgeThickness(t: number[], vertexIndex: number): number[] {
+  if (vertexIndex === 0) return t.slice(1);
+  return [...t.slice(0, vertexIndex), ...t.slice(vertexIndex + 1)];
+}
+
+// Corner `vertexIndex` was removed, merging its two edges into one — remap boundary openings
+// accordingly: the second edge's openings join the merged edge with offsets rebased past the
+// first edge's length, and everything after renumbers down.
+function remapOpeningsForVertexRemove(openings: RoomOpening[], edges: WallEdge[], vertexIndex: number): RoomOpening[] {
+  const n = edges.length;
+  const prevEdge = (vertexIndex - 1 + n) % n;
+  const nextEdge = vertexIndex;
+  const prevLen = edges[prevEdge].length;
+  return openings.map((o) => {
+    if (o.interiorWallId) return o;
+    if (o.edgeIndex === nextEdge) return { ...o, edgeIndex: prevEdge > nextEdge ? prevEdge - 1 : prevEdge, offset: o.offset + prevLen };
+    if (o.edgeIndex === prevEdge) return { ...o, edgeIndex: prevEdge > nextEdge ? prevEdge - 1 : prevEdge };
+    if (o.edgeIndex > vertexIndex) return { ...o, edgeIndex: o.edgeIndex - 1 };
+    return o;
+  });
 }
 
 export function StepDimensions({
@@ -120,29 +231,45 @@ export function StepDimensions({
   onVerticesChange,
   height,
   onHeightChange,
-  wallThickness,
-  onWallThicknessChange,
+  edgeThicknesses,
+  onEdgeThicknessesChange,
   interiorWalls,
   onInteriorWallsChange,
+  openings,
+  onOpeningsChange,
 }: StepDimensionsProps) {
   const [units, setUnits] = useState<PlanUnits>('m');
-  // Auto-exits after placing one wall (or Escape) — a toggle you have to remember to turn off
-  // is exactly the kind of thing that trips people up, so "draw" is a one-shot action, not a
-  // sticky mode.
-  const [drawMode, setDrawMode] = useState(false);
 
   // Snapshot at drag start: drags apply (snapshot + total delta), so clamped/rejected moves
   // never accumulate drift; edge normals are frozen too since the polygon changes mid-drag.
   const dragStart = useRef<{ vertices: RoomVertex[]; edges: WallEdge[] } | null>(null);
+  // Snapshot of the interior wall being whole-wall-dragged — translate is (snapshot + total
+  // normal delta), same pattern as the boundary edge drag above. A plain translate (not
+  // re-resolved against attachments/joints mid-drag): dragging a wall that's pinned to the
+  // boundary or jointed elsewhere is an edge case users rarely hit, and re-deriving the whole
+  // chain's positions live would be a lot of machinery for it — dragging it detaches it
+  // visually, same as dragging its endpoint away already does.
+  const interiorDragStart = useRef<InteriorWall | null>(null);
 
   // Undo history: one entry per completed EDIT (drag gesture, add/remove wall, typed length,
   // drawing/removing an interior wall) — not per intermediate pointer-move, otherwise undo
   // would only step back a pixel at a time instead of undoing the whole thing you just did.
-  const [history, setHistory] = useState<{ vertices: RoomVertex[]; interiorWalls: InteriorWall[] }[]>([]);
+  // Snapshots carry the WHOLE editing state — openings, attachments and joints included —
+  // because splits/merges rewrite wall ids: restoring walls without the matching
+  // attachment/joint/opening maps would leave them pointing at ids that no longer exist.
+  interface HistoryEntry {
+    vertices: RoomVertex[];
+    interiorWalls: InteriorWall[];
+    openings: RoomOpening[];
+    edgeThicknesses: number[];
+    attachments: Attachments;
+    joints: Record<string, string[]>;
+  }
+  const [history, setHistory] = useState<HistoryEntry[]>([]);
   const HISTORY_LIMIT = 25;
 
   function pushHistory() {
-    setHistory((h) => [...h.slice(-(HISTORY_LIMIT - 1)), { vertices, interiorWalls }]);
+    setHistory((h) => [...h.slice(-(HISTORY_LIMIT - 1)), { vertices, interiorWalls, openings, edgeThicknesses, attachments, joints }]);
   }
 
   function undo() {
@@ -151,9 +278,20 @@ export function StepDimensions({
       const prev = h[h.length - 1];
       onVerticesChange(prev.vertices);
       onInteriorWallsChange(prev.interiorWalls);
+      onOpeningsChange(prev.openings);
+      onEdgeThicknessesChange(prev.edgeThicknesses);
+      setAttachments(prev.attachments);
+      setJoints(prev.joints);
+      setSelected(null);
       return h.slice(0, -1);
     });
   }
+
+  // Which wall's property panel is open — click a wall (boundary or interior) to select it.
+  const [selected, setSelected] = useState<{ kind: 'edge'; index: number } | { kind: 'interior'; id: string } | null>(null);
+
+  // Full-length thickness list, resilient to any length drift (older rooms have no entries).
+  const normalizedThicknesses = () => vertices.map((_, i) => edgeThicknesses[i] ?? DEFAULT_WALL_THICKNESS);
 
   function beginDrag() {
     pushHistory();
@@ -177,6 +315,9 @@ export function StepDimensions({
     pushHistory();
     onVerticesChange(next);
     shiftAttachmentsForInsert(insertedAt);
+    onOpeningsChange(remapOpeningsForEdgeSplit(openings, edge, edgeIndex, [mid]));
+    onEdgeThicknessesChange(insertEdgeThickness(normalizedThicknesses(), insertedAt));
+    setSelected(null); // boundary edge indices just shifted — stale selection would point elsewhere
   }
 
   // Removing a corner merges its two walls into one straight wall between its former
@@ -190,6 +331,9 @@ export function StepDimensions({
       pushHistory();
       onVerticesChange(next);
       shiftAttachmentsForRemove(vertexIndex);
+      onOpeningsChange(remapOpeningsForVertexRemove(openings, computeEdges(vertices), vertexIndex));
+      onEdgeThicknessesChange(removeEdgeThickness(normalizedThicknesses(), vertexIndex));
+      setSelected(null);
     }
   }
 
@@ -201,12 +345,14 @@ export function StepDimensions({
   // joined to that origin point as a real shared joint.
   function addInteriorWall(start: RoomVertex, end: RoomVertex, startSnap: SnapTarget | null, endSnap: SnapTarget | null) {
     pushHistory();
-    const newId = crypto.randomUUID();
-    const startPoint = { x: snap(start.x), z: snap(start.z) };
-    const endPoint = { x: snap(end.x), z: snap(end.z) };
+    // Vertex-host snaps keep the corner's exact position — grid-rounding could pull the
+    // point off the very corner it's attaching to (corners can sit off-grid after merges).
+    const startPoint = startSnap?.host === 'vertex' ? startSnap.point : { x: snap(start.x), z: snap(start.z) };
+    const endPoint = endSnap?.host === 'vertex' ? endSnap.point : { x: snap(end.x), z: snap(end.z) };
     let nextVertices = vertices;
     let workingWalls = interiorWalls;
     let workingAtts: Attachments = attachments;
+    let workingOpenings = openings;
     let startVertexIndex: number | null = null;
     let endVertexIndex: number | null = null;
     let startMember: { wallId: string; end: 'start' | 'end' } | null = null;
@@ -215,16 +361,19 @@ export function StepDimensions({
     const joinsToApply: [{ wallId: string; end: 'start' | 'end' }, { wallId: string; end: 'start' | 'end' }][] = [];
 
     function applyInteriorSnap(hostWallId: string, point: RoomVertex): { wallId: string; end: 'start' | 'end' } | null {
-      const result = splitInteriorWallAt(workingWalls, workingAtts, hostWallId, point);
+      const result = splitInteriorWallAt(workingWalls, workingAtts, workingOpenings, hostWallId, point);
       if (!result) return null;
       workingWalls = result.walls;
       workingAtts = result.attachments;
+      workingOpenings = result.openings;
       if (result.newJoin) {
         joinsToApply.push(result.newJoin);
         remaps.push([hostWallId, result.newJoin[0].wallId, result.newJoin[1].wallId]);
       }
       return result.member;
     }
+
+    let workingThicknesses = normalizedThicknesses();
 
     if (startSnap?.host === 'boundary' && endSnap?.host === 'boundary' && startSnap.edgeIndex === endSnap.edgeIndex) {
       // Both land on the SAME boundary wall — insert both at once, in the correct geometric
@@ -234,55 +383,111 @@ export function StepDimensions({
       const [a, b] = startFirst ? [startPoint, endPoint] : [endPoint, startPoint];
       nextVertices = [...vertices.slice(0, insertAt), a, b, ...vertices.slice(insertAt)];
       shiftAttachmentsForInsert(insertAt, 2);
+      workingOpenings = remapOpeningsForEdgeSplit(workingOpenings, computeEdges(vertices)[startSnap.edgeIndex], startSnap.edgeIndex, [a, b]);
+      workingThicknesses = insertEdgeThickness(workingThicknesses, insertAt, 2);
       startVertexIndex = startFirst ? insertAt : insertAt + 1;
       endVertexIndex = startFirst ? insertAt + 1 : insertAt;
     } else {
-      if (startSnap?.host === 'boundary') {
-        const insertedAt = startSnap.edgeIndex + 1;
-        nextVertices = [...nextVertices.slice(0, insertedAt), startPoint, ...nextVertices.slice(insertedAt)];
-        startVertexIndex = insertedAt;
-        shiftAttachmentsForInsert(insertedAt);
+      // Tracks where (if anywhere) the start's boundary insertion landed — vertex-host
+      // attachments set startVertexIndex WITHOUT inserting, so "did the start insert"
+      // and "does the start have a vertex index" are no longer the same question.
+      let startInsertedAt: number | null = null;
+      if (startSnap?.host === 'vertex') {
+        // Landed on an EXISTING corner — reuse it, insert nothing.
+        startVertexIndex = startSnap.vertexIndex;
+      } else if (startSnap?.host === 'boundary') {
+        startInsertedAt = startSnap.edgeIndex + 1;
+        nextVertices = [...nextVertices.slice(0, startInsertedAt), startPoint, ...nextVertices.slice(startInsertedAt)];
+        startVertexIndex = startInsertedAt;
+        shiftAttachmentsForInsert(startInsertedAt);
+        workingOpenings = remapOpeningsForEdgeSplit(workingOpenings, computeEdges(vertices)[startSnap.edgeIndex], startSnap.edgeIndex, [startPoint]);
       } else if (startSnap?.host === 'interior') {
         startMember = applyInteriorSnap(startSnap.wallId, startSnap.point);
       }
-      if (endSnap?.host === 'boundary') {
+      if (endSnap?.host === 'vertex') {
+        endVertexIndex = endSnap.vertexIndex;
+        // The vertex index was captured before the start's insertion (if any) shifted it.
+        if (startInsertedAt !== null && startInsertedAt <= endVertexIndex) endVertexIndex += 1;
+      } else if (endSnap?.host === 'boundary') {
         // If the start's insertion landed at/before where the end needs to go, the end's
         // edgeIndex has shifted up by one to account for it.
-        const endEdgeIndex = startVertexIndex !== null && endSnap.edgeIndex + 1 >= startVertexIndex ? endSnap.edgeIndex + 1 : endSnap.edgeIndex;
+        const endEdgeIndex = startInsertedAt !== null && endSnap.edgeIndex + 1 >= startInsertedAt ? endSnap.edgeIndex + 1 : endSnap.edgeIndex;
         const insertedAt = endEdgeIndex + 1;
+        // Edge geometry for the opening remap comes from the INTERMEDIATE vertex list (the
+        // start's insertion, if any, already renumbered/reshaped the edges — and
+        // workingOpenings' indices were remapped to match it above).
+        const intermediateEdges = computeEdges(nextVertices);
         nextVertices = [...nextVertices.slice(0, insertedAt), endPoint, ...nextVertices.slice(insertedAt)];
         endVertexIndex = insertedAt;
         shiftAttachmentsForInsert(insertedAt);
+        workingOpenings = remapOpeningsForEdgeSplit(workingOpenings, intermediateEdges[endEdgeIndex], endEdgeIndex, [endPoint]);
         if (startVertexIndex !== null && startVertexIndex >= insertedAt) startVertexIndex += 1;
       } else if (endSnap?.host === 'interior') {
         endMember = applyInteriorSnap(endSnap.wallId, endSnap.point);
       }
     }
 
+    // A drawn wall that passes straight THROUGH other walls must junction with every one it
+    // crosses — split at each crossing into chained segments, splitting each crossed wall
+    // too, with a real shared joint at every crossing — not float over them connected only
+    // at its two ends. Crossings are collected against the post-endpoint-snap wall list,
+    // ordered along the drawn direction, and grouped when several hosts meet the line at the
+    // same physical point (crossing an existing junction).
+    const rawCrossings: { hostId: string; point: RoomVertex; tNew: number }[] = [];
+    for (const w of workingWalls) {
+      const hit = segmentIntersectionPoint(startPoint, endPoint, w.start, w.end);
+      if (hit) rawCrossings.push({ hostId: w.id, point: { x: snap(hit.point.x), z: snap(hit.point.z) }, tNew: hit.t });
+    }
+    rawCrossings.sort((a, b) => a.tNew - b.tNew);
+    const crossGroups: { point: RoomVertex; hostIds: string[] }[] = [];
+    for (const c of rawCrossings) {
+      if (Math.hypot(c.point.x - startPoint.x, c.point.z - startPoint.z) < 0.08) continue;
+      if (Math.hypot(c.point.x - endPoint.x, c.point.z - endPoint.z) < 0.08) continue;
+      const last = crossGroups[crossGroups.length - 1];
+      if (last && Math.hypot(last.point.x - c.point.x, last.point.z - c.point.z) < 0.05) last.hostIds.push(c.hostId);
+      else crossGroups.push({ point: c.point, hostIds: [c.hostId] });
+    }
+
+    const chainPoints = [startPoint, ...crossGroups.map((g) => g.point), endPoint];
+    const segmentIds = chainPoints.slice(0, -1).map(() => crypto.randomUUID());
+    const newWalls = segmentIds.map((id, i) => ({ id, start: chainPoints[i], end: chainPoints[i + 1] }));
+    const firstId = segmentIds[0];
+    const lastId = segmentIds[segmentIds.length - 1];
+
+    crossGroups.forEach((g, i) => {
+      // The two chain segments meeting at this crossing…
+      joinsToApply.push([{ wallId: segmentIds[i], end: 'end' }, { wallId: segmentIds[i + 1], end: 'start' }]);
+      // …plus each crossed wall, split right here (or its own tip, when the crossing IS its
+      // tip), all fused into one joint.
+      for (const hostId of g.hostIds) {
+        const member = applyInteriorSnap(hostId, g.point);
+        if (member) joinsToApply.push([member, { wallId: segmentIds[i], end: 'end' }]);
+      }
+    });
+
     if (nextVertices !== vertices) onVerticesChange(nextVertices);
-    onInteriorWallsChange([...workingWalls, { id: newId, start: startPoint, end: endPoint }]);
+    onInteriorWallsChange([...workingWalls, ...newWalls]);
+    if (workingOpenings !== openings) onOpeningsChange(workingOpenings);
 
     let finalAtts = workingAtts;
     if (startVertexIndex !== null || endVertexIndex !== null) {
       finalAtts = {
         ...finalAtts,
-        [newId]: {
-          ...(startVertexIndex !== null ? { start: { vertexIndex: startVertexIndex } } : {}),
-          ...(endVertexIndex !== null ? { end: { vertexIndex: endVertexIndex } } : {}),
-        },
+        ...(startVertexIndex !== null ? { [firstId]: { ...finalAtts[firstId], start: { vertexIndex: startVertexIndex } } } : {}),
       };
+      if (endVertexIndex !== null) finalAtts = { ...finalAtts, [lastId]: { ...finalAtts[lastId], end: { vertexIndex: endVertexIndex } } };
     }
     if (finalAtts !== attachments) setAttachments(finalAtts);
 
     for (const [oldId, startOwnerId, endOwnerId] of remaps) remapJointMember(oldId, startOwnerId, endOwnerId);
     for (const pair of joinsToApply) joinEndpoints(pair[0], pair[1]);
-    if (startMember) joinEndpoints(startMember, { wallId: newId, end: 'start' });
-    if (endMember) joinEndpoints(endMember, { wallId: newId, end: 'end' });
-    if (continuousFrom.current) {
-      joinEndpoints(continuousFrom.current, { wallId: newId, end: 'start' });
-      continuousFrom.current = null;
-    }
-    setDrawMode(false); // one-shot — back to normal editing after placing it
+    if (startMember) joinEndpoints(startMember, { wallId: firstId, end: 'start' });
+    if (endMember) joinEndpoints(endMember, { wallId: lastId, end: 'end' });
+    if (continuousFrom.current) joinEndpoints(continuousFrom.current, { wallId: firstId, end: 'start' });
+    // The draw tool chains on from this wall's end (Revit-style polyline) — the NEXT
+    // committed segment's start must fuse to it as one shared joint. Cleared by the tool's
+    // finish gestures (Esc / same-point click) via onWallDrawCancel.
+    continuousFrom.current = { wallId: lastId, end: 'end' };
   }
 
   function removeInteriorWall(id: string) {
@@ -290,6 +495,51 @@ export function StepDimensions({
     onInteriorWallsChange(interiorWalls.filter((w) => w.id !== id));
     leaveJoint(id, 'start');
     leaveJoint(id, 'end');
+
+    let atts = { ...attachments };
+    const removedAtt = atts[id];
+    delete atts[id];
+    let verts = vertices;
+    // A removed wall takes its doors/windows with it — leaving them keyed to a dead wall id
+    // would strand them invisibly in the saved room forever.
+    let openingsNow = openings.filter((o) => o.interiorWallId !== id);
+    let thicknesses = normalizedThicknesses();
+
+    // A boundary corner that exists ONLY because this wall attached there — and doesn't
+    // bend the boundary at all (collinear with its neighbors, i.e. the attachment landed
+    // mid-edge rather than at a real shape corner) — is now dead weight left behind by the
+    // wall that's gone. Clean it up the same way the corner's own × button would. Process
+    // descending so removing the higher index first never invalidates the lower one.
+    const candidates = [removedAtt?.start?.vertexIndex, removedAtt?.end?.vertexIndex]
+      .filter((v): v is number => v !== undefined)
+      .sort((a, b) => b - a);
+    for (const vi of candidates) {
+      if (verts.length <= 3) break;
+      const n = verts.length;
+      const prev = verts[(vi - 1 + n) % n];
+      const cur = verts[vi];
+      const next = verts[(vi + 1) % n];
+      const cross = (cur.x - prev.x) * (next.z - prev.z) - (cur.z - prev.z) * (next.x - prev.x);
+      if (Math.abs(cross) > 0.01) continue; // a real corner — some OTHER wall bowed the boundary here
+      const stillUsed = Object.values(atts).some((a) => a.start?.vertexIndex === vi || a.end?.vertexIndex === vi);
+      if (stillUsed) continue;
+
+      openingsNow = remapOpeningsForVertexRemove(openingsNow, computeEdges(verts), vi);
+      thicknesses = removeEdgeThickness(thicknesses, vi);
+      verts = verts.filter((_, i) => i !== vi);
+      const shift = (a?: WallAttachment) => (!a ? undefined : { vertexIndex: a.vertexIndex > vi ? a.vertexIndex - 1 : a.vertexIndex });
+      const next_: Attachments = {};
+      for (const [wid, a] of Object.entries(atts)) {
+        const s = { start: shift(a.start), end: shift(a.end) };
+        if (s.start || s.end) next_[wid] = s;
+      }
+      atts = next_;
+    }
+
+    if (verts !== vertices) onVerticesChange(verts);
+    if (openingsNow !== openings) onOpeningsChange(openingsNow);
+    onEdgeThicknessesChange(thicknesses);
+    setAttachments(atts);
   }
 
   // Splits an interior wall into two at its midpoint — same idea as addWall for boundary
@@ -304,10 +554,11 @@ export function StepDimensions({
     const mid = { x: snap((wall.start.x + wall.end.x) / 2), z: snap((wall.start.z + wall.end.z) / 2) };
 
     pushHistory();
-    const result = splitInteriorWallAt(interiorWalls, attachments, id, mid);
+    const result = splitInteriorWallAt(interiorWalls, attachments, openings, id, mid);
     if (!result?.newJoin) return; // length guard above means mid is never within MIN_EDGE of an end
     onInteriorWallsChange(result.walls);
     setAttachments(result.attachments);
+    if (result.openings !== openings) onOpeningsChange(result.openings);
     remapJointMember(id, result.newJoin[0].wallId, result.newJoin[1].wallId);
     joinEndpoints(result.newJoin[0], result.newJoin[1]);
   }
@@ -342,14 +593,16 @@ export function StepDimensions({
     setJoints((prev) => {
       const aKey = memberKey(a);
       const bKey = memberKey(b);
-      const existingId = Object.entries(prev).find(([, members]) => members.includes(aKey) || members.includes(bKey))?.[0];
-      if (existingId) {
-        const members = new Set(prev[existingId]);
-        members.add(aKey);
-        members.add(bKey);
-        return { ...prev, [existingId]: [...members] };
-      }
-      return { ...prev, [crypto.randomUUID()]: [aKey, bKey] };
+      // Every group already containing either key merges into ONE — a and b may each belong
+      // to a different existing joint (e.g. closing a loop between two elbows), and leaving
+      // both groups alive with overlapping members makes jointMembers answer differently
+      // depending on which group it happens to find first.
+      const touching = Object.entries(prev).filter(([, members]) => members.includes(aKey) || members.includes(bKey));
+      const untouched = Object.fromEntries(Object.entries(prev).filter(([id]) => !touching.some(([tid]) => tid === id)));
+      const merged = new Set(touching.flatMap(([, members]) => members));
+      merged.add(aKey);
+      merged.add(bKey);
+      return { ...untouched, [touching[0]?.[0] ?? crypto.randomUUID()]: [...merged] };
     });
   }
 
@@ -462,6 +715,17 @@ export function StepDimensions({
     pushHistory();
     onVerticesChange(nextVertices);
     onInteriorWallsChange(interiorWalls.filter((w) => !mergedIds.has(w.id)));
+
+    // Openings: the direct edge being replaced no longer exists as a straight wall, and the
+    // merged chain walls become boundary edges with new numbering — openings on either would
+    // point at geometry that's gone, so they're dropped; everything past the insertion
+    // renumbers to keep pointing at its own wall.
+    const replacedEdge = insertAt - 1;
+    onOpeningsChange(
+      openings
+        .filter((o) => !(o.interiorWallId && mergedIds.has(o.interiorWallId)) && !(!o.interiorWallId && o.edgeIndex === replacedEdge))
+        .map((o) => (!o.interiorWallId && o.edgeIndex > replacedEdge ? { ...o, edgeIndex: o.edgeIndex + orderedNewPoints.length } : o)),
+    );
 
     setAttachments((prev) => {
       const next: Attachments = {};
@@ -593,7 +857,10 @@ export function StepDimensions({
   // OTHER wall endpoints jointed to this one (a continuous-drawing elbow) move right along
   // with it, and inherit the same attachment if it snapped.
   function handleEndpointChange(wallId: string, end: 'start' | 'end', point: RoomVertex, snap_: SnapTarget | null) {
-    const p = { x: snap(point.x), z: snap(point.z) };
+    // A vertex-host snap keeps the corner's EXACT position (it may sit off the 0.1m grid
+    // after a boundary merge) — rounding it would detach the point from the very corner
+    // it's attaching to.
+    const p = snap_?.host === 'vertex' ? snap_.point : { x: snap(point.x), z: snap(point.z) };
     const group = [{ wallId, end }, ...jointMembers(wallId, end)];
 
     function applyPointToGroup(walls: InteriorWall[]): InteriorWall[] {
@@ -615,11 +882,20 @@ export function StepDimensions({
       return next;
     }
 
-    if (snap_?.host === 'boundary') {
+    if (snap_?.host === 'vertex') {
+      // Landed on an EXISTING corner — attach straight to it, no insertion at all.
+      onInteriorWallsChange(applyPointToGroup(interiorWalls));
+      setAttachments((prev) => {
+        const next = { ...prev };
+        for (const m of group) next[m.wallId] = { ...next[m.wallId], [m.end]: { vertexIndex: snap_.vertexIndex } };
+        return next;
+      });
+    } else if (snap_?.host === 'boundary') {
       const insertedAt = snap_.edgeIndex + 1;
       const nextVertices = [...vertices.slice(0, insertedAt), p, ...vertices.slice(insertedAt)];
       onVerticesChange(nextVertices);
       shiftAttachmentsForInsert(insertedAt);
+      onOpeningsChange(remapOpeningsForEdgeSplit(openings, computeEdges(vertices)[snap_.edgeIndex], snap_.edgeIndex, [p]));
       onInteriorWallsChange(applyPointToGroup(interiorWalls));
       setAttachments((prev) => {
         const next = { ...prev };
@@ -630,10 +906,11 @@ export function StepDimensions({
       // Snapped onto ANOTHER interior wall — split it at that point (same treatment as
       // snapping onto the boundary) and join this endpoint (and anything jointed to it) to
       // the split point as a real shared joint.
-      const result = splitInteriorWallAt(interiorWalls, attachments, snap_.wallId, snap_.point);
+      const result = splitInteriorWallAt(interiorWalls, attachments, openings, snap_.wallId, snap_.point);
       if (!result) return;
       onInteriorWallsChange(applyPointToGroup(result.walls));
       setAttachments(() => clearGroupAttachments(result.attachments));
+      if (result.openings !== openings) onOpeningsChange(result.openings);
       if (result.newJoin) {
         remapJointMember(snap_.wallId, result.newJoin[0].wallId, result.newJoin[1].wallId);
         joinEndpoints(result.newJoin[0], result.newJoin[1]);
@@ -663,13 +940,26 @@ export function StepDimensions({
     });
   }
 
-  // Continuous drawing: clicking a free endpoint arms the draw tool and remembers which
-  // wall/end it came from, so once the next segment is placed (addInteriorWall above) it can
-  // be joined to that origin as a real shared point instead of a merely coincidental one.
+  // Continuous drawing: clicking a free endpoint starts a new segment from that exact point
+  // and remembers which wall/end it came from, so once the segment is placed (addInteriorWall
+  // above) it can be joined to that origin as a real shared point instead of a merely
+  // coincidental one.
   function handleFreeEndpointClick(wallId: string, end: 'start' | 'end') {
     pushHistory();
     continuousFrom.current = { wallId, end };
-    setDrawMode(true);
+  }
+
+  // Applies a thickness (cm, NOT yet clamped to the min — see the input's own comment) to
+  // whichever wall is currently selected.
+  function applyThicknessCm(sel: NonNullable<typeof selected>, cm: number) {
+    const meters = cm / 100;
+    if (sel.kind === 'edge') {
+      const next = normalizedThicknesses();
+      next[sel.index] = meters;
+      onEdgeThicknessesChange(next);
+    } else {
+      onInteriorWallsChange(interiorWalls.map((w) => (w.id === sel.id ? { ...w, thickness: meters } : w)));
+    }
   }
 
   return (
@@ -677,19 +967,13 @@ export function StepDimensions({
       <div>
         <h2 className={styles.stepTitle}>Adjust your dimensions</h2>
         <p className={styles.stepSubtitle}>
-          Drag a wall or corner in the plan, or click a dimension to type an exact length. Click the + on a wall to
-          split it into two, or the × on a corner to remove it. Drag a drawn wall's endpoint to reposition it — it
-          snaps onto a wall it gets close to.
+          Drag a wall or corner in the plan, or click a dimension to type an exact length. To draw a new wall, just
+          click anywhere on the plan — the + marker under your cursor shows where it'll start — then click again to
+          place its end. Click the + on a wall to split it into two, or the × on a corner to remove it. Drag a drawn
+          wall's endpoint to reposition it — it snaps onto a wall it gets close to.
         </p>
 
         <div className={styles.kindToggle}>
-          <button
-            type="button"
-            className={drawMode ? styles.pillActive : styles.pill}
-            onClick={() => setDrawMode((on) => !on)}
-          >
-            {drawMode ? 'Cancel drawing' : 'Draw a wall'}
-          </button>
           <button type="button" className={styles.pill} onClick={undo} disabled={history.length === 0}>
             <FiRotateCcw style={{ verticalAlign: '-2px', marginRight: '0.35rem' }} />
             Undo
@@ -714,34 +998,65 @@ export function StepDimensions({
             min={MIN_HEIGHT}
             max={MAX_HEIGHT}
             value={height}
+            // Only the MAX clamps live — clamping the min on every keystroke makes a value
+            // below it unreachable (typing "1" of "15" gets snapped straight to the min
+            // before the second digit ever lands). The min is enforced on blur instead, once
+            // the user's actually done typing.
             onChange={(e) => {
               const value = parseFloat(e.target.value);
-              if (Number.isFinite(value)) onHeightChange(Math.min(MAX_HEIGHT, Math.max(MIN_HEIGHT, value)));
+              if (Number.isFinite(value)) onHeightChange(Math.min(MAX_HEIGHT, value));
             }}
+            onBlur={() => onHeightChange(Math.max(MIN_HEIGHT, height))}
           />
           <span>m</span>
         </div>
 
-        <p className={styles.stepSubtitle}>Wall thickness</p>
-        <div className={styles.numberField}>
-          <input
-            type="number"
-            step="1"
-            min={MIN_THICKNESS_CM}
-            max={MAX_THICKNESS_CM}
-            value={Math.round(wallThickness * 100)}
-            onChange={(e) => {
-              const cm = parseFloat(e.target.value);
-              if (Number.isFinite(cm)) onWallThicknessChange(Math.min(MAX_THICKNESS_CM, Math.max(MIN_THICKNESS_CM, cm)) / 100);
-            }}
-          />
-          <span>cm</span>
-        </div>
+        {/* Per-wall property panel — click any wall (boundary or interior) in the plan to
+            select it and edit ITS thickness here; there's no room-wide thickness anymore. */}
+        {selected && (
+          <>
+            <p className={styles.stepSubtitle}>{selected.kind === 'edge' ? `Wall ${selected.index + 1}` : 'Selected wall'} thickness</p>
+            <div className={styles.numberField}>
+              <input
+                type="number"
+                step="1"
+                min={MIN_THICKNESS_CM}
+                max={MAX_THICKNESS_CM}
+                value={Math.round(
+                  (selected.kind === 'edge'
+                    ? (edgeThicknesses[selected.index] ?? DEFAULT_WALL_THICKNESS)
+                    : (interiorWalls.find((w) => w.id === selected.id)?.thickness ?? DEFAULT_WALL_THICKNESS)) * 100,
+                )}
+                onChange={(e) => {
+                  const cm = parseFloat(e.target.value);
+                  if (!Number.isFinite(cm)) return;
+                  // Same reasoning as the room-height field above: only MAX clamps live, MIN
+                  // is enforced on blur, or "15" can never be typed past the "1".
+                  applyThicknessCm(selected, Math.min(MAX_THICKNESS_CM, cm));
+                }}
+                onBlur={(e) => {
+                  const cm = parseFloat(e.target.value);
+                  if (Number.isFinite(cm)) applyThicknessCm(selected, Math.max(MIN_THICKNESS_CM, cm));
+                }}
+              />
+              <span>cm</span>
+            </div>
+            <button type="button" className={styles.pill} onClick={() => setSelected(null)}>
+              Done
+            </button>
+          </>
+        )}
       </div>
       <div className={styles.previewPane}>
         <FloorPlanPreview
           vertices={vertices}
           units={units}
+          edgeThicknesses={normalizedThicknesses()}
+          selectedEdgeIndex={selected?.kind === 'edge' ? selected.index : null}
+          selectedInteriorWallId={selected?.kind === 'interior' ? selected.id : null}
+          onEdgeClick={(edgeIndex) => {
+            setSelected({ kind: 'edge', index: edgeIndex });
+          }}
           onEdgeDragStart={beginDrag}
           onEdgeDrag={(edgeIndex, delta) => {
             const start = dragStart.current;
@@ -802,15 +1117,57 @@ export function StepDimensions({
           interiorWalls={interiorWalls}
           onInteriorWallRemove={removeInteriorWall}
           onInteriorWallSplit={splitInteriorWall}
+          onInteriorWallClick={(id) => {
+            setSelected({ kind: 'interior', id });
+          }}
+          onInteriorWallDragStart={(id) => {
+            pushHistory();
+            interiorDragStart.current = interiorWalls.find((w) => w.id === id) ?? null;
+          }}
+          onInteriorWallDrag={(id, delta) => {
+            const orig = interiorDragStart.current;
+            if (!orig || orig.id !== id) return;
+            const dx = orig.end.x - orig.start.x;
+            const dz = orig.end.z - orig.start.z;
+            const len = Math.hypot(dx, dz) || 1;
+            const nx = dz / len;
+            const nz = -dx / len;
+            const d = snap(delta);
+            // A boundary-attached end stays exactly where it is (pinned to a fixed point on
+            // the room's outline). A FREE end moves — and takes anything jointed to it along
+            // for the ride, same as dragging that one endpoint's own handle already does, so
+            // a whole-wall Move never silently breaks a joint to another free wall.
+            const startFree = !isEndpointAttached(id, 'start');
+            const endFree = !isEndpointAttached(id, 'end');
+            const newStart = { x: snap(orig.start.x + nx * d), z: snap(orig.start.z + nz * d) };
+            const newEnd = { x: snap(orig.end.x + nx * d), z: snap(orig.end.z + nz * d) };
+
+            const updates = new Map<string, Partial<InteriorWall>>();
+            function applyPoint(wallId: string, end: 'start' | 'end', point: RoomVertex) {
+              updates.set(wallId, { ...updates.get(wallId), [end]: point });
+            }
+            if (startFree) {
+              applyPoint(id, 'start', newStart);
+              for (const m of jointMembers(id, 'start')) applyPoint(m.wallId, m.end, newStart);
+            }
+            if (endFree) {
+              applyPoint(id, 'end', newEnd);
+              for (const m of jointMembers(id, 'end')) applyPoint(m.wallId, m.end, newEnd);
+            }
+            onInteriorWallsChange(interiorWalls.map((w) => (updates.has(w.id) ? { ...w, ...updates.get(w.id) } : w)));
+          }}
           onInteriorWallEndpointDragStart={handleEndpointDragStart}
           onInteriorWallEndpointChange={handleEndpointChange}
           isEndpointAttached={isEndpointAttached}
           onInteriorWallEndpointDetach={handleEndpointDetach}
           onFreeEndpointClick={handleFreeEndpointClick}
           jointedEndpoints={jointMembers}
-          drawMode={drawMode}
           onWallDrawComplete={addInteriorWall}
-          onWallDrawCancel={() => setDrawMode(false)}
+          onWallDrawCancel={() => {
+            // An abandoned (Escaped) draw must also abandon its chain origin, or the NEXT
+            // wall drawn from anywhere would wrongly joint itself to this stale point.
+            continuousFrom.current = null;
+          }}
         />
       </div>
     </div>

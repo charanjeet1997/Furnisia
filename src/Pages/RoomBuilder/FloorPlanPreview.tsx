@@ -1,17 +1,20 @@
 import { useEffect, useRef, useState } from 'react';
 import { computeEdges, boundingBox } from '../../Components/polygonGeometry';
 import type { InteriorWall, RoomOpening, RoomVertex } from '../../Data/RoomShape';
+import { WallToolMenu } from './tools/WallToolMenu';
 import styles from './FloorPlanPreview.module.css';
 
 export type PlanUnits = 'm' | 'ft';
 
-// Where an interior-wall endpoint snapped to — either a boundary wall (the existing
-// edgeIndex/t addressing) or ANOTHER interior wall (addressed by its own id/t instead). Both
-// carry the resolved snap `point` so every consumer that only cares about "where" can ignore
-// which kind of host it is.
+// Where an interior-wall endpoint snapped to — a boundary wall (the existing edgeIndex/t
+// addressing), ANOTHER interior wall (addressed by its own id/t), or an EXISTING boundary
+// corner (`vertex`) — its own kind because attaching there must reuse that vertex, never
+// insert a near-duplicate onto one of its edges at t≈0/1. All carry the resolved snap `point`
+// so consumers that only care about "where" can ignore which kind of host it is.
 export type SnapTarget =
   | { host: 'boundary'; edgeIndex: number; t: number; point: RoomVertex }
-  | { host: 'interior'; wallId: string; t: number; point: RoomVertex };
+  | { host: 'interior'; wallId: string; t: number; point: RoomVertex }
+  | { host: 'vertex'; vertexIndex: number; point: RoomVertex };
 
 interface FloorPlanPreviewProps {
   vertices: RoomVertex[];
@@ -56,9 +59,20 @@ interface FloorPlanPreviewProps {
   // Splits an interior wall into two at its midpoint — same idea as onWallAdd above, for
   // interior walls instead of boundary ones.
   onInteriorWallSplit?: (id: string) => void;
-  // Click-to-place a door/window on an interior wall (Step 3) — same rejection-message
-  // contract as onEdgeClick above.
+  // Click on an interior wall: places a door/window in Step 3, selects the wall for the
+  // property panel in Step 2 — same rejection-message contract as onEdgeClick above.
   onInteriorWallClick?: (id: string) => string | void;
+  // Per-boundary-edge thickness (meters), parallel to the edge list — drives each wall's
+  // drawn stroke so thickness edits show up live in the plan. Falls back to 0.1.
+  edgeThicknesses?: number[];
+  // Highlight for the wall currently selected in the property panel.
+  selectedEdgeIndex?: number | null;
+  selectedInteriorWallId?: string | null;
+  // Whole-wall drag for interior walls (translate along the wall's normal, boundary-edge
+  // style). `delta` is the TOTAL normal displacement since drag start, in meters.
+  onInteriorWallDragStart?: (id: string) => void;
+  onInteriorWallDrag?: (id: string, delta: number) => void;
+  onInteriorWallDragEnd?: () => void;
   // Dragging an interior wall's endpoint. Snaps magnetically onto a boundary wall within
   // SNAP_DISTANCE — `attach` reports where (so the caller can keep it pinned to that wall as
   // it moves); `attach: null` means it ended up free-floating in open space.
@@ -77,24 +91,27 @@ interface FloorPlanPreviewProps {
   onInteriorWallEndpointDetach?: (wallId: string, end: 'start' | 'end') => void;
   // A free (unattached) endpoint was clicked (not dragged) — continuous-drawing: lets the user
   // start a brand-new wall segment picking up exactly where a free end left off, without going
-  // back to the "Draw a wall" toggle. Reports which wall/end it came from so the caller can
-  // join the new segment to it as a real shared point.
+  // back to hovering for the "+" affordance. Reports which wall/end it came from so the caller
+  // can join the new segment to it as a real shared point.
   onFreeEndpointClick?: (wallId: string, end: 'start' | 'end', point: RoomVertex) => void;
   // Other wall endpoints that are the SAME physical point as this one (a continuous-drawing
   // elbow) — used to make them visually follow together during a live drag, not just after
   // the drag commits.
   jointedEndpoints?: (wallId: string, end: 'start' | 'end') => { wallId: string; end: 'start' | 'end' }[];
-  // Click-move-click draw: click anywhere to start, move freely (live dashed preview + length
-  // follow the cursor), click again to place the end. Purely additive — never touches the
-  // room's boundary (`vertices`). `drawMode` arms it; it disarms itself after one placement or
-  // Escape.
-  drawMode?: boolean;
+  // Click-move-click draw: whenever this is provided, hovering anywhere on the plan — empty
+  // space or over an existing wall — shows a "+" at the (possibly snapped) hover point; clicking
+  // it places the start, moving the mouse previews the wall (live dashed preview + length
+  // follow the cursor), and a second click places the end. Purely additive — never touches the
+  // room's boundary (`vertices`) itself (though StepDimensions may fold a closed chain into it
+  // afterward). No separate "draw mode" toggle — starting a wall is just a plain click.
   onWallDrawComplete?: (
     start: RoomVertex,
     end: RoomVertex,
     startSnap: SnapTarget | null,
     endSnap: SnapTarget | null,
   ) => void;
+  // An in-progress draw was abandoned (Escape) — lets the parent clear any chaining state
+  // (e.g. continuousFrom) tied to the draw that never completed.
   onWallDrawCancel?: () => void;
 }
 
@@ -109,6 +126,12 @@ const SNAP_DISTANCE = 0.3; // meters — how close an interior-wall endpoint mus
 // actually catching each other — that's a harder click to land than dragging onto the middle
 // of a long wall, so tips get a more generous catch radius than SNAP_DISTANCE.
 const ENDPOINT_SNAP_DISTANCE = 0.5;
+// How close the cursor must be to a wall's LINE for the hover tool menu to appear at all.
+const WALL_HOVER_DISTANCE = 0.26;
+// Once the menu is anchored, how far the cursor can roam from that anchor point (including
+// out toward the offset icons) before the menu actually closes. Must clear the farthest
+// possible icon — see WallToolMenu's own sizing comment for that geometry.
+const HOVER_MENU_RADIUS = 0.6;
 
 const snapDraw = (v: number) => Math.round(v * 10) / 10; // 0.1m grid, matches every other edit path
 
@@ -134,7 +157,8 @@ function edgeCursor(normal: RoomVertex): string {
 type DragState =
   | { kind: 'edge'; index: number; startX: number; startY: number; scale: number; normal: RoomVertex }
   | { kind: 'vertex'; index: number; startX: number; startY: number; scale: number }
-  | { kind: 'opening'; index: number; startX: number; startY: number; scale: number; dir: RoomVertex };
+  | { kind: 'opening'; index: number; startX: number; startY: number; scale: number; dir: RoomVertex }
+  | { kind: 'interiorWall'; id: string; startX: number; startY: number; scale: number; normal: RoomVertex };
 
 export function FloorPlanPreview({
   vertices,
@@ -159,13 +183,18 @@ export function FloorPlanPreview({
   onInteriorWallRemove,
   onInteriorWallSplit,
   onInteriorWallClick,
+  edgeThicknesses,
+  selectedEdgeIndex = null,
+  selectedInteriorWallId = null,
+  onInteriorWallDragStart,
+  onInteriorWallDrag,
+  onInteriorWallDragEnd,
   onInteriorWallEndpointDragStart,
   onInteriorWallEndpointChange,
   isEndpointAttached,
   onInteriorWallEndpointDetach,
   onFreeEndpointClick,
   jointedEndpoints,
-  drawMode = false,
   onWallDrawComplete,
   onWallDrawCancel,
 }: FloorPlanPreviewProps) {
@@ -181,12 +210,21 @@ export function FloorPlanPreview({
   const [draggingEndpoint, setDraggingEndpoint] = useState<{ wallId: string; end: 'start' | 'end'; origin: RoomVertex } | null>(null);
   const [endpointLive, setEndpointLive] = useState<RoomVertex | null>(null);
   const [endpointSnap, setEndpointSnap] = useState<SnapTarget | null>(null);
+  // True while a pointer press is being handled by an endpoint's own drag/click machinery —
+  // the compatibility `click` that follows must then never reach the canvas. A ref, not
+  // state or a `drawStart` check: React flushes the state updates from pointerup (e.g.
+  // startContinuousDraw setting drawStart) BEFORE the click event dispatches, so any
+  // state-based check reads the post-update world and lets the click through — where the
+  // canvas reads it as the draw's second click at ~0 distance and instantly cancels it.
+  const endpointPressRef = useRef(false);
 
   // Resolves an opening's host wall geometry — either a boundary edge, or (when
   // `interiorWallId` is set) a free-standing interior wall, computed with the same
   // start/end/length/normal shape as a boundary WallEdge so every opening-rendering/dragging
   // calculation below works identically regardless of which kind of wall it's on.
-  function openingHost(opening: RoomOpening): { start: RoomVertex; end: RoomVertex; length: number; normal: RoomVertex } | null {
+  function openingHost(
+    opening: RoomOpening,
+  ): { start: RoomVertex; end: RoomVertex; length: number; normal: RoomVertex; thickness: number } | null {
     if (opening.interiorWallId) {
       const wall = interiorWalls.find((w) => w.id === opening.interiorWallId);
       if (!wall) return null;
@@ -194,17 +232,35 @@ export function FloorPlanPreview({
       const dz = wall.end.z - wall.start.z;
       const length = Math.hypot(dx, dz);
       if (length < 1e-6) return null;
-      return { start: wall.start, end: wall.end, length, normal: { x: dz / length, z: -dx / length } };
+      return {
+        start: wall.start,
+        end: wall.end,
+        length,
+        normal: { x: dz / length, z: -dx / length },
+        thickness: Math.max(wall.thickness ?? WALL_STROKE, 0.07),
+      };
     }
-    return edges[opening.edgeIndex] ?? null;
+    const edge = edges[opening.edgeIndex];
+    if (!edge) return null;
+    return { ...edge, thickness: Math.max(edgeThicknesses?.[opening.edgeIndex] ?? WALL_STROKE, 0.07) };
   }
 
   // Closest point to `p` on any boundary wall OR interior wall, if within SNAP_DISTANCE — the
   // "magnetism" that lets an interior wall's endpoint attach to whichever wall it's dragged
   // near, boundary or interior alike. `excludeWallId` keeps a wall's own endpoint from
   // snapping onto itself (or, via its jointed partners — see callers) while being dragged.
-  function findSnap(p: RoomVertex, excludeWallId?: string): SnapTarget | null {
+  function findSnap(
+    p: RoomVertex,
+    excludeWallId?: string,
+    excludeTips?: { wallId: string; end: 'start' | 'end' }[],
+  ): SnapTarget | null {
     let best: (SnapTarget & { dist: number }) | null = null;
+    // Existing boundary corners first — landing on one must attach to THAT vertex, not
+    // insert a near-duplicate onto an adjacent edge at t≈0/1.
+    vertices.forEach((v, vertexIndex) => {
+      const dist = Math.hypot(p.x - v.x, p.z - v.z);
+      if (dist <= ENDPOINT_SNAP_DISTANCE && (!best || dist < best.dist)) best = { host: 'vertex', vertexIndex, point: v, dist };
+    });
     edges.forEach((edge, edgeIndex) => {
       const abx = edge.end.x - edge.start.x;
       const abz = edge.end.z - edge.start.z;
@@ -220,7 +276,8 @@ export function FloorPlanPreview({
       // projection below so a point that's genuinely closer to the LINE than to either tip
       // (the normal T-junction case) still prefers the line, while a point that's only close
       // to a tip specifically gets that tip's more generous catch.
-      for (const [t, point] of [[0, wall.start] as const, [1, wall.end] as const]) {
+      for (const [t, point, tipEnd] of [[0, wall.start, 'start'] as const, [1, wall.end, 'end'] as const]) {
+        if (excludeTips?.some((tip) => tip.wallId === wall.id && tip.end === tipEnd)) continue;
         const dist = Math.hypot(p.x - point.x, p.z - point.z);
         if (dist <= ENDPOINT_SNAP_DISTANCE && (!best || dist < best.dist)) best = { host: 'interior', wallId: wall.id, t, point, dist };
       }
@@ -245,7 +302,27 @@ export function FloorPlanPreview({
   // requiring a drag-away-and-back afterward to trigger the snap.
   const [drawStartSnap, setDrawStartSnap] = useState<SnapTarget | null>(null);
   const [drawEndSnap, setDrawEndSnap] = useState<SnapTarget | null>(null);
-  const [hoveredInteriorWall, setHoveredInteriorWall] = useState<string | null>(null);
+  // "Create a wall from here" affordance: whenever drawing is available and not already in
+  // progress, a "+" marker follows the cursor (snapped onto whatever wall it's near), so
+  // starting a wall is a plain click on the plan — no separate draw-mode toggle to arm first.
+  const [hoverPoint, setHoverPoint] = useState<RoomVertex | null>(null);
+  const [hoverSnap, setHoverSnap] = useState<SnapTarget | null>(null);
+  // The wall point the tool menu is currently anchored to, if any — as long as the cursor
+  // stays within HOVER_MENU_RADIUS of it, the menu keeps showing exactly as-is, regardless
+  // of the cursor's distance from the wall's actual LINE. This is what lets you move the
+  // mouse FROM the wall OUT TO the offset menu icons without it reading as "left the wall"
+  // partway there. Recomputed from scratch on every single mousemove (pure distance math,
+  // no native onMouseEnter/onMouseLeave) — deliberately NOT a "locked" boolean toggled by
+  // DOM enter/leave events: if the element holding such a flag ever unmounts while the
+  // cursor sits still over it (routine in a React-driven SVG — e.g. right after a re-render
+  // triggered by something else entirely, like closing a side panel), the matching "leave"
+  // never fires and the flag gets stuck forever, silently disabling all future hovering. A
+  // plain ref (not state) since it only needs to gate logic inside the mousemove handler.
+  const menuAnchorRef = useRef<RoomVertex | null>(null);
+  // True when the hover point landed ON a wall's line (not just near a corner, and not out
+  // in open space) — drives which tool the hover affordance offers: a plain "+" in open
+  // space, or the move/draw TOOL MENU when you're actually over a wall.
+  const [hoverOnWall, setHoverOnWall] = useState(false);
   const width = bbox.maxX - bbox.minX;
   const depth = bbox.maxZ - bbox.minZ;
   const viewW = width + PAD * 2;
@@ -318,10 +395,9 @@ export function FloorPlanPreview({
   }
 
   // Continuous drawing: a free endpoint was clicked (not dragged) — pick up a new wall segment
-  // from exactly that point. Sets the local click-move-click state directly (rather than
-  // waiting for the `drawMode` prop to round-trip back from the parent) so the live preview
-  // starts immediately on this same click; the parent's callback is what actually arms
-  // `drawMode` for next render, so the follow-up click lands in onWallDrawComplete correctly.
+  // from exactly that point. Sets the local click-move-click state directly so the live
+  // preview starts immediately on this same click; the parent's callback records which
+  // wall/end the chain came from (continuousFrom) so the committed segment joins to it.
   // Its start is never boundary-snapped — it originates from a free interior-wall endpoint,
   // joined to that origin separately (see continuousFrom in StepDimensions), not attached.
   function startContinuousDraw(wallId: string, end: 'start' | 'end', point: RoomVertex) {
@@ -330,11 +406,6 @@ export function FloorPlanPreview({
     setDrawStartSnap(null);
     onFreeEndpointClick?.(wallId, end, point);
   }
-
-  useEffect(() => {
-    if (!drawMode) cancelDraw();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [drawMode]);
 
   useEffect(() => {
     if (!drawStart) return;
@@ -390,6 +461,8 @@ export function FloorPlanPreview({
       onEdgeDrag?.(drag.index, dx * drag.normal.x + dz * drag.normal.z);
     } else if (drag.kind === 'vertex') {
       onVertexDrag?.(drag.index, dx, dz);
+    } else if (drag.kind === 'interiorWall') {
+      onInteriorWallDrag?.(drag.id, dx * drag.normal.x + dz * drag.normal.z);
     } else {
       onOpeningDrag?.(drag.index, dx * drag.dir.x + dz * drag.dir.z);
     }
@@ -403,6 +476,7 @@ export function FloorPlanPreview({
     setFrozenViewBox(null); // release → one re-fit to the final shape
     if (drag.kind === 'edge') onEdgeDragEnd?.();
     else if (drag.kind === 'vertex') onVertexDragEnd?.();
+    else if (drag.kind === 'interiorWall') onInteriorWallDragEnd?.();
     else onOpeningDragEnd?.();
     // `movedRef` must stay true through the native "click" event that follows this same
     // pointerup (it fires synchronously right after, and the dragged element's own onClick
@@ -442,25 +516,61 @@ export function FloorPlanPreview({
       <svg
         ref={svgRef}
         viewBox={viewBox}
-        style={{ width: '100%', height: '100%', cursor: drawMode ? 'crosshair' : undefined }}
+        style={{ width: '100%', height: '100%', cursor: onWallDrawComplete ? 'crosshair' : undefined }}
         preserveAspectRatio="xMidYMid meet"
         onMouseMove={(e) => {
-          if (!drawStart) return;
+          if (drawStart) {
+            const p = clientToSvgPoint(e.clientX, e.clientY);
+            const snapped = findSnap(p);
+            setDrawEnd(snapped?.point ?? p);
+            setDrawEndSnap(snapped);
+            return;
+          }
+          if (!onWallDrawComplete) return;
+          // A drag (e.g. the Move icon below) is in progress — leave the hover state alone.
+          // Recomputing it here could flip `hoverOnWall` mid-drag and unmount the very
+          // element holding pointer capture (plain "mousemove" isn't blocked by capture the
+          // way pointer events are, so this handler keeps firing throughout the drag).
+          if (dragRef.current) return;
           const p = clientToSvgPoint(e.clientX, e.clientY);
+
+          // The menu is already anchored somewhere and the cursor hasn't wandered far enough
+          // to leave it — keep it exactly as-is (see menuAnchorRef's own comment for why this
+          // is checked here, every move, rather than via a DOM enter/leave-driven flag).
+          const anchor = menuAnchorRef.current;
+          if (anchor && Math.hypot(p.x - anchor.x, p.z - anchor.z) < HOVER_MENU_RADIUS) return;
+          menuAnchorRef.current = null;
+
+          // Not drawing yet — track the cursor for the hover affordance, magnetized onto
+          // whatever wall it's near. In open space that's the plain "+" (click to start a
+          // wall right there); directly over a wall's line it's the move/draw tool menu
+          // instead, since a plain click there selects the wall (property panel) rather than
+          // starting a draw.
           const snapped = findSnap(p);
-          setDrawEnd(snapped?.point ?? p);
-          setDrawEndSnap(snapped);
+          const onWall = Boolean(snapped) && snapped!.host !== 'vertex' && Math.hypot(p.x - snapped!.point.x, p.z - snapped!.point.z) < WALL_HOVER_DISTANCE;
+          if (onWall) menuAnchorRef.current = snapped!.point;
+          setHoverPoint(snapped?.point ?? p);
+          setHoverSnap(snapped);
+          setHoverOnWall(onWall);
+        }}
+        onMouseLeave={() => {
+          menuAnchorRef.current = null;
+          setHoverPoint(null);
+          setHoverSnap(null);
+          setHoverOnWall(false);
         }}
         onClick={(e) => {
-          // `drawStart` already being set (continuous drawing from a free endpoint) is treated
-          // the same as `drawMode` being armed — covers the moment right after that click,
-          // before the parent's `drawMode` prop has round-tripped back down.
-          if (!drawMode && !drawStart) return;
+          if (!onWallDrawComplete) return;
+          // A click that ends a drag gesture (movedRef) must never double as a draw click —
+          // releasing a wall/corner drag would otherwise instantly start an unwanted wall.
+          if (movedRef.current) return;
           if (!drawStart) {
             const p = clientToSvgPoint(e.clientX, e.clientY);
             const snapped = findSnap(p);
             setDrawStart(snapped?.point ?? p);
             setDrawStartSnap(snapped);
+            setHoverPoint(null);
+            setHoverSnap(null);
             return;
           }
           const p = clientToSvgPoint(e.clientX, e.clientY);
@@ -468,11 +578,19 @@ export function FloorPlanPreview({
           const end = snapped?.point ?? p;
           if (Math.hypot(end.x - drawStart.x, end.z - drawStart.z) >= 0.2) {
             onWallDrawComplete?.(drawStart, end, drawStartSnap, snapped);
+            // Revit-style polyline: the chain continues from the end just placed — the next
+            // click adds the next wall. The parent tracks the committed segment
+            // (continuousFrom) so the next commit joins to its end as a real shared point;
+            // startSnap stays null here so that start is never ALSO re-attached by snap.
+            setDrawStart(end);
+            setDrawEnd(end);
+            setDrawStartSnap(null);
+            setDrawEndSnap(null);
+          } else {
+            // Clicking (nearly) the same point again is the "I'm done" gesture — like
+            // double-click-to-finish in CAD tools. Esc works too.
+            cancelDraw();
           }
-          setDrawStart(null);
-          setDrawEnd(null);
-          setDrawStartSnap(null);
-          setDrawEndSnap(null);
         }}
       >
         <polygon points={points} fill={FLOOR_FILL} stroke="none" />
@@ -499,8 +617,8 @@ export function FloorPlanPreview({
               y1={edge.start.z}
               x2={edge.end.x}
               y2={edge.end.z}
-              stroke={isHighlighted ? 'var(--color-accent)' : 'var(--color-text)'}
-              strokeWidth={WALL_STROKE}
+              stroke={selectedEdgeIndex === i || isHighlighted ? 'var(--color-accent)' : 'var(--color-text)'}
+              strokeWidth={Math.max(edgeThicknesses?.[i] ?? WALL_STROKE, 0.07)}
               strokeLinecap="square"
             />
             {(onEdgeClick || onEdgeDrag) && (
@@ -511,30 +629,45 @@ export function FloorPlanPreview({
                 y2={hz2}
                 stroke="transparent"
                 strokeWidth={0.65}
-                style={{ cursor: drawMode ? 'crosshair' : onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
-                onClick={() => {
-                  if (movedRef.current || drawMode) return;
-                  const reason = onEdgeClick?.(i);
-                  if (reason) flashRejection(i, reason);
-                }}
+                // Press-and-hold directly on the wall moves it (the "tool" you get without
+                // hunting for an icon); a plain click (no real movement) instead selects it.
+                // movedRef is what tells the two apart — set the instant a real drag happens,
+                // it makes onClick below a no-op for that same gesture's release.
+                style={{ cursor: drawStart ? 'crosshair' : onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
                 onPointerDown={(e) => {
-                  if (drawMode || !onEdgeDrag) return;
+                  if (drawStart || !onEdgeDrag) return;
                   beginDrag(e, { kind: 'edge', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale(), normal: edge.normal });
                   onEdgeDragStart?.(i);
                 }}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
+                onClick={(e) => {
+                  // While drawing, this click is the draw gesture's — let it bubble to the
+                  // canvas handler (which snaps it onto this wall) instead of acting here.
+                  if (movedRef.current || drawStart) return;
+                  if (onEdgeClick) {
+                    // Handled here (select / place opening) — never ALSO a draw-start click.
+                    e.stopPropagation();
+                    const reason = onEdgeClick(i);
+                    if (reason) flashRejection(i, reason);
+                  }
+                }}
               />
             )}
-            {onWallAdd && !drawMode && (
+            {onWallAdd && !drawStart && (
               <g
                 transform={`translate(${edge.midpoint.x - edge.normal.x * 0.3} ${edge.midpoint.z - edge.normal.z * 0.3})`}
                 style={{ cursor: 'pointer' }}
-                onClick={() => onWallAdd(i)}
+                onClick={(e) => {
+                  // Control buttons act on THIS element only — never fall through to the
+                  // canvas click, which would read the same click as "start drawing a wall".
+                  e.stopPropagation();
+                  onWallAdd(i);
+                }}
               >
-                <circle r={0.13} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.02} />
-                <path d="M-0.06,0 H0.06 M0,-0.06 V0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+                <circle r={0.09} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.015} />
+                <path d="M-0.042,0 H0.042 M0,-0.042 V0.042" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
               </g>
             )}
           </g>
@@ -562,9 +695,13 @@ export function FloorPlanPreview({
         const dz = end.z - start.z;
         const midX = (start.x + end.x) / 2;
         const midZ = (start.z + end.z) / 2;
-        const isHovered = hoveredInteriorWall === wall.id;
 
         function beginEndpointDrag(e: React.PointerEvent<SVGElement>, end: 'start' | 'end') {
+          // Mid-draw, a press on an endpoint is part of the draw gesture (ending the wall on
+          // this point), not the start of an endpoint drag — endpointPressRef stays false so
+          // the click bubbles through to the canvas to commit the wall's end here.
+          if (drawStart) return;
+          endpointPressRef.current = true;
           e.currentTarget.setPointerCapture(e.pointerId);
           const origin = end === 'start' ? wall.start : wall.end;
           setDraggingEndpoint({ wallId: wall.id, end, origin });
@@ -576,7 +713,9 @@ export function FloorPlanPreview({
         function handleEndpointMove(e: React.PointerEvent<SVGElement>) {
           const p = clientToSvgPoint(e.clientX, e.clientY);
           setEndpointLive(p);
-          setEndpointSnap(findSnap(p, wall.id));
+          // Partners jointed to the dragged endpoint sit at its own origin — snapping onto
+          // them would glue the point right back where it started, making short drags no-ops.
+          setEndpointSnap(findSnap(p, wall.id, jointedEndpoints?.(wall.id, draggingEndpoint?.end ?? 'start')));
         }
 
         function handleEndpointUp(e: React.PointerEvent<SVGElement>) {
@@ -584,12 +723,16 @@ export function FloorPlanPreview({
           if (draggingEndpoint) {
             const finalPoint = endpointSnap?.point ?? endpointLive;
             const attached = isEndpointAttached?.(wall.id, draggingEndpoint.end) ?? false;
-            const moved = finalPoint && Math.hypot(finalPoint.x - draggingEndpoint.origin.x, finalPoint.z - draggingEndpoint.origin.z) > 0.12;
+            // Click-vs-drag must be judged by the RAW cursor, never the snapped point — a
+            // 1px jitter near another tip would otherwise read as a 0.5m "drag" (the snap
+            // teleports the point), swallowing the click that should start continuous drawing.
+            const rawPoint = endpointLive ?? draggingEndpoint.origin;
+            const moved = Math.hypot(rawPoint.x - draggingEndpoint.origin.x, rawPoint.z - draggingEndpoint.origin.z) > 0.12;
             if (!moved && !attached && onFreeEndpointClick) {
               // A plain click (no real drag) on a FREE endpoint — continuous drawing: pick up
               // a new wall segment exactly where this free end left off.
               startContinuousDraw(wall.id, draggingEndpoint.end, draggingEndpoint.origin);
-            } else if (finalPoint) {
+            } else if (moved && finalPoint) {
               onInteriorWallEndpointChange?.(wall.id, draggingEndpoint.end, finalPoint, endpointSnap);
             }
           }
@@ -600,8 +743,16 @@ export function FloorPlanPreview({
 
         return (
           <g key={wall.id}>
-            <line x1={start.x} y1={start.z} x2={end.x} y2={end.z} stroke="var(--color-text)" strokeWidth={WALL_STROKE} strokeLinecap="square" />
-            {(onInteriorWallRemove || onInteriorWallClick) && (
+            <line
+              x1={start.x}
+              y1={start.z}
+              x2={end.x}
+              y2={end.z}
+              stroke={selectedInteriorWallId === wall.id ? 'var(--color-accent)' : 'var(--color-text)'}
+              strokeWidth={Math.max(wall.thickness ?? WALL_STROKE, 0.07)}
+              strokeLinecap="square"
+            />
+            {(onInteriorWallRemove || onInteriorWallClick || onInteriorWallDrag) && (
               <line
                 x1={start.x}
                 y1={start.z}
@@ -609,34 +760,80 @@ export function FloorPlanPreview({
                 y2={end.z}
                 stroke="transparent"
                 strokeWidth={0.5}
-                style={{ cursor: 'pointer', touchAction: 'none' }}
-                onPointerEnter={() => setHoveredInteriorWall(wall.id)}
-                onPointerLeave={() => setHoveredInteriorWall((cur) => (cur === wall.id ? null : cur))}
-                onClick={() => {
-                  if (!onInteriorWallClick) return;
-                  const reason = onInteriorWallClick(wall.id);
-                  if (reason) flashRejection(undefined, reason);
+                // Press-and-hold directly on the wall moves it — same "no icon to hunt for"
+                // gesture as the boundary edge above. A wall pinned to the boundary on BOTH
+                // ends has nothing that could move (its own endpoint handles still do that
+                // job individually), so pressing it there is left as a plain select instead.
+                style={{
+                  cursor: drawStart
+                    ? 'crosshair'
+                    : onInteriorWallDrag && !(isEndpointAttached?.(wall.id, 'start') && isEndpointAttached?.(wall.id, 'end'))
+                      ? 'move'
+                      : 'pointer',
+                  touchAction: 'none',
+                }}
+                onPointerDown={(e) => {
+                  if (
+                    drawStart ||
+                    !onInteriorWallDrag ||
+                    (isEndpointAttached?.(wall.id, 'start') && isEndpointAttached?.(wall.id, 'end'))
+                  ) {
+                    return;
+                  }
+                  const len = Math.hypot(dx, dz) || 1;
+                  beginDrag(e, {
+                    kind: 'interiorWall',
+                    id: wall.id,
+                    startX: e.clientX,
+                    startY: e.clientY,
+                    scale: pxScale(),
+                    normal: { x: dz / len, z: -dx / len },
+                  });
+                  onInteriorWallDragStart?.(wall.id);
+                }}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                onClick={(e) => {
+                  // Post-drag clicks (movedRef) and mid-draw clicks fall through — the
+                  // latter must reach the canvas as the draw gesture's end click.
+                  if (movedRef.current || drawStart) return;
+                  if (onInteriorWallClick) {
+                    e.stopPropagation();
+                    const reason = onInteriorWallClick(wall.id);
+                    if (reason) flashRejection(undefined, reason);
+                  }
                 }}
               />
             )}
-            {isHovered && onInteriorWallRemove && (
+            {/* Always visible (never hover-gated): a hover-revealed button that sits this
+                close to its own hover zone unmounts under the cursor on approach, and the
+                click that was meant for it falls through to the canvas — which now starts
+                drawing a wall. Hidden mid-draw so the end click can't hit it either. */}
+            {onInteriorWallRemove && !drawStart && (
               <g
-                transform={`translate(${midX - dz * 0.06} ${midZ + dx * 0.06})`}
+                transform={`translate(${midX - dz * 0.09} ${midZ + dx * 0.09})`}
                 style={{ cursor: 'pointer' }}
-                onClick={() => onInteriorWallRemove(wall.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onInteriorWallRemove(wall.id);
+                }}
               >
-                <circle r={0.13} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.02} />
-                <path d="M-0.06,-0.06 L0.06,0.06 M0.06,-0.06 L-0.06,0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+                <circle r={0.09} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.015} />
+                <path d="M-0.042,-0.042 L0.042,0.042 M0.042,-0.042 L-0.042,0.042" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
               </g>
             )}
-            {onInteriorWallSplit && (
+            {onInteriorWallSplit && !drawStart && (
               <g
                 transform={`translate(${midX + dz * 0.09} ${midZ - dx * 0.09})`}
                 style={{ cursor: 'pointer' }}
-                onClick={() => onInteriorWallSplit(wall.id)}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  onInteriorWallSplit(wall.id);
+                }}
               >
-                <circle r={0.13} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.02} />
-                <path d="M-0.06,0 H0.06 M0,-0.06 V0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+                <circle r={0.09} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.015} />
+                <path d="M-0.042,0 H0.042 M0,-0.042 V0.042" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
               </g>
             )}
             {onInteriorWallEndpointChange &&
@@ -681,23 +878,31 @@ export function FloorPlanPreview({
                         onPointerMove={handleEndpointMove}
                         onPointerUp={handleEndpointUp}
                         onPointerCancel={handleEndpointUp}
-                        // A plain click here (continuous-drawing start) must NOT also reach the
-                        // canvas's own click handler — left unstopped, that bubbled click gets
-                        // read as the draw gesture's SECOND click (at ~0 distance from where it
-                        // just started), which silently cancels the just-started draw.
-                        onClick={(e) => e.stopPropagation()}
+                        // If this press was handled here (drag or continuous-draw start), its
+                        // trailing click must never reach the canvas — see endpointPressRef.
+                        // A mid-draw press skips beginEndpointDrag entirely (ref stays false),
+                        // so THAT click bubbles through as the draw gesture's end click.
+                        onClick={(e) => {
+                          if (endpointPressRef.current) {
+                            endpointPressRef.current = false;
+                            e.stopPropagation();
+                          }
+                        }}
                       />
                     )}
                     {pinned && onInteriorWallEndpointDetach && (
                       <g
                         transform={`translate(${p.x + 0.4} ${p.z - 0.4})`}
                         style={{ cursor: 'pointer' }}
-                        onClick={() => onInteriorWallEndpointDetach(wall.id, endKey)}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          onInteriorWallEndpointDetach(wall.id, endKey);
+                        }}
                       >
-                        <circle r={0.13} fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth={0.025} />
+                        <circle r={0.09} fill="var(--color-surface)" stroke="var(--color-border)" strokeWidth={0.018} />
                         {/* Broken-link glyph: two short offset strokes, reads as "unlink". */}
-                        <path d="M-0.06,0.035 L0,-0.035" stroke="var(--color-text)" strokeWidth={0.03} strokeLinecap="round" />
-                        <path d="M0,0.035 L0.06,-0.035" stroke="var(--color-text)" strokeWidth={0.03} strokeLinecap="round" />
+                        <path d="M-0.042,0.025 L0,-0.025" stroke="var(--color-text)" strokeWidth={0.022} strokeLinecap="round" />
+                        <path d="M0,0.025 L0.042,-0.025" stroke="var(--color-text)" strokeWidth={0.022} strokeLinecap="round" />
                       </g>
                     )}
                   </g>
@@ -741,8 +946,9 @@ export function FloorPlanPreview({
                 textAnchor="middle"
                 dominantBaseline="middle"
                 style={{ cursor: onEdgeLengthChange ? 'text' : undefined }}
-                onClick={() => {
+                onClick={(e) => {
                   if (!onEdgeLengthChange) return;
+                  e.stopPropagation(); // editing a dimension is not a draw click
                   setEditValue(edge.length.toFixed(2));
                   setEditingEdge(i);
                 }}
@@ -776,7 +982,7 @@ export function FloorPlanPreview({
               x2={cx + dirX * halfW}
               y2={cz + dirZ * halfW}
               stroke={opening.kind === 'door' ? '#8b5e3c' : '#5b8fa8'}
-              strokeWidth={WALL_STROKE + 0.02}
+              strokeWidth={edge.thickness + 0.02}
               strokeLinecap="butt"
             />
             {(draggable || onOpeningRemove) && (
@@ -808,8 +1014,8 @@ export function FloorPlanPreview({
                 onPointerLeave={() => setHoveredOpening((cur) => (cur === i ? null : cur))}
                 onClick={() => onOpeningRemove(i)}
               >
-                <circle r={0.14} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.02} />
-                <path d="M-0.06,-0.06 L0.06,0.06 M0.06,-0.06 L-0.06,0.06" stroke="var(--color-surface)" strokeWidth={0.03} strokeLinecap="round" />
+                <circle r={0.1} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.015} />
+                <path d="M-0.045,-0.045 L0.045,0.045 M0.045,-0.045 L-0.045,0.045" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
               </g>
             )}
           </g>
@@ -835,20 +1041,30 @@ export function FloorPlanPreview({
                 cy={v.z}
                 r={0.34}
                 fill="transparent"
-                style={{ cursor: drawMode ? 'default' : 'move', touchAction: 'none' }}
+                style={{ cursor: drawStart ? 'default' : 'move', touchAction: 'none' }}
                 onPointerDown={(e) => {
-                  if (drawMode) return;
+                  if (drawStart) return;
                   beginDrag(e, { kind: 'vertex', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale() });
                   onVertexDragStart?.(i);
                 }}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
+                // Corner clicks bubble to the canvas on purpose: findSnap resolves them to a
+                // `vertex` host, so a wall started (or ended) here attaches to THIS existing
+                // corner — the draw-from-a-corner gesture — instead of inserting a duplicate.
               />
-              {onVertexRemove && !drawMode && (
-                <g transform={`translate(${rx} ${rz})`} style={{ cursor: 'pointer' }} onClick={() => onVertexRemove(i)}>
-                  <circle r={0.12} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.02} />
-                  <path d="M-0.05,-0.05 L0.05,0.05 M0.05,-0.05 L-0.05,0.05" stroke="var(--color-surface)" strokeWidth={0.028} strokeLinecap="round" />
+              {onVertexRemove && !drawStart && (
+                <g
+                  transform={`translate(${rx} ${rz})`}
+                  style={{ cursor: 'pointer' }}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    onVertexRemove(i);
+                  }}
+                >
+                  <circle r={0.09} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.015} />
+                  <path d="M-0.04,-0.04 L0.04,0.04 M0.04,-0.04 L-0.04,0.04" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
                 </g>
               )}
             </g>
@@ -868,7 +1084,7 @@ export function FloorPlanPreview({
           // the wall itself, which reads as "a door appeared" rather than "this click was
           // rejected". End margin + half-thickness both sit outside the wall's own box.
           const endMargin = 0.08;
-          const halfThick = WALL_STROKE / 2 + 0.08;
+          const halfThick = Math.max(edgeThicknesses?.[rejectedClick.edgeIndex!] ?? WALL_STROKE, 0.07) / 2 + 0.08;
           const sx = edge.start.x - dirX * endMargin;
           const sz = edge.start.z - dirZ * endMargin;
           const ex = edge.end.x + dirX * endMargin;
@@ -927,11 +1143,73 @@ export function FloorPlanPreview({
             )}
           </g>
         )}
+
+        {/* Hover affordance. In open space (or right on a corner): a plain "create a wall
+            from here" marker that follows the cursor — click starts a wall right there. Over
+            a wall's own line instead: a small tool menu — Draw (start a new branching wall
+            from this exact point) and — interior walls only — Delete (boundary walls have no
+            "delete" of their own; removing one IS removing a corner, already the corner
+            handle's × button). Moving the wall itself isn't here — it's a direct press-and-
+            hold on the wall body (see its hit-line above), no icon to find first. */}
+        {onWallDrawComplete &&
+          !drawStart &&
+          hoverPoint &&
+          (() => {
+            if (!hoverOnWall || !hoverSnap || hoverSnap.host === 'vertex') {
+              return (
+                <g transform={`translate(${hoverPoint.x} ${hoverPoint.z})`} style={{ pointerEvents: 'none' }}>
+                  {hoverSnap && (
+                    <circle r={0.13} fill="none" stroke="var(--color-accent)" strokeWidth={0.02} strokeDasharray="0.04 0.035" />
+                  )}
+                  <circle r={0.09} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.015} opacity={0.92} />
+                  <path d="M-0.042,0 H0.042 M0,-0.042 V0.042" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
+                </g>
+              );
+            }
+            const normal =
+              hoverSnap.host === 'boundary'
+                ? (edges[hoverSnap.edgeIndex]?.normal ?? { x: 0, z: 0 })
+                : (() => {
+                    const wall = interiorWalls.find((w) => w.id === hoverSnap.wallId);
+                    const wdx = (wall?.end.x ?? 0) - (wall?.start.x ?? 0);
+                    const wdz = (wall?.end.z ?? 0) - (wall?.start.z ?? 0);
+                    const wlen = Math.hypot(wdx, wdz) || 1;
+                    return { x: wdz / wlen, z: -wdx / wlen };
+                  })();
+            const snap_ = hoverSnap;
+            const point = snap_.point;
+            const canDelete = snap_.host === 'interior' && Boolean(onInteriorWallRemove);
+
+            function clearHover() {
+              setHoverPoint(null);
+              setHoverSnap(null);
+              setHoverOnWall(false);
+            }
+
+            return (
+              <WallToolMenu
+                point={point}
+                snap={snap_}
+                normal={normal}
+                canDelete={canDelete}
+                onDraw={() => {
+                  setDrawStart(point);
+                  setDrawEnd(point);
+                  setDrawStartSnap(snap_);
+                  menuAnchorRef.current = null;
+                  clearHover();
+                }}
+                onDelete={() => {
+                  if (snap_.host === 'interior') onInteriorWallRemove?.(snap_.wallId);
+                  menuAnchorRef.current = null;
+                  clearHover();
+                }}
+              />
+            );
+          })()}
       </svg>
-      {drawMode && (
-        <div className={styles.drawHint}>
-          {drawStart ? 'Click to place the wall’s end point — Esc to cancel' : 'Click to start a new wall'}
-        </div>
+      {drawStart && (
+        <div className={styles.drawHint}>Click to place the wall’s end — keep clicking to chain walls. Click the last point again (or Esc) to finish.</div>
       )}
       {editBox && editingEdge !== null && (
         <input

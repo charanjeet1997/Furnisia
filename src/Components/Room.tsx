@@ -45,9 +45,13 @@ export function Room() {
   // app's original fixed thickness / no interior walls.
   const wallThickness = room.wallThickness ?? 0.1;
   const interiorWalls = room.interiorWalls ?? [];
+  // Per-edge thickness (parallel to the edge list), falling back to the room default for
+  // edges without an entry and for rooms saved before per-wall thickness existed.
+  const edgeThicknesses = room.edgeThicknesses ?? [];
   const { camera, controls } = useThree();
 
   const edges = useMemo(() => computeEdges(vertices), [vertices]);
+  const edgeTh = (i: number) => edgeThicknesses[i] ?? wallThickness;
 
   // Ceiling-mounted fixture: a flush disc glowing via emissive material (visible regardless
   // of scene lighting) paired with a real point light just beneath it, so the room reads as
@@ -71,8 +75,11 @@ export function Room() {
 
   // Ceiling outline = room polygon grown to the walls' OUTER faces (walls are boxes centered
   // on the polygon line), so the slab sits flush with them — no gap/step seen from outside.
+  // With per-edge thickness the slab grows to the THICKEST wall's outer face (a slight
+  // overhang on thinner walls beats a visible gap on thicker ones).
   const ceilingShape = useMemo(() => {
-    const grown = offsetPolygon(vertices, wallThickness / 2);
+    const maxTh = Math.max(wallThickness, ...edgeThicknesses);
+    const grown = offsetPolygon(vertices, maxTh / 2);
     const shape = new Shape();
     grown.forEach((v, i) => {
       if (i === 0) shape.moveTo(v.x, -v.z);
@@ -80,7 +87,7 @@ export function Room() {
     });
     shape.closePath();
     return shape;
-  }, [vertices, wallThickness]);
+  }, [vertices, wallThickness, edgeThicknesses]);
 
   const wallMats = useMemo(
     () => edges.map(() => createClippedMaterial({ color: wallColor }, 0)),
@@ -214,17 +221,31 @@ export function Room() {
       />
 
       {edges.map((edge, edgeIndex) => {
-        const edgeOpenings = openings.filter((o) => o.edgeIndex === edgeIndex);
+        const th = edgeTh(edgeIndex);
+        const edgeOpenings = openings.filter((o) => !o.interiorWallId && o.edgeIndex === edgeIndex);
         const wallOpenings = edgeOpenings.map((o) => toWallOpening(o, edge.length));
         const segments = buildWallSegments(edge.length, height, wallOpenings);
+        // Corner fill: each wall box stops exactly at the polygon corner, so two thick walls
+        // meeting there leave an L-shaped notch on the outside. Extending this wall past each
+        // corner by the NEIGHBORING wall's half-thickness fills the notch (the overlap with
+        // the neighbor is invisible — same color, solid boxes).
+        const n = edges.length;
+        const extStart = edgeTh((edgeIndex - 1 + n) % n) / 2;
+        const extEnd = edgeTh((edgeIndex + 1) % n) / 2;
 
         return (
           <group key={`edge-${edgeIndex}`} position={[edge.midpoint.x, 0, edge.midpoint.z]} rotation={[0, edge.angle, 0]}>
             {segments.map((seg, si) => (
               <mesh key={si} position={[seg.centerX, seg.centerY, 0]} material={wallMats[edgeIndex]?.material} receiveShadow castShadow>
-                <boxGeometry args={[seg.width, seg.height, wallThickness]} />
+                <boxGeometry args={[seg.width, seg.height, th]} />
               </mesh>
             ))}
+            <mesh position={[-(edge.length + extStart) / 2, height / 2, 0]} material={wallMats[edgeIndex]?.material} receiveShadow castShadow>
+              <boxGeometry args={[extStart, height, th]} />
+            </mesh>
+            <mesh position={[(edge.length + extEnd) / 2, height / 2, 0]} material={wallMats[edgeIndex]?.material} receiveShadow castShadow>
+              <boxGeometry args={[extEnd, height, th]} />
+            </mesh>
 
             {edgeOpenings.map((opening) => {
               const globalIndex = openings.indexOf(opening);
@@ -238,7 +259,7 @@ export function Room() {
               if (leafCount === 1) {
                 return (
                   <mesh key={opening.edgeIndex + '-' + opening.offset} position={[wo.centerX, centerY, -PANEL_OFFSET]} material={mat?.material}>
-                    <boxGeometry args={[openingWidth, openingHeight, wallThickness * 0.5]} />
+                    <boxGeometry args={[openingWidth, openingHeight, th * 0.5]} />
                   </mesh>
                 );
               }
@@ -247,23 +268,25 @@ export function Room() {
               return (
                 <group key={opening.edgeIndex + '-' + opening.offset}>
                   <mesh position={[wo.centerX - openingWidth / 4 - LEAF_GAP / 4, centerY, -PANEL_OFFSET]} material={mat?.material}>
-                    <boxGeometry args={[leafWidth, openingHeight, wallThickness * 0.5]} />
+                    <boxGeometry args={[leafWidth, openingHeight, th * 0.5]} />
                   </mesh>
                   <mesh position={[wo.centerX + openingWidth / 4 + LEAF_GAP / 4, centerY, -PANEL_OFFSET]} material={mat?.material}>
-                    <boxGeometry args={[leafWidth, openingHeight, wallThickness * 0.5]} />
+                    <boxGeometry args={[leafWidth, openingHeight, th * 0.5]} />
                   </mesh>
                 </group>
               );
             })}
 
             {/* Baseboard for this edge — always visible, cut only around door openings
-                (windows sit well above floor level so they never need a cutout). */}
+                (windows sit well above floor level so they never need a cutout). Sits proud
+                of the wall's INNER face whatever this edge's thickness is — a fixed inset
+                would bury it inside anything thicker than the old default. */}
             {buildWallSegments(
               edge.length,
               BASEBOARD_HEIGHT,
               edgeOpenings.filter((o) => o.kind === 'door').map((o) => ({ ...toWallOpening(o, edge.length), top: BASEBOARD_HEIGHT })),
             ).map((seg, si) => (
-              <mesh key={`base-${si}`} position={[seg.centerX, seg.centerY, -BASEBOARD_INSET]}>
+              <mesh key={`base-${si}`} position={[seg.centerX, seg.centerY, -(th / 2 + BASEBOARD_DEPTH / 2 - BASEBOARD_INSET)]}>
                 <boxGeometry args={[seg.width, seg.height, BASEBOARD_DEPTH]} />
                 <meshStandardMaterial color={BASEBOARD_COLOR} />
               </mesh>
@@ -278,6 +301,7 @@ export function Room() {
           (unflipped — these aren't part of any polygon winding) so the rotation lines the box
           up with the wall direction exactly the same way boundary walls already do. */}
       {interiorWalls.map((wall, wallIndex) => {
+        const th = wall.thickness ?? wallThickness;
         const dx = wall.end.x - wall.start.x;
         const dz = wall.end.z - wall.start.z;
         const length = Math.hypot(dx, dz);
@@ -302,7 +326,7 @@ export function Room() {
                 receiveShadow
                 castShadow
               >
-                <boxGeometry args={[seg.width, seg.height, wallThickness]} />
+                <boxGeometry args={[seg.width, seg.height, th]} />
               </mesh>
             ))}
 
@@ -318,7 +342,7 @@ export function Room() {
               if (leafCount === 1) {
                 return (
                   <mesh key={opening.interiorWallId + '-' + opening.offset} position={[wo.centerX, centerY, -PANEL_OFFSET]} material={mat?.material}>
-                    <boxGeometry args={[openingWidth, openingHeight, wallThickness * 0.5]} />
+                    <boxGeometry args={[openingWidth, openingHeight, th * 0.5]} />
                   </mesh>
                 );
               }
@@ -327,10 +351,10 @@ export function Room() {
               return (
                 <group key={opening.interiorWallId + '-' + opening.offset}>
                   <mesh position={[wo.centerX - openingWidth / 4 - LEAF_GAP / 4, centerY, -PANEL_OFFSET]} material={mat?.material}>
-                    <boxGeometry args={[leafWidth, openingHeight, wallThickness * 0.5]} />
+                    <boxGeometry args={[leafWidth, openingHeight, th * 0.5]} />
                   </mesh>
                   <mesh position={[wo.centerX + openingWidth / 4 + LEAF_GAP / 4, centerY, -PANEL_OFFSET]} material={mat?.material}>
-                    <boxGeometry args={[leafWidth, openingHeight, wallThickness * 0.5]} />
+                    <boxGeometry args={[leafWidth, openingHeight, th * 0.5]} />
                   </mesh>
                 </group>
               );

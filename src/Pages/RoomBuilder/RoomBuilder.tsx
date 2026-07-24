@@ -52,13 +52,21 @@ export function RoomBuilder() {
   const [wallColor, setWallColor] = useState(initialRoom?.wallColor ?? DEFAULT_WALL_COLOR);
   const [floorColor, setFloorColor] = useState(initialRoom?.floorColor ?? DEFAULT_FLOOR_COLOR);
   const [height, setHeight] = useState(initialRoom?.height ?? DEFAULT_HEIGHT);
-  const [wallThickness, setWallThickness] = useState(initialRoom?.wallThickness ?? DEFAULT_WALL_THICKNESS);
+  const wallThickness = initialRoom?.wallThickness ?? DEFAULT_WALL_THICKNESS;
+  // Per-boundary-edge thickness, parallel to `vertices` — seeded from the saved room where
+  // present, falling back to the room's old single thickness for every edge otherwise (a
+  // room saved before per-wall thickness existed, or a fresh rectangle).
+  const [edgeThicknesses, setEdgeThicknesses] = useState<number[]>(
+    () => initialRoom?.edgeThicknesses ?? initialRoom?.vertices.map(() => wallThickness) ?? vertices.map(() => wallThickness),
+  );
   const [interiorWalls, setInteriorWalls] = useState<InteriorWall[]>(initialRoom?.interiorWalls ?? []);
 
   function handleShapeSelect(type: RoomShapeType) {
     setShapeType(type);
-    setVertices(generateVertices(type, SHAPE_DEFAULT_PARAMS[type]));
+    const next = generateVertices(type, SHAPE_DEFAULT_PARAMS[type]);
+    setVertices(next);
     setOpenings([]); // edge indices are shape-specific, so a shape change invalidates them
+    setEdgeThicknesses(next.map(() => wallThickness)); // a new shape has a whole new edge list
   }
 
   function handleFinish() {
@@ -79,10 +87,11 @@ export function RoomBuilder() {
       vertices: centerVertices(vertices),
       height,
       wallThickness,
+      edgeThicknesses,
       wallColor,
       floorColor,
       openings,
-      interiorWalls: interiorWalls.map((w) => ({ id: w.id, start: shift(w.start), end: shift(w.end) })),
+      interiorWalls: interiorWalls.map((w) => ({ ...w, start: shift(w.start), end: shift(w.end) })),
     });
     navigate('/planner');
   }
@@ -104,10 +113,12 @@ export function RoomBuilder() {
             onVerticesChange={setVertices}
             height={height}
             onHeightChange={setHeight}
-            wallThickness={wallThickness}
-            onWallThicknessChange={setWallThickness}
+            edgeThicknesses={edgeThicknesses}
+            onEdgeThicknessesChange={setEdgeThicknesses}
             interiorWalls={interiorWalls}
             onInteriorWallsChange={setInteriorWalls}
+            openings={openings}
+            onOpeningsChange={setOpenings}
           />
         )}
         {step === 2 && (

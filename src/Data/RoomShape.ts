@@ -25,6 +25,9 @@ export interface InteriorWall {
   id: string;
   start: RoomVertex;
   end: RoomVertex;
+  // Per-wall override; falls back to the room's `wallThickness` when absent (all walls did
+  // before thickness became editable per wall).
+  thickness?: number;
 }
 
 export interface RoomShape {
@@ -32,7 +35,12 @@ export interface RoomShape {
   name: string;
   vertices: RoomVertex[]; // ordered, closed polygon footprint
   height: number;
+  // Room-wide default thickness — the fallback for boundary edges without an
+  // `edgeThicknesses` entry and interior walls without their own `thickness`.
   wallThickness: number;
+  // Per-boundary-edge thickness, parallel to the edge list (edge i = vertices[i] →
+  // vertices[i+1]). Optional: rooms saved before per-wall thickness existed don't have it.
+  edgeThicknesses?: number[];
   wallColor: string;
   floorColor: string;
   openings: RoomOpening[];
