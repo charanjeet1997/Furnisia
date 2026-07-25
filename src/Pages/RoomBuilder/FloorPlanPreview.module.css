@@ -61,19 +61,108 @@
   pointer-events: none;
 }
 
-.drawHint {
+.drawOverlay {
   position: absolute;
-  bottom: 0.6rem;
+  top: 0.8rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 5;
-  padding: 0.4rem 0.85rem;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.4rem 0.6rem 0.4rem 0.9rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  box-shadow: var(--shadow-md);
+  pointer-events: auto;
+  max-width: calc(100% - 2rem);
+}
+
+.drawHint {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+  white-space: nowrap;
+}
+
+.drawActions {
+  display: flex;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.drawDoneButton {
+  min-height: 38px;
+  padding: 0.4rem 0.95rem;
   border-radius: var(--radius-pill);
   background: var(--color-accent);
   color: var(--color-on-accent);
-  font-size: 0.78rem;
-  font-weight: 600;
-  white-space: nowrap;
+  border: none;
+  font-size: 0.82rem;
+  font-weight: 700;
+  cursor: pointer;
   box-shadow: var(--shadow-sm);
-  pointer-events: none;
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  pointer-events: auto;
+}
+
+.drawDoneButton:hover {
+  background: var(--color-accent-hover);
+}
+
+.drawCancelButton {
+  min-height: 38px;
+  padding: 0.4rem 0.75rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  font-size: 0.82rem;
+  font-weight: 600;
+  cursor: pointer;
+  pointer-events: auto;
+}
+
+.drawCancelButton:hover {
+  background: var(--color-bg);
+  color: var(--color-danger);
+}
+
+.mobileStopFloatingBar {
+  position: absolute;
+  bottom: 1.2rem;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 200;
+  pointer-events: auto;
+}
+
+.mobileStopButton {
+  min-height: 46px;
+  padding: 0.65rem 1.5rem;
+  border-radius: var(--radius-pill);
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border: 1px solid var(--color-accent);
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.25);
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: auto;
+  white-space: nowrap;
+}
+
+.mobileStopButton:hover {
+  background: var(--color-accent-hover);
+}
+
+.stopIcon {
+  font-size: 1.1rem;
+  font-weight: 800;
 }

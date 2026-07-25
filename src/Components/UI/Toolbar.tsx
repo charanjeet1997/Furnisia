@@ -81,9 +81,7 @@ export function Toolbar() {
           <FiEdit2 />
           Edit room
         </button>
-      </div>
 
-      <div className={styles.topRightStack}>
         <ThemeToggle />
       </div>
 
