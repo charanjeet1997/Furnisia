@@ -25,6 +25,13 @@ export function useFloorPlanDrawing({ onFreeEndpointClick, onWallDrawCancel }: U
     onWallDrawCancel?.();
   }
 
+  function confirmDraw() {
+    setDrawStart(null);
+    setDrawEnd(null);
+    setDrawStartSnap(null);
+    setDrawEndSnap(null);
+  }
+
   function startContinuousDraw(wallId: string, end: 'start' | 'end', point: RoomVertex) {
     setDrawStart(point);
     setDrawEnd(point);
@@ -59,6 +66,7 @@ export function useFloorPlanDrawing({ onFreeEndpointClick, onWallDrawCancel }: U
     setHoverOnWall,
     menuAnchorRef,
     cancelDraw,
+    confirmDraw,
     startContinuousDraw,
   };
 }

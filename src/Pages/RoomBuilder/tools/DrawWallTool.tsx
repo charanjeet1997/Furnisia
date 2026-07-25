@@ -8,10 +8,10 @@ export const DrawWallTool: IWallTool = {
   cursor: 'crosshair',
   isAvailable: () => true,
   icon: (
-    <>
-      <circle r={0.13} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.015} />
-      <path d="M-0.042,0 H0.042 M0,-0.042 V0.042" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
-    </>
+    <g>
+      <circle r={0.18} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.02} />
+      <path d="M-0.06,0 H0.06 M0,-0.06 V0.06" stroke="var(--color-surface)" strokeWidth={0.028} strokeLinecap="round" />
+    </g>
   ),
   activate: (ctx) => {
     ctx.onDraw();

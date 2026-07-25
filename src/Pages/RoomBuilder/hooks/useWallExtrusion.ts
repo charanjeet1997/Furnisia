@@ -83,22 +83,24 @@ export function useWallExtrusion({
       const dx = wall.end.x - wall.start.x;
       const dz = wall.end.z - wall.start.z;
       const len = Math.hypot(dx, dz) || 1;
-      const nx = (dz / len) * 0.03;
-      const nz = (-dx / len) * 0.03;
+      const nx = (dz / len) * 0.05;
+      const nz = (-dx / len) * 0.05;
 
-      for (const t of [0.2, 0.5, 0.8]) {
+      for (const t of [0.5, 0.3, 0.7]) {
         const sx = wall.start.x + dx * t;
         const sz = wall.start.z + dz * t;
+        const inMid = pointInPolygon(vertices, sx, sz);
         const inSideA = pointInPolygon(vertices, sx + nx, sz + nz);
         const inSideB = pointInPolygon(vertices, sx - nx, sz - nz);
-        console.log(`[ExtrusionCheck] Wall ${wall.id} @ t=${t}: sideA(in)=${inSideA}, sideB(in)=${inSideB}`);
-        if (inSideA && inSideB) {
-          continue; // Both sides inside -> interior partition
+        console.log(`[ExtrusionCheck] Wall ${wall.id} @ t=${t}: mid(in)=${inMid}, sideA(in)=${inSideA}, sideB(in)=${inSideB}`);
+
+        if (inMid || inSideA || inSideB) {
+          console.log(`[ExtrusionCheck] Wall ${wall.id} confirmed as INTERIOR PARTITION.`);
+          return false; // Inside room polygon -> interior partition
         }
-        console.log(`[ExtrusionCheck] Wall ${wall.id} detected as OUTSIDE polygon extension!`);
-        return true;
       }
-      return false;
+      console.log(`[ExtrusionCheck] Wall ${wall.id} detected as genuine OUTSIDE polygon extension!`);
+      return true;
     });
 
     if (!isExtension) {

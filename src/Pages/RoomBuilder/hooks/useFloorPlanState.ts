@@ -158,13 +158,17 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     const snapped = findSnap(p);
     const snapDist = snapped ? Math.hypot(p.x - snapped.point.x, p.z - snapped.point.z) : Infinity;
 
-    // Mobile / Tablet Touch Optimization:
-    // On touch devices, tapping a wall triggers hoverPoint & hoverSnap so WallToolMenu (+/x) pops up!
-    if (snapped && snapped.host !== 'vertex' && snapDist < WALL_HOVER_DISTANCE * 1.5) {
+    // Tapping anywhere (wall or open space) triggers hoverPoint so WallToolMenu (+) pops up!
+    if (snapped) {
       drawing.menuAnchorRef.current = snapped.point;
       drawing.setHoverPoint(snapped.point);
       drawing.setHoverSnap(snapped);
-      drawing.setHoverOnWall(true);
+      drawing.setHoverOnWall(snapped.host !== 'vertex');
+    } else {
+      drawing.menuAnchorRef.current = p;
+      drawing.setHoverPoint(p);
+      drawing.setHoverSnap(null);
+      drawing.setHoverOnWall(false);
     }
 
     if (!snapped || snapped.host === 'vertex' || snapDist >= WALL_HOVER_DISTANCE) return;
@@ -201,10 +205,10 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     if (!drawing.drawStart) {
       const p = clientToSvgPoint(e.clientX, e.clientY);
       const snapped = findSnap(p);
-      drawing.setDrawStart(snapped?.point ?? p);
-      drawing.setDrawStartSnap(snapped);
-      drawing.setHoverPoint(null);
-      drawing.setHoverSnap(null);
+      drawing.menuAnchorRef.current = snapped?.point ?? p;
+      drawing.setHoverPoint(snapped?.point ?? p);
+      drawing.setHoverSnap(snapped);
+      drawing.setHoverOnWall(Boolean(snapped && snapped.host !== 'vertex'));
       return;
     }
     const p = clientToSvgPoint(e.clientX, e.clientY);

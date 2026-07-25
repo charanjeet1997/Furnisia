@@ -73,9 +73,7 @@ export function StepDimensions(props: StepDimensionsProps) {
           onFreeEndpointClick={state.interiorActions.handleFreeEndpointClick}
           jointedEndpoints={state.jointMembers}
           onWallDrawComplete={state.interiorActions.addInteriorWall}
-          onWallDrawCancel={() => {
-            state.interiorActions.continuousFrom.current = null;
-          }}
+          onWallDrawCancel={state.interiorActions.cancelDrawSession}
         />
       </div>
     </div>

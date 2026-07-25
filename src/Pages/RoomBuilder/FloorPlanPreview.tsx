@@ -9,19 +9,11 @@ export function FloorPlanPreview(props: FloorPlanPreviewProps) {
   const state = useFloorPlanState(props);
 
   return (
-    <div style={{ position: 'relative', width: '100%', height: '100%' }}>
-      {state.pointer.rejectedClick && (
-        <div key={state.pointer.rejectedClick.token} className={styles.toast}>
-          {state.pointer.rejectedClick.message}
-        </div>
-      )}
-
-      <FloorPlanSvgCanvas props={props} state={state} />
-
+    <div className={styles.previewContainer}>
       {state.drawing.drawStart && (
-        <div className={styles.mobileStopFloatingBar} onPointerDown={(e) => e.stopPropagation()}>
+        <div className={styles.canvasHeader} onPointerDown={(e) => e.stopPropagation()}>
           <div className={styles.drawHintText}>
-            Tap where you want the wall segment to go
+            Tap points to draw wall • Tap Finish when done
           </div>
           <div className={styles.drawActions}>
             <button
@@ -29,7 +21,7 @@ export function FloorPlanPreview(props: FloorPlanPreviewProps) {
               className={styles.mobileStopButton}
               onClick={(e) => {
                 e.stopPropagation();
-                state.drawing.cancelDraw();
+                state.drawing.confirmDraw();
               }}
             >
               <span className={styles.stopIcon}>✓</span>
@@ -49,8 +41,17 @@ export function FloorPlanPreview(props: FloorPlanPreviewProps) {
         </div>
       )}
 
-      {state.editBox && state.pointer.editingEdge !== null && (
-        <input
+      <div className={styles.canvasBody}>
+        {state.pointer.rejectedClick && (
+          <div key={state.pointer.rejectedClick.token} className={styles.toast}>
+            {state.pointer.rejectedClick.message}
+          </div>
+        )}
+
+        <FloorPlanSvgCanvas props={props} state={state} />
+
+        {state.editBox && state.pointer.editingEdge !== null && (
+          <input
           autoFocus
           type="number"
           step="0.1"
@@ -80,6 +81,7 @@ export function FloorPlanPreview(props: FloorPlanPreviewProps) {
           }}
         />
       )}
+      </div>
     </div>
   );
 }

@@ -58,29 +58,29 @@ export function DimensionsSidebar({
 
   return (
     <div className={styles.controlsSection}>
-      <div style={{ display: 'flex', gap: '0.5rem', alignItems: 'center', marginBottom: '0.75rem' }}>
+      <div className={styles.sidebarHeader}>
         <button
           type="button"
           onClick={undo}
           disabled={!canUndo}
-          className={styles.secondaryBtn}
+          className={styles.undoBtn}
           title="Undo last edit"
-          style={{ display: 'inline-flex', alignItems: 'center', gap: '0.35rem', padding: '0.4rem 0.75rem' }}
         >
-          <FiRotateCcw size={14} /> Undo
+          <FiRotateCcw size={14} />
+          <span>Undo</span>
         </button>
 
-        <div className={styles.unitToggle} style={{ marginLeft: 'auto' }}>
+        <div className={styles.unitToggle}>
           <button
             type="button"
-            className={`${styles.unitBtn} ${units === 'm' ? styles.active : ''}`}
+            className={`${styles.unitBtn} ${units === 'm' ? styles.unitBtnActive : ''}`}
             onClick={() => onUnitsChange('m')}
           >
             Metric (m)
           </button>
           <button
             type="button"
-            className={`${styles.unitBtn} ${units === 'ft' ? styles.active : ''}`}
+            className={`${styles.unitBtn} ${units === 'ft' ? styles.unitBtnActive : ''}`}
             onClick={() => onUnitsChange('ft')}
           >
             Imperial (ft)

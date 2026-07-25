@@ -56,34 +56,42 @@ export function DrawPreviewLayer({
 
   return (
     <>
-      {drawStart && drawEnd && (
+      {drawStart && (
         <g>
-          <line
-            x1={drawStart.x}
-            y1={drawStart.z}
-            x2={drawEnd.x}
-            y2={drawEnd.z}
-            stroke="var(--color-accent)"
-            strokeWidth={0.05}
-            strokeDasharray="0.1 0.07"
-          />
-          <circle cx={drawStart.x} cy={drawStart.z} r={0.08} fill="var(--color-accent)" />
-          <circle cx={drawEnd.x} cy={drawEnd.z} r={0.09} fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth={0.035} />
-          <text
-            x={(drawStart.x + drawEnd.x) / 2}
-            y={(drawStart.z + drawEnd.z) / 2 - 0.18}
-            fontSize={0.22}
-            fill="var(--color-accent)"
-            stroke="none"
-            textAnchor="middle"
-          >
-            {formatLength(Math.hypot(drawEnd.x - drawStart.x, drawEnd.z - drawStart.z), units)}
-          </text>
-          {drawStartSnap && (
-            <circle cx={drawStart.x} cy={drawStart.z} r={0.16} fill="none" stroke="var(--color-accent)" strokeWidth={0.03} strokeDasharray="0.05 0.04" />
+          {drawEnd && (drawEnd.x !== drawStart.x || drawEnd.z !== drawStart.z) && (
+            <>
+              <line
+                x1={drawStart.x}
+                y1={drawStart.z}
+                x2={drawEnd.x}
+                y2={drawEnd.z}
+                stroke="var(--color-accent)"
+                strokeWidth={0.05}
+                strokeDasharray="0.1 0.07"
+              />
+              <circle cx={drawEnd.x} cy={drawEnd.z} r={0.12} fill="var(--color-surface)" stroke="var(--color-accent)" strokeWidth={0.035} />
+              <text
+                x={(drawStart.x + drawEnd.x) / 2}
+                y={(drawStart.z + drawEnd.z) / 2 - 0.18}
+                fontSize={0.22}
+                fill="var(--color-accent)"
+                stroke="none"
+                textAnchor="middle"
+              >
+                {formatLength(Math.hypot(drawEnd.x - drawStart.x, drawEnd.z - drawStart.z), units)}
+              </text>
+            </>
           )}
-          {drawEndSnap && (
-            <circle cx={drawEnd.x} cy={drawEnd.z} r={0.16} fill="none" stroke="var(--color-accent)" strokeWidth={0.03} strokeDasharray="0.05 0.04" />
+
+          {/* Prominent start circle dot for touch visibility */}
+          <circle cx={drawStart.x} cy={drawStart.z} r={0.2} fill="var(--color-accent)" opacity={0.35} />
+          <circle cx={drawStart.x} cy={drawStart.z} r={0.12} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.03} />
+
+          {drawStartSnap && (
+            <circle cx={drawStart.x} cy={drawStart.z} r={0.24} fill="none" stroke="var(--color-accent)" strokeWidth={0.03} strokeDasharray="0.05 0.04" />
+          )}
+          {drawEndSnap && drawEnd && (
+            <circle cx={drawEnd.x} cy={drawEnd.z} r={0.24} fill="none" stroke="var(--color-accent)" strokeWidth={0.03} strokeDasharray="0.05 0.04" />
           )}
         </g>
       )}
@@ -92,30 +100,21 @@ export function DrawPreviewLayer({
         !drawStart &&
         hoverPoint &&
         (() => {
-          if (!hoverOnWall || !hoverSnap || hoverSnap.host === 'vertex') {
-            return (
-              <g transform={`translate(${hoverPoint.x} ${hoverPoint.z})`} style={{ pointerEvents: 'none' }}>
-                {hoverSnap && (
-                  <circle r={0.13} fill="none" stroke="var(--color-accent)" strokeWidth={0.02} strokeDasharray="0.04 0.035" />
-                )}
-                <circle r={0.09} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.015} opacity={0.92} />
-                <path d="M-0.042,0 H0.042 M0,-0.042 V0.042" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
-              </g>
-            );
-          }
+          const snap_ = hoverSnap ?? ({ host: 'free', point: hoverPoint } as SnapTarget);
           const normal =
-            hoverSnap.host === 'boundary'
-              ? (edges[hoverSnap.edgeIndex]?.normal ?? { x: 0, z: 0 })
-              : (() => {
+            hoverSnap?.host === 'boundary'
+              ? (edges[hoverSnap.edgeIndex]?.normal ?? { x: 0, z: -1 })
+              : hoverSnap?.host === 'interior'
+              ? (() => {
                   const wall = interiorWalls.find((w) => w.id === hoverSnap.wallId);
                   const wdx = (wall?.end.x ?? 0) - (wall?.start.x ?? 0);
                   const wdz = (wall?.end.z ?? 0) - (wall?.start.z ?? 0);
                   const wlen = Math.hypot(wdx, wdz) || 1;
                   return { x: wdz / wlen, z: -wdx / wlen };
-                })();
-          const snap_ = hoverSnap;
-          const point = snap_.point;
-          const canDelete = snap_.host === 'interior' && Boolean(onInteriorWallRemove);
+                })()
+              : { x: 0, z: -1 };
+          const point = hoverPoint;
+          const canDelete = hoverSnap?.host === 'interior' && Boolean(onInteriorWallRemove);
 
           return (
             <WallToolMenu
@@ -126,12 +125,12 @@ export function DrawPreviewLayer({
               onDraw={() => {
                 setDrawStart(point);
                 setDrawEnd(point);
-                setDrawStartSnap(snap_);
+                setDrawStartSnap(hoverSnap);
                 menuAnchorRef.current = null;
                 clearHover();
               }}
               onDelete={() => {
-                if (snap_.host === 'interior') onInteriorWallRemove?.(snap_.wallId);
+                if (hoverSnap?.host === 'interior') onInteriorWallRemove?.(hoverSnap.wallId);
                 menuAnchorRef.current = null;
                 clearHover();
               }}

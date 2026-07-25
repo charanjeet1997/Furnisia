@@ -13,22 +13,28 @@ interface WallToolMenuProps {
 }
 
 export function WallToolMenu(props: WallToolMenuProps) {
+  const isFree = !props.snap || props.snap.host === 'free';
   const ctx: WallToolContext = props;
   const positionedTools = toolRunner.getPositionedTools(ctx);
 
   return (
     <g>
-      <circle cx={props.point.x} cy={props.point.z} r={0.06} fill="var(--color-accent)" style={{ pointerEvents: 'none' }} />
-      {positionedTools.map(({ tool, position }) => (
-        <g
-          key={tool.id}
-          transform={`translate(${position.x} ${position.z})`}
-          style={{ cursor: tool.cursor }}
-          onClick={(e) => toolRunner.execute(tool, ctx, e)}
-        >
-          {tool.icon}
-        </g>
-      ))}
+      {!isFree && (
+        <circle cx={props.point.x} cy={props.point.z} r={0.06} fill="var(--color-accent)" style={{ pointerEvents: 'none' }} />
+      )}
+      {positionedTools.map(({ tool, position }) => {
+        const pos = isFree ? props.point : position;
+        return (
+          <g
+            key={tool.id}
+            transform={`translate(${pos.x} ${pos.z})`}
+            style={{ cursor: tool.cursor }}
+            onClick={(e) => toolRunner.execute(tool, ctx, e)}
+          >
+            {tool.icon}
+          </g>
+        );
+      })}
     </g>
   );
 }
