@@ -250,6 +250,15 @@ export function StepDimensions({
   // chain's positions live would be a lot of machinery for it — dragging it detaches it
   // visually, same as dragging its endpoint away already does.
   const interiorDragStart = useRef<InteriorWall | null>(null);
+  // Every wall id ever created BY extrudeChainIntoBoundary (the "original edge, reborn as an
+  // interior wall" pieces). A preserved wall is ALSO attached to the boundary at both its
+  // outer ends by construction — which makes it look exactly like a fresh candidate for
+  // extrusion too. Without excluding these, the very next render would try to extrude the
+  // preserved chain right back into the boundary, producing a new preserved chain that's
+  // ALSO attached at both ends, forever — a real infinite loop (the "floor flickering, can't
+  // draw" bug). A ref, not state: it's only ever read/written inside the effect below, never
+  // needs to trigger a render itself.
+  const preservedWallIdsRef = useRef<Set<string>>(new Set());
 
   // Undo history: one entry per completed EDIT (drag gesture, add/remove wall, typed length,
   // drawing/removing an interior wall) — not per intermediate pointer-move, otherwise undo
@@ -684,17 +693,62 @@ export function StepDimensions({
     }
   }
 
-  // A chain of interior walls that bridges two ADJACENT boundary corners isn't a partition
-  // anymore — it's an alternate path between two points already on the room's outline, so it
-  // REPLACES the direct edge between them: the room's actual footprint grows (or notches) to
-  // follow the drawn path, and that area becomes real floor. (Chains spanning two NON-adjacent
-  // corners are left alone — replacing a whole run of unrelated edges is too ambiguous to do
-  // automatically.)
-  function mergeChainIntoBoundary(startIdx: number, endIdx: number, steps: { wallId: string; entryEnd: 'start' | 'end' }[]) {
+  // EXTRUDE, not merge: a chain of interior walls that bridges TWO BOUNDARY CORNERS (not
+  // necessarily adjacent — after one extrusion, the next one's endpoints often land on
+  // corners with others in between) becomes the room's new outer edge across that whole
+  // span (the enclosed area — old room + the new bulge — becomes one continuous floor). The
+  // ORIGINAL edges being replaced are kept too — each reborn as its own interior wall at
+  // its exact original position, chained together at their old shared corners — an internal
+  // partition run inside the bigger footprint instead of being deleted. Both the old walls'
+  // points and the new wall's floor survive.
+  //
+  // Only ever replaces the SHORTER of the two arcs between the two corners — and that arc
+  // can WRAP past the end of the vertex list back to index 0 (e.g. bottom-left back to
+  // top-left, in a typical clockwise room, is index n-1 back to 0 — the short way — not the
+  // "long way" through every other corner). All the index arithmetic below is modulo n for
+  // exactly that reason.
+  //
+  // Returns whether it actually extruded — a self-intersecting path, or a span with a
+  // corner some OTHER wall still depends on, is left alone; the caller needs to know which
+  // happened so it can keep scanning the rest instead of stopping after one non-extrudable
+  // candidate.
+  function extrudeChainIntoBoundary(startIdx: number, endIdx: number, steps: { wallId: string; entryEnd: 'start' | 'end' }[]): boolean {
+    if (startIdx === endIdx) return false;
     const n = vertices.length;
-    const forwardAdjacent = (endIdx - startIdx + n) % n === 1;
-    const backwardAdjacent = (startIdx - endIdx + n) % n === 1;
-    if (!forwardAdjacent && !backwardAdjacent) return;
+    const mergedIds = new Set(steps.map((s) => s.wallId));
+
+    // Two possible arcs between the corners going around the polygon; take the shorter one
+    // (fewer edges) — the new path is assumed to bulge out from the near side, not loop all
+    // the way around the far side of the room.
+    const forwardLen = (endIdx - startIdx + n) % n; // edges walking forward (wrapping) startIdx -> endIdx
+    const goForward = forwardLen * 2 <= n;
+    const runFrom = goForward ? startIdx : endIdx;
+    const runTo = goForward ? endIdx : startIdx;
+    const runLength = goForward ? forwardLen : n - forwardLen;
+    // Whether the chain (as originally walked, startIdx -> endIdx) begins at runFrom — if
+    // not, `newPoints` below needs reversing to read runFrom-side -> runTo-side instead.
+    const bulgeStartsAtRunFrom = startIdx === runFrom;
+
+    // The ORIGINAL vertex indices in the run, walking forward with wraparound from runFrom
+    // to runTo — e.g. [5, 0] for the wraparound bottom-left(5) -> top-left(0) edge in a
+    // 6-vertex room.
+    const runIndices: number[] = [];
+    for (let k = 0; k <= runLength; k++) runIndices.push((runFrom + k) % n);
+    const runEdgeIndices = runIndices.slice(0, -1); // edge i = vertices[i] -> vertices[(i+1)%n]
+    const interiorIndices = runIndices.slice(1, -1); // run's own corners, strictly between the two ends
+    const interiorSet = new Set(interiorIndices);
+
+    // A corner strictly inside the run is about to stop existing on the boundary (the run
+    // gets chamfered/replaced). Any OTHER wall (e.g. a partition, or a wall preserved by an
+    // earlier extrude) attached at that corner must be DETACHED from it — it keeps its own
+    // stored coordinates and just becomes a free interior point there, so cutting across a
+    // corner is allowed (extrude-from-anywhere) instead of refused.
+    const toDetach: { wallId: string; end: 'start' | 'end' }[] = [];
+    for (const [wallId, att] of Object.entries(attachments)) {
+      if (mergedIds.has(wallId)) continue;
+      if (att.start && interiorSet.has(att.start.vertexIndex)) toDetach.push({ wallId, end: 'start' });
+      if (att.end && interiorSet.has(att.end.vertexIndex)) toDetach.push({ wallId, end: 'end' });
+    }
 
     const newPoints = steps
       .map((s) => {
@@ -705,37 +759,86 @@ export function StepDimensions({
       })
       .filter((p): p is RoomVertex => p !== null);
     newPoints.pop(); // last point is the terminal boundary vertex — already in `vertices`
+    const orderedNewPoints = bulgeStartsAtRunFrom ? newPoints : [...newPoints].reverse();
 
-    const orderedNewPoints = forwardAdjacent ? newPoints : [...newPoints].reverse();
-    const insertAt = forwardAdjacent ? startIdx + 1 : endIdx + 1;
-    const nextVertices = [...vertices.slice(0, insertAt), ...orderedNewPoints, ...vertices.slice(insertAt)];
-    if (!edgesValid(nextVertices)) return; // would self-intersect — leave it as an unmerged partition
+    // Build the new vertex list by keeping every vertex NOT strictly inside the run (in
+    // original circular order — this alone correctly handles the wraparound case, since a
+    // plain index filter doesn't care where the array "starts"), then inserting the bulge
+    // right after runFrom's new position.
+    const keptVertices: RoomVertex[] = [];
+    const oldToKeptIndex = new Map<number, number>();
+    for (let i = 0; i < n; i++) {
+      if (interiorSet.has(i)) continue;
+      oldToKeptIndex.set(i, keptVertices.length);
+      keptVertices.push(vertices[i]);
+    }
+    const insertAt = oldToKeptIndex.get(runFrom)! + 1;
+    const nextVertices = [...keptVertices.slice(0, insertAt), ...orderedNewPoints, ...keptVertices.slice(insertAt)];
+    if (!edgesValid(nextVertices)) return false; // would self-intersect — leave it as an unmerged partition
 
-    const mergedIds = new Set(steps.map((s) => s.wallId));
+    // Where an old (kept, non-run) vertex/edge index ends up in the new numbering.
+    const shift = (oldIdx: number): number => {
+      const kept = oldToKeptIndex.get(oldIdx)!;
+      return kept >= insertAt ? kept + orderedNewPoints.length : kept;
+    };
+
+    const oldThicknesses = normalizedThicknesses();
+    const preservedThicknesses = runEdgeIndices.map((i) => oldThicknesses[i]);
+
     pushHistory();
     onVerticesChange(nextVertices);
-    onInteriorWallsChange(interiorWalls.filter((w) => !mergedIds.has(w.id)));
 
-    // Openings: the direct edge being replaced no longer exists as a straight wall, and the
-    // merged chain walls become boundary edges with new numbering — openings on either would
-    // point at geometry that's gone, so they're dropped; everything past the insertion
-    // renumbers to keep pointing at its own wall.
-    const replacedEdge = insertAt - 1;
+    const nextThicknesses = new Array<number>(nextVertices.length).fill(DEFAULT_WALL_THICKNESS);
+    for (let i = 0; i < n; i++) {
+      if (interiorSet.has(i) || runEdgeIndices.includes(i)) continue;
+      nextThicknesses[shift(i)] = oldThicknesses[i];
+    }
+    for (let k = insertAt; k <= insertAt + orderedNewPoints.length; k++) nextThicknesses[k] = preservedThicknesses[0] ?? DEFAULT_WALL_THICKNESS;
+    onEdgeThicknessesChange(nextThicknesses);
+
+    // Each ORIGINAL edge in the replaced run is reborn as its own interior wall at its exact
+    // original position, chained to its neighbors at their old shared corners.
+    const preservedIds = runEdgeIndices.map(() => crypto.randomUUID());
+    for (const id of preservedIds) preservedWallIdsRef.current.add(id);
+    const preservedWalls: InteriorWall[] = preservedIds.map((id, k) => ({
+      id,
+      start: vertices[runIndices[k]],
+      end: vertices[runIndices[k + 1]],
+      thickness: preservedThicknesses[k],
+    }));
+    onInteriorWallsChange([...interiorWalls.filter((w) => !mergedIds.has(w.id)), ...preservedWalls]);
+
+    // Openings: the chain walls' own openings are dropped (that geometry is gone). One that
+    // was on an original edge inside the run moves onto that edge's preserved wall instead —
+    // same start/end, so its offset needs no rebasing. Everything else just renumbers.
     onOpeningsChange(
       openings
-        .filter((o) => !(o.interiorWallId && mergedIds.has(o.interiorWallId)) && !(!o.interiorWallId && o.edgeIndex === replacedEdge))
-        .map((o) => (!o.interiorWallId && o.edgeIndex > replacedEdge ? { ...o, edgeIndex: o.edgeIndex + orderedNewPoints.length } : o)),
+        .filter((o) => !(o.interiorWallId && mergedIds.has(o.interiorWallId)))
+        .map((o) => {
+          if (o.interiorWallId) return o;
+          const runPos = runEdgeIndices.indexOf(o.edgeIndex);
+          if (runPos !== -1) return { ...o, edgeIndex: -1, interiorWallId: preservedIds[runPos] };
+          return { ...o, edgeIndex: shift(o.edgeIndex) };
+        }),
     );
 
     setAttachments((prev) => {
       const next: Attachments = {};
       for (const [wallId, att] of Object.entries(prev)) {
         if (mergedIds.has(wallId)) continue;
-        const shift = (a?: WallAttachment) =>
-          a ? { vertexIndex: a.vertexIndex >= insertAt ? a.vertexIndex + orderedNewPoints.length : a.vertexIndex } : undefined;
-        const shifted = { start: shift(att.start), end: shift(att.end) };
+        // Detach ends that were pinned to an interior corner leaving the boundary (see
+        // toDetach above) — the shift() function has no mapping for a removed vertex anyway.
+        const dropStart = toDetach.some((d) => d.wallId === wallId && d.end === 'start');
+        const dropEnd = toDetach.some((d) => d.wallId === wallId && d.end === 'end');
+        const shiftAtt = (a: WallAttachment | undefined, drop: boolean) => (a && !drop ? { vertexIndex: shift(a.vertexIndex) } : undefined);
+        const shifted = { start: shiftAtt(att.start, dropStart), end: shiftAtt(att.end, dropEnd) };
         if (shifted.start || shifted.end) next[wallId] = shifted;
       }
+      // The two OUTER ends of the preserved chain attach to the same corners the run's own
+      // ends always had; nothing marks the INNER joints between preserved walls as boundary
+      // attachments (setJoints below links them to each other instead).
+      next[preservedIds[0]] = { ...next[preservedIds[0]], start: { vertexIndex: shift(runFrom) } };
+      next[preservedIds[preservedIds.length - 1]] = { ...next[preservedIds[preservedIds.length - 1]], end: { vertexIndex: shift(runTo) } };
       return next;
     });
 
@@ -745,23 +848,38 @@ export function StepDimensions({
         const filtered = members.filter((m) => !mergedIds.has(m.split(':')[0]));
         if (filtered.length >= 2) next[jointId] = filtered;
       }
+      // Chain the preserved walls together at their old shared corners.
+      for (let k = 1; k < preservedIds.length; k++) {
+        const a = `${preservedIds[k - 1]}:end`;
+        const b = `${preservedIds[k]}:start`;
+        next[crypto.randomUUID()] = [a, b];
+      }
       return next;
     });
+
+    return true;
   }
 
   // After every commit, check whether any boundary-attached endpoint now has a path — direct
-  // or through a chain of joints — back to ANOTHER boundary corner, and fold it into the
-  // footprint if so. Runs as an effect (not inline in the commit handlers) so it always sees
-  // the fully-settled attachments/joints/walls state, not a snapshot mid-update.
+  // or through a chain of joints — back to ANOTHER boundary corner, and extrude the footprint
+  // if so (keeping the original edge as a new interior wall — see extrudeChainIntoBoundary).
+  // Runs as an effect (not inline in the commit handlers) so it always sees the fully-settled
+  // attachments/joints/walls state, not a snapshot mid-update.
   useEffect(() => {
     for (const [wallId, att] of Object.entries(attachments)) {
+      // A wall PRESERVED by a previous extrude is attached at both ends by construction —
+      // it must never itself seed another extrude (see preservedWallIdsRef's own comment).
+      if (preservedWallIdsRef.current.has(wallId)) continue;
       for (const end of ['start', 'end'] as const) {
         const a = att[end];
         if (!a) continue;
         const result = walkChainToBoundary(wallId, end);
         if (!result || result.endBoundaryVertexIndex === a.vertexIndex) continue;
-        mergeChainIntoBoundary(a.vertexIndex, result.endBoundaryVertexIndex, result.steps);
-        return;
+        // Only stop once something ACTUALLY extruded — state really changed, so this effect
+        // re-runs on the new state anyway. A non-adjacent (or self-intersecting) candidate is
+        // a legitimate ordinary partition, not "handled" — keep scanning the rest instead of
+        // abandoning every other wall's chance this render.
+        if (extrudeChainIntoBoundary(a.vertexIndex, result.endBoundaryVertexIndex, result.steps)) return;
       }
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps

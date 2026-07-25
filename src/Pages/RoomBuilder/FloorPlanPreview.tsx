@@ -559,6 +559,64 @@ export function FloorPlanPreview({
           setHoverSnap(null);
           setHoverOnWall(false);
         }}
+        // Canvas-wide fallback for "press-and-hold a wall to move it": reuses the SAME
+        // findSnap proximity math that already reliably detects wall hover (proven by the
+        // Draw/Delete menu, which never fails to appear) instead of depending on each wall's
+        // own thin hit-line to catch the press — a per-element hit target is one more thing
+        // that can silently lose the race to whatever else is layered on top of it at that
+        // exact pixel; this can't, since it's plain distance math, not DOM hit-testing. Fires
+        // on bubbling AFTER any more specific child handler (corner/endpoint/opening), so if
+        // one of those already started a drag (dragRef.current set), this steps aside.
+        onPointerDown={(e) => {
+          if (drawStart || dragRef.current) {
+            console.log('[move] canvas pointerdown IGNORED — drawStart?', Boolean(drawStart), 'dragRef?', Boolean(dragRef.current));
+            return;
+          }
+          const p = clientToSvgPoint(e.clientX, e.clientY);
+          const snapped = findSnap(p);
+          console.log('[move] canvas pointerdown. snapped=', snapped ? `${snapped.host}${snapped.host === 'interior' ? ' ' + snapped.wallId.slice(0, 4) : ''} dist=${Math.hypot(p.x - snapped.point.x, p.z - snapped.point.z).toFixed(2)}` : 'null', 'WALL_HOVER_DISTANCE=', WALL_HOVER_DISTANCE);
+          if (!snapped || snapped.host === 'vertex') return;
+          if (Math.hypot(p.x - snapped.point.x, p.z - snapped.point.z) >= WALL_HOVER_DISTANCE) return;
+          if (snapped.host === 'boundary') {
+            if (!onEdgeDrag) return;
+            const normal = edges[snapped.edgeIndex]?.normal;
+            if (!normal) return;
+            beginDrag(e, { kind: 'edge', index: snapped.edgeIndex, startX: e.clientX, startY: e.clientY, scale: pxScale(), normal });
+            onEdgeDragStart?.(snapped.edgeIndex);
+            console.log('[move] canvas -> started BOUNDARY drag edge', snapped.edgeIndex);
+          } else {
+            if (!onInteriorWallDrag) {
+              console.log('[move] interior BLOCKED: no onInteriorWallDrag prop');
+              return;
+            }
+            const bothAttached = isEndpointAttached?.(snapped.wallId, 'start') && isEndpointAttached?.(snapped.wallId, 'end');
+            if (bothAttached) {
+              console.log('[move] interior BLOCKED: both ends attached to boundary');
+              return;
+            }
+            const wall = interiorWalls.find((w) => w.id === snapped.wallId);
+            if (!wall) {
+              console.log('[move] interior BLOCKED: wall not found', snapped.wallId.slice(0, 4));
+              return;
+            }
+            const wdx = wall.end.x - wall.start.x;
+            const wdz = wall.end.z - wall.start.z;
+            const wlen = Math.hypot(wdx, wdz) || 1;
+            beginDrag(e, {
+              kind: 'interiorWall',
+              id: snapped.wallId,
+              startX: e.clientX,
+              startY: e.clientY,
+              scale: pxScale(),
+              normal: { x: wdz / wlen, z: -wdx / wlen },
+            });
+            onInteriorWallDragStart?.(snapped.wallId);
+            console.log('[move] canvas -> started INTERIOR drag', snapped.wallId.slice(0, 4));
+          }
+        }}
+        onPointerMove={handlePointerMove}
+        onPointerUp={handlePointerUp}
+        onPointerCancel={handlePointerUp}
         onClick={(e) => {
           if (!onWallDrawComplete) return;
           // A click that ends a drag gesture (movedRef) must never double as a draw click —
@@ -659,6 +717,11 @@ export function FloorPlanPreview({
               <g
                 transform={`translate(${edge.midpoint.x - edge.normal.x * 0.3} ${edge.midpoint.z - edge.normal.z * 0.3})`}
                 style={{ cursor: 'pointer' }}
+                // Buttons this close to a wall sit well within the canvas-level drag
+                // fallback's catch radius — without stopping it here, PRESSING this button
+                // (before the click even fires) would bubble straight into "start dragging
+                // the wall" instead.
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   // Control buttons act on THIS element only — never fall through to the
                   // canvas click, which would read the same click as "start drawing a wall".
@@ -701,6 +764,10 @@ export function FloorPlanPreview({
           // this point), not the start of an endpoint drag — endpointPressRef stays false so
           // the click bubbles through to the canvas to commit the wall's end here.
           if (drawStart) return;
+          // This press is handled HERE (endpoint drag) — must not also bubble into the
+          // canvas-level "press-and-hold a wall to move it" fallback, which would otherwise
+          // try to start a whole-wall drag from the very same press.
+          e.stopPropagation();
           endpointPressRef.current = true;
           e.currentTarget.setPointerCapture(e.pointerId);
           const origin = end === 'start' ? wall.start : wall.end;
@@ -814,6 +881,7 @@ export function FloorPlanPreview({
               <g
                 transform={`translate(${midX - dz * 0.09} ${midZ + dx * 0.09})`}
                 style={{ cursor: 'pointer' }}
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation();
                   onInteriorWallRemove(wall.id);
@@ -827,6 +895,7 @@ export function FloorPlanPreview({
               <g
                 transform={`translate(${midX + dz * 0.09} ${midZ - dx * 0.09})`}
                 style={{ cursor: 'pointer' }}
+                onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => {
                   e.stopPropagation();
                   onInteriorWallSplit(wall.id);
@@ -894,6 +963,7 @@ export function FloorPlanPreview({
                       <g
                         transform={`translate(${p.x + 0.4} ${p.z - 0.4})`}
                         style={{ cursor: 'pointer' }}
+                        onPointerDown={(e) => e.stopPropagation()}
                         onClick={(e) => {
                           e.stopPropagation();
                           onInteriorWallEndpointDetach(wall.id, endKey);
@@ -1058,6 +1128,7 @@ export function FloorPlanPreview({
                 <g
                   transform={`translate(${rx} ${rz})`}
                   style={{ cursor: 'pointer' }}
+                  onPointerDown={(e) => e.stopPropagation()}
                   onClick={(e) => {
                     e.stopPropagation();
                     onVertexRemove(i);
