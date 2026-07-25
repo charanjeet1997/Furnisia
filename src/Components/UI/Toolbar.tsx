@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCopy, FiEdit2, FiMove, FiRotateCw, FiSave, FiTrash2 } from 'react-icons/fi';
 import { usePlannerStore } from '../../store/plannerStore';
@@ -12,10 +12,19 @@ function normalizeDegrees(deg: number) {
   return (((deg % 360) + 540) % 360) - 180;
 }
 
+const LightbulbIcon = () => (
+  <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1.3.5 2.6 1.5 3.5.8.8 1.3 1.5 1.5 2.5" />
+    <path d="M9 18h6" />
+    <path d="M10 22h4" />
+  </svg>
+);
+
 export function Toolbar() {
   const navigate = useNavigate();
   const { user } = useAuth();
   const room = usePlannerStore((state) => state.room);
+  const updateLightIntensity = usePlannerStore((state) => state.updateLightIntensity);
   const placedItems = usePlannerStore((state) => state.placedItems);
   const selectedId = usePlannerStore((state) => state.selectedId);
   const selectedItem = usePlannerStore((state) => state.placedItems.find((item) => item.id === state.selectedId));
@@ -26,6 +35,10 @@ export function Toolbar() {
   const selectItem = usePlannerStore((state) => state.selectItem);
   const updateItemTransform = usePlannerStore((state) => state.updateItemTransform);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [showLightPopover, setShowLightPopover] = useState(false);
+  const lightRef = useRef<HTMLDivElement>(null);
+
+  const lightIntensity = room.lightIntensity ?? 1.8;
 
   function handleEditRoom() {
     // Skips straight to the Dimensions (wall-editing) step — the room's shape already exists
@@ -59,11 +72,24 @@ export function Toolbar() {
         removeSelected();
       } else if (event.key === 'Escape') {
         selectItem(null);
+        setShowLightPopover(false);
       }
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);
   }, [removeSelected, selectItem]);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (lightRef.current && !lightRef.current.contains(e.target as Node)) {
+        setShowLightPopover(false);
+      }
+    }
+    if (showLightPopover) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, [showLightPopover]);
 
   return (
     <>
@@ -81,6 +107,35 @@ export function Toolbar() {
           <FiEdit2 />
           Edit room
         </button>
+
+        <div className={styles.lightControlWrapper} ref={lightRef}>
+          <button
+            type="button"
+            className={showLightPopover ? styles.lightButtonActive : styles.lightButton}
+            onClick={() => setShowLightPopover((prev) => !prev)}
+            title="Adjust Ceiling Light Intensity"
+            aria-label="Light Intensity"
+          >
+            <LightbulbIcon />
+          </button>
+          {showLightPopover && (
+            <div className={styles.lightPopover}>
+              <div className={styles.popoverHeader}>
+                <span>Light Intensity</span>
+                <span className={styles.popoverVal}>{Math.round((lightIntensity / 4) * 100)}%</span>
+              </div>
+              <input
+                type="range"
+                min="0"
+                max="4"
+                step="0.1"
+                value={lightIntensity}
+                onChange={(e) => updateLightIntensity(parseFloat(e.target.value))}
+                className={styles.popoverRange}
+              />
+            </div>
+          )}
+        </div>
 
         <ThemeToggle />
       </div>

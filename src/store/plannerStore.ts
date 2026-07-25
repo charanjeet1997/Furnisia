@@ -25,6 +25,7 @@ interface PlannerState {
   removeItem: (id: string) => void;
   removeSelected: () => void;
   setGizmoMode: (mode: GizmoMode) => void;
+  updateLightIntensity: (val: number) => void;
 }
 
 export const usePlannerStore = create<PlannerState>((set) => ({
@@ -34,6 +35,10 @@ export const usePlannerStore = create<PlannerState>((set) => ({
   gizmoMode: 'translate',
 
   setRoom: (room) => set({ room, placedItems: [], selectedId: null }),
+  updateLightIntensity: (val) =>
+    set((state) => ({
+      room: { ...state.room, lightIntensity: val },
+    })),
 
   // Restores a saved room (from Firestore) with its furniture intact, unlike setRoom which
   // always clears placedItems — used when a user loads one of their own saved rooms.

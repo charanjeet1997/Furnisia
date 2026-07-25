@@ -33,11 +33,20 @@ function toWallOpening(o: RoomOpening, edgeLength: number): WallOpening {
   return { centerX, width: o.width, bottom, top };
 }
 
-// Walls follow an arbitrary polygon (room.vertices) instead of a fixed rectangle. Each edge
-// gets its own <group> positioned/rotated so local +Z aligns with that edge's outward normal
-// (see polygonGeometry.computeEdges) — everything inside a wall's group (segments, door,
-// window) just uses simple local 1D coordinates along the edge, same as the old rectangle
-// code did, so buildWallSegments and the clip-material approach carry over unchanged.
+function computeRoomLightingGrid(vertices: RoomVertex[]) {
+  const bbox = boundingBox(vertices);
+  const totalW = bbox.maxX - bbox.minX || 1;
+  const totalH = bbox.maxZ - bbox.minZ || 1;
+
+  // Always return 4 balanced recessed lights placed across the room area
+  return [
+    { id: 'l1', x: bbox.minX + totalW * 0.3, z: bbox.minZ + totalH * 0.3 },
+    { id: 'l2', x: bbox.minX + totalW * 0.7, z: bbox.minZ + totalH * 0.3 },
+    { id: 'l3', x: bbox.minX + totalW * 0.3, z: bbox.minZ + totalH * 0.7 },
+    { id: 'l4', x: bbox.minX + totalW * 0.7, z: bbox.minZ + totalH * 0.7 },
+  ];
+}
+
 export function Room() {
   const room = usePlannerStore((state) => state.room);
   const { vertices, height, wallColor, floorColor, openings } = room;
@@ -53,12 +62,10 @@ export function Room() {
   const edges = useMemo(() => computeEdges(vertices), [vertices]);
   const edgeTh = (i: number) => edgeThicknesses[i] ?? wallThickness;
 
-  // Ceiling-mounted fixture: a flush disc glowing via emissive material (visible regardless
-  // of scene lighting) paired with a real point light just beneath it, so the room reads as
-  // lit from within instead of only by the outdoor-style directional "sun".
-  const center = useMemo(() => {
-    const bbox = boundingBox(vertices);
-    return { x: (bbox.minX + bbox.maxX) / 2, z: (bbox.minZ + bbox.maxZ) / 2 };
+  const lightIntensity = room.lightIntensity ?? 1.8;
+
+  const lightFixtures = useMemo(() => {
+    return computeRoomLightingGrid(vertices);
   }, [vertices]);
 
   const floorShape = useMemo(() => {
@@ -103,10 +110,10 @@ export function Room() {
   const ceilingMat = useMemo(() => createClippedMaterial({ color: wallColor }, 0), [wallColor]);
   // Fixture materials share the ceiling's cull test (same uniforms set in useFrame below) so
   // the light fixture fades away with the ceiling instead of floating with nothing above it.
-  const fixtureTrimMat = useMemo(() => createClippedMaterial({ color: '#c9c2b2', roughness: 0.6 }, 0), []);
+  const fixtureTrimMat = useMemo(() => createClippedMaterial({ color: '#88847b', roughness: 0.6 }, 0), []);
   const fixtureLensMat = useMemo(
-    () => createClippedMaterial({ color: '#fff6e0', emissive: '#fff6e0', emissiveIntensity: 0.6 }, 0),
-    [],
+    () => createClippedMaterial({ color: '#f5ebd5', emissive: '#ffeedd', emissiveIntensity: Math.min(0.8, lightIntensity * 0.15) }, 0),
+    [lightIntensity],
   );
   const openingMats = useMemo(
     () =>
@@ -202,23 +209,27 @@ export function Room() {
         <extrudeGeometry args={[ceilingShape, { depth: wallThickness, bevelEnabled: false }]} />
       </mesh>
 
-      {/* Ceiling light fixture: a flush-mount disc — dark trim ring flush against the
-          ceiling, with a smaller, dimmer lens recessed just below it — plus a real point
-          light for actual illumination. No rotation needed — cylinderGeometry's flat caps
-          already face up/down along Y by default. */}
-      <mesh position={[center.x, height - 0.012, center.z]} material={fixtureTrimMat.material}>
-        <cylinderGeometry args={[0.24, 0.24, 0.02, 32]} />
-      </mesh>
-      <mesh position={[center.x, height - 0.03, center.z]} material={fixtureLensMat.material}>
-        <cylinderGeometry args={[0.17, 0.17, 0.015, 32]} />
-      </mesh>
-      <pointLight
-        position={[center.x, height - 0.15, center.z]}
-        intensity={4}
-        distance={Math.max(height * 3, 8)}
-        decay={2}
-        color="#fff1d6"
-      />
+      {/* Ceiling light fixtures: 4 small recessed pot lights */}
+      {lightFixtures.map((fixture) => (
+        <group key={fixture.id}>
+          {/* Flush dark trim ring */}
+          <mesh position={[fixture.x, height - 0.01, fixture.z]} material={fixtureTrimMat.material}>
+            <cylinderGeometry args={[0.09, 0.09, 0.015, 24]} />
+          </mesh>
+          {/* Glowing lens disc */}
+          <mesh position={[fixture.x, height - 0.022, fixture.z]} material={fixtureLensMat.material}>
+            <cylinderGeometry args={[0.065, 0.065, 0.01, 24]} />
+          </mesh>
+          {/* Soft warm recessed pointLight */}
+          <pointLight
+            position={[fixture.x, height - 0.12, fixture.z]}
+            intensity={lightIntensity}
+            distance={Math.max(height * 2.5, 6.5)}
+            decay={2}
+            color="#ffeedd"
+          />
+        </group>
+      ))}
 
       {edges.map((edge, edgeIndex) => {
         const th = edgeTh(edgeIndex);

@@ -72,6 +72,70 @@
   border-color: var(--color-accent);
 }
 
+.lightControlWrapper {
+  position: relative;
+}
+
+.lightButton,
+.lightButtonActive {
+  width: 44px;
+  height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.lightButton:hover,
+.lightButtonActive {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: var(--color-accent);
+}
+
+.lightPopover {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  width: 180px;
+  padding: 0.75rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-md);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.popoverHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.popoverVal {
+  font-size: 0.75rem;
+  color: var(--color-accent);
+}
+
+.popoverRange {
+  width: 100%;
+  accent-color: var(--color-accent);
+  cursor: pointer;
+}
+
 .topRightStack {
   position: absolute;
   top: 1rem;

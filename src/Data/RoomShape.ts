@@ -45,6 +45,7 @@ export interface RoomShape {
   floorColor: string;
   openings: RoomOpening[];
   interiorWalls: InteriorWall[];
+  lightIntensity?: number;
 }
 
 export type RoomShapeType = 'rectangular' | 'l-shape' | 't-shape' | 'u-shape' | 'cut' | 'beveled';
