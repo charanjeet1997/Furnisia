@@ -1,6 +1,8 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import type { InteriorWall, RoomVertex } from '../../../../Data/RoomShape';
 import type { SnapTarget, DragState } from '../../types/floorPlanTypes';
+
+const DOUBLE_CLICK_WINDOW = 280;
 
 interface InteriorWallsLayerProps {
   interiorWalls: InteriorWall[];
@@ -12,6 +14,7 @@ interface InteriorWallsLayerProps {
   selectedInteriorWallId: string | null;
   onInteriorWallRemove?: (id: string) => void;
   onInteriorWallClick?: (id: string) => string | void;
+  onWallClickStartDraw?: (clientX: number, clientY: number) => void;
   onInteriorWallDrag?: (id: string, dx: number, dz: number) => void;
   onInteriorWallDragStart?: (id: string) => void;
   isEndpointAttached?: (wallId: string, end: 'start' | 'end') => boolean;
@@ -45,6 +48,7 @@ export function InteriorWallsLayer({
   selectedInteriorWallId,
   onInteriorWallRemove,
   onInteriorWallClick,
+  onWallClickStartDraw,
   onInteriorWallDrag,
   onInteriorWallDragStart,
   isEndpointAttached,
@@ -68,6 +72,8 @@ export function InteriorWallsLayer({
   flashRejection,
 }: InteriorWallsLayerProps) {
   const WALL_STROKE = 0.18;
+  const lastPointerTypeRef = useRef<string>('mouse');
+  const clickTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
 
   return (
     <>
@@ -150,6 +156,7 @@ export function InteriorWallsLayer({
                   touchAction: 'none',
                 }}
                 onPointerDown={(e) => {
+                  lastPointerTypeRef.current = e.pointerType;
                   if (drawStart || !onInteriorWallDrag) {
                     return;
                   }
@@ -169,11 +176,35 @@ export function InteriorWallsLayer({
                 onPointerCancel={handlePointerUp}
                 onClick={(e) => {
                   if (movedRef.current || drawStart) return;
-                  if (onInteriorWallClick) {
-                    e.stopPropagation();
-                    const reason = onInteriorWallClick(wall.id);
-                    if (reason) flashRejection(undefined, reason);
+                  // Touch/pen keeps tap-to-select (mobile reveals the delete/split menu via
+                  // hover state set on pointerDown). Mouse: single click starts a new wall,
+                  // double-click selects for thickness editing.
+                  if (lastPointerTypeRef.current !== 'mouse' || !onWallClickStartDraw) {
+                    if (onInteriorWallClick) {
+                      e.stopPropagation();
+                      const reason = onInteriorWallClick(wall.id);
+                      if (reason) flashRejection(undefined, reason);
+                    }
+                    return;
                   }
+                  e.stopPropagation();
+                  const pending = clickTimers.current.get(wall.id);
+                  if (pending) {
+                    clearTimeout(pending);
+                    clickTimers.current.delete(wall.id);
+                    if (onInteriorWallClick) {
+                      const reason = onInteriorWallClick(wall.id);
+                      if (reason) flashRejection(undefined, reason);
+                    }
+                    return;
+                  }
+                  const clientX = e.clientX;
+                  const clientY = e.clientY;
+                  const timer = setTimeout(() => {
+                    clickTimers.current.delete(wall.id);
+                    onWallClickStartDraw(clientX, clientY);
+                  }, DOUBLE_CLICK_WINDOW);
+                  clickTimers.current.set(wall.id, timer);
                 }}
               />
             )}

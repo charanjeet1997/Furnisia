@@ -54,6 +54,8 @@ export interface FloorPlanPreviewProps {
     endSnap: SnapTarget | null,
   ) => void;
   onWallDrawCancel?: () => void;
+  onWallDrawFinish?: () => void;
+  onDrawStateChange?: (state: { active: boolean; finish: () => void; cancel: () => void }) => void;
 }
 
 export const PAD = 1.1;

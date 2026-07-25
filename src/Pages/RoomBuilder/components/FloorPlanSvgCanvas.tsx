@@ -35,6 +35,7 @@ export function FloorPlanSvgCanvas({ props, state }: FloorPlanSvgCanvasProps) {
     handleCanvasMouseLeave,
     handleCanvasPointerDown,
     handleCanvasClick,
+    startWallDrawAt,
   } = state;
 
   return (
@@ -64,6 +65,7 @@ export function FloorPlanSvgCanvas({ props, state }: FloorPlanSvgCanvasProps) {
         onEdgeDragStart={props.onEdgeDragStart}
         onVertexDrag={props.onVertexDrag}
         onWallAdd={props.onWallAdd}
+        onWallClickStartDraw={props.onWallDrawComplete ? startWallDrawAt : undefined}
         beginDrag={pointer.beginDrag}
         handlePointerMove={pointer.handlePointerMove}
         handlePointerUp={pointer.handlePointerUp}
@@ -82,6 +84,7 @@ export function FloorPlanSvgCanvas({ props, state }: FloorPlanSvgCanvasProps) {
         selectedInteriorWallId={props.selectedInteriorWallId ?? null}
         onInteriorWallRemove={props.onInteriorWallRemove}
         onInteriorWallClick={props.onInteriorWallClick}
+        onWallClickStartDraw={props.onWallDrawComplete ? startWallDrawAt : undefined}
         onInteriorWallDrag={props.onInteriorWallDrag}
         onInteriorWallDragStart={props.onInteriorWallDragStart}
         isEndpointAttached={props.isEndpointAttached}

@@ -61,76 +61,6 @@
   pointer-events: none;
 }
 
-.drawOverlay {
-  position: absolute;
-  top: 0.8rem;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 100;
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  padding: 0.4rem 0.6rem 0.4rem 0.9rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  box-shadow: var(--shadow-md);
-  pointer-events: auto;
-  max-width: calc(100% - 2rem);
-}
-
-.drawHint {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text);
-  white-space: nowrap;
-}
-
-.drawActions {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.drawDoneButton {
-  min-height: 38px;
-  padding: 0.4rem 0.95rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  border: none;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  align-items: center;
-  gap: 0.25rem;
-  pointer-events: auto;
-}
-
-.drawDoneButton:hover {
-  background: var(--color-accent-hover);
-}
-
-.drawCancelButton {
-  min-height: 38px;
-  padding: 0.4rem 0.75rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-surface);
-  color: var(--color-text-muted);
-  border: 1px solid var(--color-border);
-  font-size: 0.82rem;
-  font-weight: 600;
-  cursor: pointer;
-  pointer-events: auto;
-}
-
-.drawCancelButton:hover {
-  background: var(--color-bg);
-  color: var(--color-danger);
-}
-
 .previewContainer {
   display: flex;
   flex-direction: column;
@@ -140,62 +70,10 @@
   overflow: hidden;
 }
 
-.canvasHeader {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0.5rem 0.75rem;
-  background: var(--color-surface);
-  border-bottom: 1px solid var(--color-border);
-  z-index: 20;
-  gap: 0.5rem;
-  flex-wrap: wrap;
-}
-
 .canvasBody {
   flex: 1;
   position: relative;
   width: 100%;
   height: 100%;
   min-height: 0;
-}
-
-.drawHintText {
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--color-text);
-  white-space: nowrap;
-}
-
-.drawActions {
-  display: flex;
-  align-items: center;
-  gap: 0.4rem;
-}
-
-.mobileStopButton {
-  min-height: 38px;
-  padding: 0.4rem 1rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
-  border: none;
-  font-size: 0.82rem;
-  font-weight: 700;
-  cursor: pointer;
-  box-shadow: var(--shadow-sm);
-  display: flex;
-  align-items: center;
-  gap: 0.3rem;
-  pointer-events: auto;
-  white-space: nowrap;
-}
-
-.mobileStopButton:hover {
-  background: var(--color-accent-hover);
-}
-
-.stopIcon {
-  font-size: 1.05rem;
-  font-weight: 800;
 }

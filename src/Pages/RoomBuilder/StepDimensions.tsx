@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FloorPlanPreview } from './FloorPlanPreview';
 import type { RoomOpening, RoomVertex, InteriorWall } from '../../Data/RoomShape';
 import styles from './RoomBuilder.module.css';
@@ -23,6 +23,7 @@ const MAX_HEIGHT = 6;
 
 export function StepDimensions(props: StepDimensionsProps) {
   const state = useStepDimensionsState(props);
+  const [drawState, setDrawState] = useState<{ active: boolean; finish: () => void; cancel: () => void } | null>(null);
 
   return (
     <div className={styles.dimensionsLayout}>
@@ -41,6 +42,9 @@ export function StepDimensions(props: StepDimensionsProps) {
         interiorWalls={props.interiorWalls}
         onEdgeThicknessesChange={props.onEdgeThicknessesChange}
         onInteriorWallsChange={props.onInteriorWallsChange}
+        isDrawingWall={drawState?.active ?? false}
+        onFinishWall={drawState?.finish}
+        onCancelWall={drawState?.cancel}
       />
       <div className={styles.previewPane}>
         <FloorPlanPreview
@@ -74,6 +78,8 @@ export function StepDimensions(props: StepDimensionsProps) {
           jointedEndpoints={state.jointMembers}
           onWallDrawComplete={state.interiorActions.addInteriorWall}
           onWallDrawCancel={state.interiorActions.cancelDrawSession}
+          onWallDrawFinish={state.interiorActions.confirmDrawSession}
+          onDrawStateChange={setDrawState}
         />
       </div>
     </div>

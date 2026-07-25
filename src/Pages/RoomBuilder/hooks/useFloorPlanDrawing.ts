@@ -5,9 +5,10 @@ import type { SnapTarget } from '../types/floorPlanTypes';
 interface UseFloorPlanDrawingProps {
   onFreeEndpointClick?: (wallId: string, end: 'start' | 'end', point: RoomVertex) => void;
   onWallDrawCancel?: () => void;
+  onWallDrawFinish?: () => void;
 }
 
-export function useFloorPlanDrawing({ onFreeEndpointClick, onWallDrawCancel }: UseFloorPlanDrawingProps) {
+export function useFloorPlanDrawing({ onFreeEndpointClick, onWallDrawCancel, onWallDrawFinish }: UseFloorPlanDrawingProps) {
   const [drawStart, setDrawStart] = useState<RoomVertex | null>(null);
   const [drawEnd, setDrawEnd] = useState<RoomVertex | null>(null);
   const [drawStartSnap, setDrawStartSnap] = useState<SnapTarget | null>(null);
@@ -30,6 +31,7 @@ export function useFloorPlanDrawing({ onFreeEndpointClick, onWallDrawCancel }: U
     setDrawEnd(null);
     setDrawStartSnap(null);
     setDrawEndSnap(null);
+    onWallDrawFinish?.();
   }
 
   function startContinuousDraw(wallId: string, end: 'start' | 'end', point: RoomVertex) {
@@ -41,8 +43,10 @@ export function useFloorPlanDrawing({ onFreeEndpointClick, onWallDrawCancel }: U
 
   useEffect(() => {
     if (!drawStart) return;
+    // Escape just exits draw mode — it keeps whatever walls were already placed in this
+    // session (unlike the Cancel button, which is a deliberate "throw this away" action).
     function onKeyDown(e: KeyboardEvent) {
-      if (e.key === 'Escape') cancelDraw();
+      if (e.key === 'Escape') confirmDraw();
     }
     window.addEventListener('keydown', onKeyDown);
     return () => window.removeEventListener('keydown', onKeyDown);

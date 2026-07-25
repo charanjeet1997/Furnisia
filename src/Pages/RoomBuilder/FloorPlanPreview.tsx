@@ -10,37 +10,6 @@ export function FloorPlanPreview(props: FloorPlanPreviewProps) {
 
   return (
     <div className={styles.previewContainer}>
-      {state.drawing.drawStart && (
-        <div className={styles.canvasHeader} onPointerDown={(e) => e.stopPropagation()}>
-          <div className={styles.drawHintText}>
-            Tap points to draw wall • Tap Finish when done
-          </div>
-          <div className={styles.drawActions}>
-            <button
-              type="button"
-              className={styles.mobileStopButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                state.drawing.confirmDraw();
-              }}
-            >
-              <span className={styles.stopIcon}>✓</span>
-              <span>Finish Wall</span>
-            </button>
-            <button
-              type="button"
-              className={styles.drawCancelButton}
-              onClick={(e) => {
-                e.stopPropagation();
-                state.drawing.cancelDraw();
-              }}
-            >
-              Cancel
-            </button>
-          </div>
-        </div>
-      )}
-
       <div className={styles.canvasBody}>
         {state.pointer.rejectedClick && (
           <div key={state.pointer.rejectedClick.token} className={styles.toast}>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import type { WallEdge } from '../../../../Components/polygonGeometry';
 import { edgeCursor, type DragState } from '../../types/floorPlanTypes';
 
@@ -13,6 +13,7 @@ interface BoundaryWallsLayerProps {
   onEdgeDragStart?: (edgeIndex: number) => void;
   onVertexDrag?: unknown;
   onWallAdd?: (edgeIndex: number) => void;
+  onWallClickStartDraw?: (clientX: number, clientY: number) => void;
   beginDrag: (e: React.PointerEvent<SVGElement>, state: DragState) => void;
   handlePointerMove: (e: React.PointerEvent<SVGElement>) => void;
   handlePointerUp: (e: React.PointerEvent<SVGElement>) => void;
@@ -20,6 +21,8 @@ interface BoundaryWallsLayerProps {
   pxScale: () => number;
   flashRejection: (edgeIndex: number | undefined, message: string) => void;
 }
+
+const DOUBLE_CLICK_WINDOW = 280;
 
 export function BoundaryWallsLayer({
   edges,
@@ -32,6 +35,7 @@ export function BoundaryWallsLayer({
   onEdgeDragStart,
   onVertexDrag,
   onWallAdd,
+  onWallClickStartDraw,
   beginDrag,
   handlePointerMove,
   handlePointerUp,
@@ -40,6 +44,8 @@ export function BoundaryWallsLayer({
   flashRejection,
 }: BoundaryWallsLayerProps) {
   const WALL_STROKE = 0.18;
+  const lastPointerTypeRef = useRef<string>('mouse');
+  const clickTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
 
   return (
     <>
@@ -73,6 +79,7 @@ export function BoundaryWallsLayer({
                 strokeWidth={0.65}
                 style={{ cursor: drawStart ? 'crosshair' : onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
                 onPointerDown={(e) => {
+                  lastPointerTypeRef.current = e.pointerType;
                   if (drawStart || !onEdgeDrag) return;
                   beginDrag(e, { kind: 'edge', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale(), normal: edge.normal });
                   onEdgeDragStart?.(i);
@@ -82,11 +89,35 @@ export function BoundaryWallsLayer({
                 onPointerCancel={handlePointerUp}
                 onClick={(e) => {
                   if (movedRef.current || drawStart) return;
-                  if (onEdgeClick) {
-                    e.stopPropagation();
-                    const reason = onEdgeClick(i);
-                    if (reason) flashRejection(i, reason);
+                  // Touch/pen keeps the old tap-to-select behavior (mobile reveals the +/delete
+                  // menu via hover state set on pointerDown instead). Mouse gets single-click =
+                  // start a new wall, double-click = select for thickness editing.
+                  if (lastPointerTypeRef.current !== 'mouse' || !onWallClickStartDraw) {
+                    if (onEdgeClick) {
+                      e.stopPropagation();
+                      const reason = onEdgeClick(i);
+                      if (reason) flashRejection(i, reason);
+                    }
+                    return;
                   }
+                  e.stopPropagation();
+                  const pending = clickTimers.current.get(i);
+                  if (pending) {
+                    clearTimeout(pending);
+                    clickTimers.current.delete(i);
+                    if (onEdgeClick) {
+                      const reason = onEdgeClick(i);
+                      if (reason) flashRejection(i, reason);
+                    }
+                    return;
+                  }
+                  const clientX = e.clientX;
+                  const clientY = e.clientY;
+                  const timer = setTimeout(() => {
+                    clickTimers.current.delete(i);
+                    onWallClickStartDraw(clientX, clientY);
+                  }, DOUBLE_CLICK_WINDOW);
+                  clickTimers.current.set(i, timer);
                 }}
               />
             )}

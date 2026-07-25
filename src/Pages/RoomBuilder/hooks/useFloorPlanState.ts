@@ -1,4 +1,4 @@
-import { useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { computeEdges, boundingBox } from '../../../Components/polygonGeometry';
 import type { RoomOpening, RoomVertex } from '../../../Data/RoomShape';
 import {
@@ -8,7 +8,6 @@ import {
   WALL_STROKE,
   DIM_OFFSET,
   WALL_HOVER_DISTANCE,
-  HOVER_MENU_RADIUS,
   snapDraw,
 } from '../types/floorPlanTypes';
 import { findSnapTarget } from './useFloorPlanSnapping';
@@ -33,7 +32,9 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     onEdgeLengthChange,
     onFreeEndpointClick,
     onWallDrawCancel,
+    onWallDrawFinish,
     onWallDrawComplete,
+    onDrawStateChange,
   } = props;
 
   const edges = computeEdges(vertices);
@@ -68,7 +69,13 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
   const drawing = useFloorPlanDrawing({
     onFreeEndpointClick,
     onWallDrawCancel,
+    onWallDrawFinish,
   });
+
+  useEffect(() => {
+    onDrawStateChange?.({ active: Boolean(drawing.drawStart), finish: drawing.confirmDraw, cancel: drawing.cancelDraw });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [drawing.drawStart]);
 
   const findSnap = (
     p: RoomVertex,
@@ -111,6 +118,20 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     return { x: snapDraw(p.x), z: snapDraw(p.y) };
   }
 
+  function startWallDrawAt(clientX: number, clientY: number) {
+    if (!onWallDrawComplete) return;
+    const p = clientToSvgPoint(clientX, clientY);
+    const snapped = findSnap(p);
+    const point = snapped?.point ?? p;
+    drawing.setDrawStart(point);
+    drawing.setDrawEnd(point);
+    drawing.setDrawStartSnap(snapped);
+    drawing.menuAnchorRef.current = null;
+    drawing.setHoverPoint(null);
+    drawing.setHoverSnap(null);
+    drawing.setHoverOnWall(false);
+  }
+
   let editBox: { left: number; top: number; angleDeg: number } | null = null;
   if (pointer.editingEdge !== null && edges[pointer.editingEdge]) {
     const edge = edges[pointer.editingEdge];
@@ -123,26 +144,15 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
   }
 
   function handleCanvasMouseMove(e: React.MouseEvent<SVGSVGElement>) {
+    // Only the live draw-preview (updating the in-progress wall's end point) uses mouse
+    // hover on desktop. Revealing the +/delete WallToolMenu from hover alone is mobile-only
+    // (touch reveals it via tap through handleCanvasPointerDown instead).
     if (drawing.drawStart) {
       const p = clientToSvgPoint(e.clientX, e.clientY);
       const snapped = findSnap(p);
       drawing.setDrawEnd(snapped?.point ?? p);
       drawing.setDrawEndSnap(snapped);
-      return;
     }
-    if (!onWallDrawComplete || pointer.dragRef.current) return;
-    const p = clientToSvgPoint(e.clientX, e.clientY);
-
-    const anchor = drawing.menuAnchorRef.current;
-    if (anchor && Math.hypot(p.x - anchor.x, p.z - anchor.z) < HOVER_MENU_RADIUS) return;
-    drawing.menuAnchorRef.current = null;
-
-    const snapped = findSnap(p);
-    const onWall = Boolean(snapped) && snapped!.host !== 'vertex' && Math.hypot(p.x - snapped!.point.x, p.z - snapped!.point.z) < WALL_HOVER_DISTANCE;
-    if (onWall) drawing.menuAnchorRef.current = snapped!.point;
-    drawing.setHoverPoint(snapped?.point ?? p);
-    drawing.setHoverSnap(snapped);
-    drawing.setHoverOnWall(onWall);
   }
 
   function handleCanvasMouseLeave() {
@@ -246,5 +256,6 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     handleCanvasMouseLeave,
     handleCanvasPointerDown,
     handleCanvasClick,
+    startWallDrawAt,
   };
 }
