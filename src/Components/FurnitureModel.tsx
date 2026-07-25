@@ -50,13 +50,14 @@ export function FurnitureModel({ item }: FurnitureModelProps) {
   if (!catalogEntry) return null;
 
   // Room shapes can be non-rectangular; furniture clamps to the shape's axis-aligned
-  // bounding box rather than true point-in-polygon containment (see plan's "Known
-  // simplification" — vertices are always centered, so the bbox is symmetric around origin).
+  // bounding box using the wall's inner face inset (half thickness + 5cm buffer).
+  const wallThickness = room.wallThickness ?? 0.1;
+  const wallMargin = wallThickness / 2 + 0.05;
   const bbox = boundingBox(room.vertices);
   const roomWidth = bbox.maxX - bbox.minX;
   const roomDepth = bbox.maxZ - bbox.minZ;
-  const maxX = Math.max(0, roomWidth / 2 - halfWidth - WALL_MARGIN);
-  const maxZ = Math.max(0, roomDepth / 2 - halfDepth - WALL_MARGIN);
+  const maxX = Math.max(0, roomWidth / 2 - halfWidth - wallMargin);
+  const maxZ = Math.max(0, roomDepth / 2 - halfDepth - wallMargin);
 
   return (
     <>

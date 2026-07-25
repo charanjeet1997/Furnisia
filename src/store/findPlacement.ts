@@ -1,10 +1,10 @@
 import type { RoomShape } from '../Data/RoomShape';
 import { furnitureCatalog, type ModelForward } from '../Data/FurnitureCatalog';
-import { computeEdges, boundingBox, type WallEdge } from '../Components/polygonGeometry';
+import { computeEdges, boundingBox, pointInPolygon, type WallEdge } from '../Components/polygonGeometry';
 import type { PlacedItem } from './plannerStore';
 
-const WALL_MARGIN = 0.15; // matches FurnitureModel clamp margin
-const ITEM_GAP = 0.10; // breathing room between pieces
+const WALL_MARGIN = 0.03; // 3cm flush inset against walls (IKEA style)
+const ITEM_GAP = 0.15; // 15cm breathing room between pieces
 const GRID_STEP = 0.25; // interior fallback grid resolution
 const DOOR_CLEAR_Z = 1.0; // metres of clearance kept in front of every door
 
@@ -44,9 +44,7 @@ function rotatedFootprint(w: number, d: number, rotationY: number) {
   return { w, d };
 }
 
-// Keeps candidates out of the clearance zone in front of every door, on any wall/angle —
-// approximated as an axis-aligned box centered a little way inward from the door along that
-// wall's own normal (good enough for a "don't block the door" heuristic, not exact geometry).
+// Keeps candidates out of the clearance zone in front of every door, on any wall/angle.
 function blocksAnyDoor(candidate: Box, room: RoomShape, edges: WallEdge[]): boolean {
   for (const opening of room.openings) {
     if (opening.kind !== 'door') continue;
@@ -63,7 +61,6 @@ function blocksAnyDoor(candidate: Box, room: RoomShape, edges: WallEdge[]): bool
   return false;
 }
 
-// Centre first, then alternating outward — same sampling shape as the old fixed-wall version.
 function wallSamples(halfRange: number, count: number): number[] {
   if (halfRange <= 0) return [0];
   const step = (halfRange * 1.6) / Math.max(count - 1, 1);
@@ -85,6 +82,9 @@ export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalo
   const { width: iW, depth: iD } = entry?.footprint ?? { width: 0.6, depth: 0.6 };
   const rotOff = forwardToOffset[entry?.forward ?? 'north'];
 
+  const wallThickness = room.wallThickness ?? 0.1;
+  const WALL_MARGIN = wallThickness / 2 + 0.05; // 5cm buffer in front of wall inner face
+
   const edges = computeEdges(room.vertices);
   const bbox = boundingBox(room.vertices);
   const maxX = Math.max(0, (bbox.maxX - bbox.minX) / 2 - iW / 2 - WALL_MARGIN);
@@ -96,16 +96,82 @@ export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalo
     return boxAt(item.position[0], item.position[2], w, d);
   });
 
-  function isFree(x: number, z: number): boolean {
-    const candidate = boxAt(x, z, iW, iD);
+  function isFree(x: number, z: number, rotationY = 0): boolean {
+    const { w, d } = rotatedFootprint(iW, iD, rotationY);
+    const candidate = boxAt(x, z, w, d);
+
+    // 1. MUST BE INSIDE THE ROOM POLYGON FOOTPRINT
+    if (!pointInPolygon(room.vertices, x, z)) return false;
+
+    // Check all 4 corners of candidate box so furniture never pokes out through outer walls
+    const corners = [
+      { x: candidate.minX, z: candidate.minZ },
+      { x: candidate.maxX, z: candidate.minZ },
+      { x: candidate.maxX, z: candidate.maxZ },
+      { x: candidate.minX, z: candidate.maxZ },
+    ];
+    if (corners.some((c) => !pointInPolygon(room.vertices, c.x, c.z))) return false;
+
+    // 2. MUST NOT BLOCK DOORS
     if (blocksAnyDoor(candidate, room, edges)) return false;
+
+    // 3. MUST NOT OVERLAP EXISTING FURNITURE
     return existingBoxes.every((box) => !overlaps(candidate, box, ITEM_GAP));
   }
 
-  // --- Wall-hugging candidates, one wall at a time so the room fills evenly ---
-  // Diagonal edges (from Cut/Beveled corners) are skipped — hugging a chamfered wall would
-  // need the item rotated to match an arbitrary angle, out of scope for this heuristic; the
-  // interior grid fallback below still covers that floor area.
+  const lowerId = newCatalogId.toLowerCase();
+
+  // --- IKEA Rule 1: Coffee Table (Placed 0.45m in front of sofa) ---
+  if (lowerId.includes('table') || lowerId.includes('coffee')) {
+    const sofa = existing.find((item) => item.catalogId.toLowerCase().includes('sofa') || item.catalogId.toLowerCase().includes('seating'));
+    if (sofa) {
+      const sofaFp = footprintOf(sofa.catalogId);
+      const dist = sofaFp.depth / 2 + iD / 2 + 0.45;
+      const fwdX = -Math.sin(sofa.rotationY);
+      const fwdZ = -Math.cos(sofa.rotationY);
+      const targetX = sofa.position[0] + fwdX * dist;
+      const targetZ = sofa.position[2] + fwdZ * dist;
+      if (isFree(targetX, targetZ, sofa.rotationY)) {
+        return { position: [targetX, 0, targetZ], rotationY: sofa.rotationY };
+      }
+    }
+  }
+
+  // --- IKEA Rule 2: Nightstand / Shelf (Placed beside bed headboard) ---
+  if (lowerId.includes('shelf') || lowerId.includes('nightstand')) {
+    const bed = existing.find((item) => item.catalogId.toLowerCase().includes('bed'));
+    if (bed) {
+      const bedFp = footprintOf(bed.catalogId);
+      const offsetDist = bedFp.width / 2 + iW / 2 + 0.12;
+      const rightX = Math.cos(bed.rotationY);
+      const rightZ = -Math.sin(bed.rotationY);
+      for (const sideMult of [1, -1]) {
+        const targetX = bed.position[0] + rightX * offsetDist * sideMult;
+        const targetZ = bed.position[2] + rightZ * offsetDist * sideMult;
+        if (isFree(targetX, targetZ, bed.rotationY)) {
+          return { position: [targetX, 0, targetZ], rotationY: bed.rotationY };
+        }
+      }
+    }
+  }
+
+  // --- IKEA Rule 3: Bed (Prefers longest empty wall, headboard against wall) ---
+  if (lowerId.includes('bed')) {
+    const sortedEdges = [...edges].sort((a, b) => b.length - a.length);
+    for (const edge of sortedEdges) {
+      const dirX = (edge.end.x - edge.start.x) / edge.length;
+      const dirZ = (edge.end.z - edge.start.z) / edge.length;
+      const rotation = edge.angle + rotOff;
+      const pushIn = iD / 2 + WALL_MARGIN;
+      const x = edge.midpoint.x - edge.normal.x * pushIn;
+      const z = edge.midpoint.z - edge.normal.z * pushIn;
+      if (isFree(x, z, rotation)) {
+        return { position: [x, 0, z], rotationY: rotation };
+      }
+    }
+  }
+
+  // --- IKEA Rule 4: General Wall-Hugging candidates (Sofa, Lamp, Plant, etc.) ---
   const SAMPLES = 7;
   const wallCandidateLists: [number, number, number][][] = edges.map((edge) => {
     const dirX = (edge.end.x - edge.start.x) / edge.length;
@@ -136,13 +202,13 @@ export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalo
   }
 
   for (const [x, z, rot] of wallCandidates) {
-    if (isFree(x, z)) return { position: [x, 0, z], rotationY: rot };
+    if (isFree(x, z, rot)) return { position: [x, 0, z], rotationY: rot };
   }
 
-  // --- Interior grid fallback (bounding box, not the exact polygon) ---
+  // --- Interior grid fallback ---
   for (let x = -maxX; x <= maxX; x += GRID_STEP) {
     for (let z = -maxZ; z <= maxZ; z += GRID_STEP) {
-      if (isFree(x, z)) return { position: [x, 0, z], rotationY: rotOff };
+      if (isFree(x, z, rotOff)) return { position: [x, 0, z], rotationY: rotOff };
     }
   }
 
