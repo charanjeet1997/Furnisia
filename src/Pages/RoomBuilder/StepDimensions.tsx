@@ -1261,11 +1261,33 @@ export function StepDimensions({
           onInteriorWallDrag={(id, dx, dz) => {
             const orig = interiorDragStart.current;
             if (!orig || orig.id !== id) return;
-            // Free 2D translation: move both endpoints by the raw cursor displacement
-            // (total since drag-start, always relative to the wall's original position).
-            // Diagonal walls now slide exactly where the user drags — no more crab-walk.
-            const newStart = { x: snap(orig.start.x + dx), z: snap(orig.start.z + dz) };
-            const newEnd   = { x: snap(orig.end.x   + dx), z: snap(orig.end.z   + dz) };
+            // Constrain to a single axis based on the wall's dominant direction:
+            //   wall more vertical   (|dz| > |dx|) → move LEFT / RIGHT (X only)
+            //   wall more horizontal (|dx| >= |dz|) → move UP / DOWN   (Z only)
+            const wallDx = orig.end.x - orig.start.x;
+            const wallDz = orig.end.z - orig.start.z;
+            const isMoreVertical = Math.abs(wallDz) > Math.abs(wallDx);
+            const sdx = isMoreVertical ? snap(dx) : 0;
+            const sdz = isMoreVertical ? 0 : snap(dz);
+            const newStart = { x: snap(orig.start.x + sdx), z: snap(orig.start.z + sdz) };
+            const newEnd   = { x: snap(orig.end.x   + sdx), z: snap(orig.end.z   + sdz) };
+
+            // Boundary guard: reject the move if the wall would leave the room polygon.
+            // Endpoints can sit ON the boundary (boundary-attached walls), so we nudge
+            // each endpoint 2 cm inward toward the midpoint before testing — the midpoint
+            // is always checked too. Any point outside the polygon cancels the move.
+            const mid = { x: (newStart.x + newEnd.x) / 2, z: (newStart.z + newEnd.z) / 2 };
+            const INSET = 0.02;
+            const segLen = Math.hypot(newEnd.x - newStart.x, newEnd.z - newStart.z) || 0;
+            const checkPts =
+              segLen < INSET * 2
+                ? [mid]
+                : [
+                    { x: newStart.x + ((mid.x - newStart.x) / segLen) * INSET, z: newStart.z + ((mid.z - newStart.z) / segLen) * INSET },
+                    mid,
+                    { x: newEnd.x   + ((mid.x - newEnd.x)   / segLen) * INSET, z: newEnd.z   + ((mid.z - newEnd.z)   / segLen) * INSET },
+                  ];
+            if (checkPts.some((p) => !pointInPolygon(vertices, p.x, p.z))) return;
 
             const updates = new Map<string, Partial<InteriorWall>>();
             function applyPoint(wallId: string, end: 'start' | 'end', point: RoomVertex) {
