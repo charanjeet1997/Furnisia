@@ -68,10 +68,10 @@ interface FloorPlanPreviewProps {
   // Highlight for the wall currently selected in the property panel.
   selectedEdgeIndex?: number | null;
   selectedInteriorWallId?: string | null;
-  // Whole-wall drag for interior walls (translate along the wall's normal, boundary-edge
-  // style). `delta` is the TOTAL normal displacement since drag start, in meters.
+  // Whole-wall drag for interior walls — free 2D translation following the cursor.
+  // `dx` / `dz` are the TOTAL displacement since drag start, in meters.
   onInteriorWallDragStart?: (id: string) => void;
-  onInteriorWallDrag?: (id: string, delta: number) => void;
+  onInteriorWallDrag?: (id: string, dx: number, dz: number) => void;
   onInteriorWallDragEnd?: () => void;
   // Dragging an interior wall's endpoint. Snaps magnetically onto a boundary wall within
   // SNAP_DISTANCE — `attach` reports where (so the caller can keep it pinned to that wall as
@@ -462,7 +462,10 @@ export function FloorPlanPreview({
     } else if (drag.kind === 'vertex') {
       onVertexDrag?.(drag.index, dx, dz);
     } else if (drag.kind === 'interiorWall') {
-      onInteriorWallDrag?.(drag.id, dx * drag.normal.x + dz * drag.normal.z);
+      // Free 2D translation — pass raw cursor displacement so the wall follows the pointer
+      // directly. Normal-projection (old behaviour) forced diagonal walls to crab-walk at
+      // an angle even when the user dragged straight left/right.
+      onInteriorWallDrag?.(drag.id, dx, dz);
     } else {
       onOpeningDrag?.(drag.index, dx * drag.dir.x + dz * drag.dir.z);
     }
@@ -574,9 +577,19 @@ export function FloorPlanPreview({
           }
           const p = clientToSvgPoint(e.clientX, e.clientY);
           const snapped = findSnap(p);
-          console.log('[move] canvas pointerdown. snapped=', snapped ? `${snapped.host}${snapped.host === 'interior' ? ' ' + snapped.wallId.slice(0, 4) : ''} dist=${Math.hypot(p.x - snapped.point.x, p.z - snapped.point.z).toFixed(2)}` : 'null', 'WALL_HOVER_DISTANCE=', WALL_HOVER_DISTANCE);
+          const snapDist = snapped ? Math.hypot(p.x - snapped.point.x, p.z - snapped.point.z) : Infinity;
+          console.log(
+            '[move] canvas pointerdown. snapped=',
+            snapped ? `${snapped.host}${snapped.host === 'interior' ? ' ' + snapped.wallId.slice(0, 4) : ''}` : 'null',
+            'dist=', snapDist.toFixed(3),
+            'threshold=', WALL_HOVER_DISTANCE,
+            'passes?', snapped ? snapDist < WALL_HOVER_DISTANCE : false,
+          );
           if (!snapped || snapped.host === 'vertex') return;
-          if (Math.hypot(p.x - snapped.point.x, p.z - snapped.point.z) >= WALL_HOVER_DISTANCE) return;
+          if (snapDist >= WALL_HOVER_DISTANCE) {
+            console.log('[move] BLOCKED by distance:', snapDist.toFixed(3), '>=', WALL_HOVER_DISTANCE);
+            return;
+          }
           if (snapped.host === 'boundary') {
             if (!onEdgeDrag) return;
             const normal = edges[snapped.edgeIndex]?.normal;
@@ -589,14 +602,17 @@ export function FloorPlanPreview({
               console.log('[move] interior BLOCKED: no onInteriorWallDrag prop');
               return;
             }
-            const bothAttached = isEndpointAttached?.(snapped.wallId, 'start') && isEndpointAttached?.(snapped.wallId, 'end');
-            if (bothAttached) {
-              console.log('[move] interior BLOCKED: both ends attached to boundary');
-              return;
-            }
+            const startAttached = isEndpointAttached?.(snapped.wallId, 'start') ?? false;
+            const endAttached   = isEndpointAttached?.(snapped.wallId, 'end')   ?? false;
+            console.log(
+              '[move] interior wall', snapped.wallId.slice(0, 8),
+              '| startAttached=', startAttached,
+              '| endAttached=', endAttached,
+              '| proceeding with drag',
+            );
             const wall = interiorWalls.find((w) => w.id === snapped.wallId);
             if (!wall) {
-              console.log('[move] interior BLOCKED: wall not found', snapped.wallId.slice(0, 4));
+              console.log('[move] interior BLOCKED: wall not found', snapped.wallId.slice(0, 8));
               return;
             }
             const wdx = wall.end.x - wall.start.x;
@@ -611,7 +627,7 @@ export function FloorPlanPreview({
               normal: { x: wdz / wlen, z: -wdx / wlen },
             });
             onInteriorWallDragStart?.(snapped.wallId);
-            console.log('[move] canvas -> started INTERIOR drag', snapped.wallId.slice(0, 4));
+            console.log('[move] canvas -> started INTERIOR drag', snapped.wallId.slice(0, 8));
           }
         }}
         onPointerMove={handlePointerMove}

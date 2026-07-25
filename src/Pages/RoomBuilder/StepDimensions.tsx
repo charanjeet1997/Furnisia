@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { FiRotateCcw } from 'react-icons/fi';
-import { computeEdges, type WallEdge } from '../../Components/polygonGeometry';
+import { computeEdges, pointInPolygon, type WallEdge } from '../../Components/polygonGeometry';
 import { FloorPlanPreview, type PlanUnits, type SnapTarget } from './FloorPlanPreview';
 import { DEFAULT_WALL_THICKNESS, type InteriorWall, type RoomOpening, type RoomVertex } from '../../Data/RoomShape';
 import styles from './RoomBuilder.module.css';
@@ -717,6 +717,22 @@ export function StepDimensions({
     const n = vertices.length;
     const mergedIds = new Set(steps.map((s) => s.wallId));
 
+    // Guard: if the chain's path lies INSIDE the current room polygon it is a partition
+    // (a dividing wall), not an extension of the footprint. Extruding it would replace
+    // the boundary arc with the interior wall, carving the floor polygon into the room
+    // and leaving a dark, floorless gap between the interior wall and the old boundary.
+    // Sample the midpoint of every segment in the chain — if ALL of them are inside the
+    // polygon the chain can only be a partition and must be left alone. (A genuine
+    // room-extension bulge will have at least one midpoint outside the current boundary.)
+    const allInside = steps.every((s) => {
+      const wall = interiorWalls.find((w) => w.id === s.wallId);
+      if (!wall) return true;
+      const mx = (wall.start.x + wall.end.x) / 2;
+      const mz = (wall.start.z + wall.end.z) / 2;
+      return pointInPolygon(vertices, mx, mz);
+    });
+    if (allInside) return false;
+
     // Two possible arcs between the corners going around the polygon; take the shorter one
     // (fewer edges) — the new path is assumed to bulge out from the near side, not loop all
     // the way around the far side of the room.
@@ -1242,37 +1258,139 @@ export function StepDimensions({
             pushHistory();
             interiorDragStart.current = interiorWalls.find((w) => w.id === id) ?? null;
           }}
-          onInteriorWallDrag={(id, delta) => {
+          onInteriorWallDrag={(id, dx, dz) => {
             const orig = interiorDragStart.current;
             if (!orig || orig.id !== id) return;
-            const dx = orig.end.x - orig.start.x;
-            const dz = orig.end.z - orig.start.z;
-            const len = Math.hypot(dx, dz) || 1;
-            const nx = dz / len;
-            const nz = -dx / len;
-            const d = snap(delta);
-            // A boundary-attached end stays exactly where it is (pinned to a fixed point on
-            // the room's outline). A FREE end moves — and takes anything jointed to it along
-            // for the ride, same as dragging that one endpoint's own handle already does, so
-            // a whole-wall Move never silently breaks a joint to another free wall.
-            const startFree = !isEndpointAttached(id, 'start');
-            const endFree = !isEndpointAttached(id, 'end');
-            const newStart = { x: snap(orig.start.x + nx * d), z: snap(orig.start.z + nz * d) };
-            const newEnd = { x: snap(orig.end.x + nx * d), z: snap(orig.end.z + nz * d) };
+            // Free 2D translation: move both endpoints by the raw cursor displacement
+            // (total since drag-start, always relative to the wall's original position).
+            // Diagonal walls now slide exactly where the user drags — no more crab-walk.
+            const newStart = { x: snap(orig.start.x + dx), z: snap(orig.start.z + dz) };
+            const newEnd   = { x: snap(orig.end.x   + dx), z: snap(orig.end.z   + dz) };
 
             const updates = new Map<string, Partial<InteriorWall>>();
             function applyPoint(wallId: string, end: 'start' | 'end', point: RoomVertex) {
               updates.set(wallId, { ...updates.get(wallId), [end]: point });
             }
-            if (startFree) {
-              applyPoint(id, 'start', newStart);
-              for (const m of jointMembers(id, 'start')) applyPoint(m.wallId, m.end, newStart);
-            }
-            if (endFree) {
-              applyPoint(id, 'end', newEnd);
-              for (const m of jointMembers(id, 'end')) applyPoint(m.wallId, m.end, newEnd);
-            }
+            applyPoint(id, 'start', newStart);
+            for (const m of jointMembers(id, 'start')) applyPoint(m.wallId, m.end, newStart);
+            applyPoint(id, 'end', newEnd);
+            for (const m of jointMembers(id, 'end')) applyPoint(m.wallId, m.end, newEnd);
             onInteriorWallsChange(interiorWalls.map((w) => (updates.has(w.id) ? { ...w, ...updates.get(w.id) } : w)));
+          }}
+          onInteriorWallDragEnd={() => {
+            const orig = interiorDragStart.current;
+            interiorDragStart.current = null;
+            if (!orig) return;
+
+            // Phase 1 — detach & clean up the OLD snap-anchor vertices left behind at
+            // the wall's previous position. Without this they stay on the polygon as
+            // orphaned collinear points (phantom grey dots with no wall between them).
+            const att = attachments[orig.id];
+            let atts: Attachments = { ...attachments };
+            delete atts[orig.id];
+
+            let verts = vertices;
+            let openingsNow = openings;
+            let thicknesses = normalizedThicknesses();
+
+            const candidates = ([att?.start?.vertexIndex, att?.end?.vertexIndex] as (number | undefined)[])
+              .filter((v): v is number => v !== undefined)
+              .sort((a, b) => b - a);
+
+            for (const vi of candidates) {
+              if (verts.length <= 3) break;
+              const nv = verts.length;
+              const prev = verts[(vi - 1 + nv) % nv];
+              const cur  = verts[vi];
+              const next = verts[(vi + 1) % nv];
+              const cross = (cur.x - prev.x) * (next.z - prev.z) - (cur.z - prev.z) * (next.x - prev.x);
+              if (Math.abs(cross) > 0.01) continue; // real corner — keep it
+              const stillUsed = Object.values(atts).some(
+                (a) => a.start?.vertexIndex === vi || a.end?.vertexIndex === vi,
+              );
+              if (stillUsed) continue;
+
+              openingsNow = remapOpeningsForVertexRemove(openingsNow, computeEdges(verts), vi);
+              thicknesses = removeEdgeThickness(thicknesses, vi);
+              verts = verts.filter((_, i) => i !== vi);
+
+              const shiftAtt = (a?: { vertexIndex: number }) =>
+                !a ? undefined : { vertexIndex: a.vertexIndex > vi ? a.vertexIndex - 1 : a.vertexIndex };
+              const shifted: Attachments = {};
+              for (const [wid, a] of Object.entries(atts)) {
+                const s = { start: shiftAtt(a.start), end: shiftAtt(a.end) };
+                if (s.start || s.end) shifted[wid] = s;
+              }
+              atts = shifted;
+            }
+
+            // Phase 2 — re-snap the wall's NEW endpoint positions onto the boundary.
+            // After a whole-wall translate the endpoints often still lie on the same
+            // boundary walls (e.g. a vertical partition spanning a rectangular room),
+            // so re-attaching them here keeps the endpoints black (joined) rather than
+            // grey (free). Processed start-first so any vertex inserted for `start`
+            // is already in `verts` when `end` runs its own edge-proximity check.
+            const RESNAP_RADIUS = 0.12; // tighter than draw-snap; must be genuinely on-edge
+            const movedWall = interiorWalls.find((w) => w.id === orig.id);
+            if (movedWall) {
+              for (const endName of ['start', 'end'] as const) {
+                const pt = endName === 'start' ? movedWall.start : movedWall.end;
+                let bestDist = RESNAP_RADIUS;
+                type SnapResult =
+                  | { kind: 'vertex'; vertexIndex: number }
+                  | { kind: 'insert'; insertAt: number; point: RoomVertex };
+                let snapResult: SnapResult | null = null;
+
+                const nv = verts.length;
+                for (let ei = 0; ei < nv; ei++) {
+                  const es = verts[ei];
+                  const ee = verts[(ei + 1) % nv];
+                  const abx = ee.x - es.x;
+                  const abz = ee.z - es.z;
+                  const lenSq = abx * abx + abz * abz || 1;
+                  const t = Math.max(0, Math.min(1, ((pt.x - es.x) * abx + (pt.z - es.z) * abz) / lenSq));
+                  const sx = es.x + abx * t;
+                  const sz = es.z + abz * t;
+                  const dist = Math.hypot(pt.x - sx, pt.z - sz);
+                  if (dist < bestDist) {
+                    bestDist = dist;
+                    const EPS = 0.02;
+                    if (t < EPS) snapResult = { kind: 'vertex', vertexIndex: ei };
+                    else if (t > 1 - EPS) snapResult = { kind: 'vertex', vertexIndex: (ei + 1) % nv };
+                    else snapResult = { kind: 'insert', insertAt: ei + 1, point: { x: sx, z: sz } };
+                  }
+                }
+
+                if (!snapResult) continue;
+
+                if (snapResult.kind === 'vertex') {
+                  atts[orig.id] = { ...atts[orig.id], [endName]: { vertexIndex: snapResult.vertexIndex } };
+                } else {
+                  const { insertAt, point } = snapResult;
+                  // Compute edge data from the PRE-insertion verts list for the remap.
+                  const edgeForRemap = computeEdges(verts)[insertAt - 1];
+                  verts = [...verts.slice(0, insertAt), point, ...verts.slice(insertAt)];
+                  thicknesses = insertEdgeThickness(thicknesses, insertAt);
+                  openingsNow = remapOpeningsForEdgeSplit(openingsNow, edgeForRemap, insertAt - 1, [point]);
+                  // Shift every existing attachment index at or past the insertion point.
+                  const shiftIns = (a?: { vertexIndex: number }) =>
+                    !a ? undefined : { vertexIndex: a.vertexIndex >= insertAt ? a.vertexIndex + 1 : a.vertexIndex };
+                  const shiftedIns: Attachments = {};
+                  for (const [wid, a] of Object.entries(atts)) {
+                    shiftedIns[wid] = { start: shiftIns(a.start), end: shiftIns(a.end) };
+                  }
+                  atts = shiftedIns;
+                  atts[orig.id] = { ...atts[orig.id], [endName]: { vertexIndex: insertAt } };
+                }
+              }
+            }
+
+            setAttachments(atts);
+            if (verts !== vertices) {
+              onVerticesChange(verts);
+              onEdgeThicknessesChange(thicknesses);
+            }
+            if (openingsNow !== openings) onOpeningsChange(openingsNow);
           }}
           onInteriorWallEndpointDragStart={handleEndpointDragStart}
           onInteriorWallEndpointChange={handleEndpointChange}
