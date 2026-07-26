@@ -1,16 +1,19 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiCopy, FiShare2, FiCheck } from 'react-icons/fi';
+import { FiArrowLeft, FiCopy, FiShare2, FiCheck, FiSun, FiMoon } from 'react-icons/fi';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls } from '@react-three/drei';
 import { usePlannerStore } from '../store/plannerStore';
 import { Room } from '../Components/Room';
 import { FurnitureModel } from '../Components/FurnitureModel';
+import { FPSController } from '../Components/FPSController';
 import styles from './VRRoom.module.css';
+
+type Atmosphere = 'day' | 'sunset' | 'night';
 
 export function VRRoom() {
   const navigate = useNavigate();
   const placedItems = usePlannerStore((state) => state.placedItems);
+  const [atmosphere, setAtmosphere] = useState<Atmosphere>('day');
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
@@ -30,6 +33,35 @@ export function VRRoom() {
             <FiArrowLeft size={18} />
             <span>Planner</span>
           </button>
+
+          <div className={styles.atmosphereGroup}>
+            <button
+              type="button"
+              className={`${styles.atmosphereBtn} ${atmosphere === 'day' ? styles.atmosphereBtnActive : ''}`}
+              onClick={() => setAtmosphere('day')}
+            >
+              <FiSun size={14} />
+              <span>Day</span>
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.atmosphereBtn} ${atmosphere === 'sunset' ? styles.atmosphereBtnActive : ''}`}
+              onClick={() => setAtmosphere('sunset')}
+            >
+              🌇
+              <span>Sunset</span>
+            </button>
+
+            <button
+              type="button"
+              className={`${styles.atmosphereBtn} ${atmosphere === 'night' ? styles.atmosphereBtnActive : ''}`}
+              onClick={() => setAtmosphere('night')}
+            >
+              <FiMoon size={14} />
+              <span>Night</span>
+            </button>
+          </div>
         </div>
 
         <div className={styles.rightGroup}>
@@ -43,22 +75,43 @@ export function VRRoom() {
       <div className={styles.canvasWrapper}>
         <Canvas
           shadows="variance"
-          gl={{ preserveDrawingBuffer: true, xr: true }}
-          camera={{ position: [0, 1.6, 2], fov: 75 }}
+          gl={{ preserveDrawingBuffer: true }}
+          camera={{ position: [0, 1.6, 0], fov: 75 }}
         >
-          <ambientLight intensity={0.8} />
-          <directionalLight position={[5, 8, 5]} intensity={1.2} castShadow />
-          <Room />
+          <FPSController eyeHeight={1.6} moveSpeed={2.5} />
+
+          {atmosphere === 'day' && (
+            <>
+              <ambientLight intensity={0.9} />
+              <directionalLight position={[3, 6, 3]} intensity={1.3} castShadow color="#ffffff" />
+            </>
+          )}
+
+          {atmosphere === 'sunset' && (
+            <>
+              <ambientLight intensity={0.6} color="#ffdfc4" />
+              <directionalLight position={[4, 3, 4]} intensity={1.6} castShadow color="#ffaa55" />
+            </>
+          )}
+
+          {atmosphere === 'night' && (
+            <>
+              <ambientLight intensity={0.35} color="#88aaff" />
+              <directionalLight position={[0, 5, 0]} intensity={0.8} color="#ffd8a8" />
+            </>
+          )}
+
+          <Room disableClipping={true} />
+
           {placedItems.map((item) => (
             <FurnitureModel key={item.id} item={item} />
           ))}
-          <OrbitControls target={[0, 1.4, 0]} enableZoom={true} enablePan={true} maxPolarAngle={Math.PI / 2 + 0.1} />
         </Canvas>
       </div>
 
       <div className={styles.vrBanner}>
         <div className={styles.vrBannerTitle}>🥽 1:1 Scale Immersive VR Experience</div>
-        <div>Rotate & pan to explore your room from inside at eye level (1.6m).</div>
+        <div>Drag mouse to look 360° inside · Use <strong>W A S D</strong> or <strong>Arrow Keys</strong> to walk</div>
       </div>
 
       {showShareModal && (

@@ -1,6 +1,6 @@
 import { useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
-import { Shape } from 'three';
+import { Shape, MeshStandardMaterial } from 'three';
 import { usePlannerStore } from '../store/plannerStore';
 import { buildWallSegments, type WallOpening } from './wallSegments';
 import { createClippedMaterial } from './createClippedMaterial';
@@ -47,15 +47,15 @@ function computeRoomLightingGrid(vertices: RoomVertex[]) {
   ];
 }
 
-export function Room() {
+interface RoomProps {
+  disableClipping?: boolean;
+}
+
+export function Room({ disableClipping = false }: RoomProps) {
   const room = usePlannerStore((state) => state.room);
   const { vertices, height, wallColor, floorColor, openings } = room;
-  // Older saved rooms (Firestore documents from before these fields existed) fall back to the
-  // app's original fixed thickness / no interior walls.
   const wallThickness = room.wallThickness ?? 0.1;
   const interiorWalls = room.interiorWalls ?? [];
-  // Per-edge thickness (parallel to the edge list), falling back to the room default for
-  // edges without an entry and for rooms saved before per-wall thickness existed.
   const edgeThicknesses = room.edgeThicknesses ?? [];
   const { camera, controls } = useThree();
 
@@ -71,8 +71,6 @@ export function Room() {
   const floorShape = useMemo(() => {
     const shape = new Shape();
     vertices.forEach((v, i) => {
-      // z is negated here to counter the -90° X rotation used to lay the shape flat facing
-      // up — without this the floor would come out mirrored relative to the walls.
       if (i === 0) shape.moveTo(v.x, -v.z);
       else shape.lineTo(v.x, -v.z);
     });
@@ -80,10 +78,6 @@ export function Room() {
     return shape;
   }, [vertices]);
 
-  // Ceiling outline = room polygon grown to the walls' OUTER faces (walls are boxes centered
-  // on the polygon line), so the slab sits flush with them — no gap/step seen from outside.
-  // With per-edge thickness the slab grows to the THICKEST wall's outer face (a slight
-  // overhang on thinner walls beats a visible gap on thicker ones).
   const ceilingShape = useMemo(() => {
     const maxTh = Math.max(wallThickness, ...edgeThicknesses);
     const grown = offsetPolygon(vertices, maxTh / 2);
@@ -97,23 +91,31 @@ export function Room() {
   }, [vertices, wallThickness, edgeThicknesses]);
 
   const wallMats = useMemo(
-    () => edges.map(() => createClippedMaterial({ color: wallColor }, 0)),
-    [edges.length, wallColor],
+    () => edges.map(() => (disableClipping ? { material: new MeshStandardMaterial({ color: wallColor }) } : createClippedMaterial({ color: wallColor }, 0))),
+    [edges.length, wallColor, disableClipping],
   );
-  // Interior walls get the same camera/target cull test as boundary walls — without it,
-  // orbiting the room would fade every boundary wall in your way except a partition, which
-  // would just stay put and block the view inconsistently.
+
   const interiorWallMats = useMemo(
-    () => interiorWalls.map(() => createClippedMaterial({ color: wallColor }, 0)),
-    [interiorWalls.length, wallColor],
+    () => interiorWalls.map(() => (disableClipping ? { material: new MeshStandardMaterial({ color: wallColor }) } : createClippedMaterial({ color: wallColor }, 0))),
+    [interiorWalls.length, wallColor, disableClipping],
   );
-  const ceilingMat = useMemo(() => createClippedMaterial({ color: wallColor }, 0), [wallColor]);
-  // Fixture materials share the ceiling's cull test (same uniforms set in useFrame below) so
-  // the light fixture fades away with the ceiling instead of floating with nothing above it.
-  const fixtureTrimMat = useMemo(() => createClippedMaterial({ color: '#88847b', roughness: 0.6 }, 0), []);
+
+  const ceilingMat = useMemo(
+    () => (disableClipping ? { material: new MeshStandardMaterial({ color: wallColor }) } : createClippedMaterial({ color: wallColor }, 0)),
+    [wallColor, disableClipping],
+  );
+
+  const fixtureTrimMat = useMemo(
+    () => (disableClipping ? { material: new MeshStandardMaterial({ color: '#88847b', roughness: 0.6 }) } : createClippedMaterial({ color: '#88847b', roughness: 0.6 }, 0)),
+    [disableClipping],
+  );
+
   const fixtureLensMat = useMemo(
-    () => createClippedMaterial({ color: '#f5ebd5', emissive: '#ffeedd', emissiveIntensity: Math.min(0.8, lightIntensity * 0.15) }, 0),
-    [lightIntensity],
+    () =>
+      disableClipping
+        ? { material: new MeshStandardMaterial({ color: '#f5ebd5', emissive: '#ffeedd', emissiveIntensity: Math.min(0.8, lightIntensity * 0.15) }) }
+        : createClippedMaterial({ color: '#f5ebd5', emissive: '#ffeedd', emissiveIntensity: Math.min(0.8, lightIntensity * 0.15) }, 0),
+    [lightIntensity, disableClipping],
   );
   const openingMats = useMemo(
     () =>
@@ -130,10 +132,7 @@ export function Room() {
   );
 
   useFrame(() => {
-    // Orbit pivot (what the camera looks at). Each wall hides only when its plane separates
-    // the camera from this point — see createClippedMaterial for why the camera side alone
-    // is not enough for concave (L/T/U) rooms. Falls back to the room centre before
-    // OrbitControls mounts (makeDefault populates `controls` a frame late).
+    if (disableClipping) return;
     const target = (controls as unknown as { target?: { x: number; y: number; z: number } } | null)?.target ?? {
       x: 0,
       y: height / 2,

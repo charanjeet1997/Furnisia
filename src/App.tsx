@@ -16,7 +16,7 @@ function App() {
           <Route path="/" element={<Dashboard />} />
           <Route path="/room-builder" element={<RoomBuilder />} />
           <Route path="/planner" element={<Planner />} />
-          <Route path="/vr-room" element={<VRRoom />} />
+          <Route path="/vr-room" element={<VRRoom />} /> {/* VR Room FPS Mode */}
           <Route path="/login" element={<Login />} />
           <Route path="/register" element={<Register />} />
           <Route path="/profile" element={<Profile />} />
