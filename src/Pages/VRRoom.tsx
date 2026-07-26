@@ -2,6 +2,7 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCopy, FiShare2, FiCheck, FiSun, FiMoon } from 'react-icons/fi';
 import { Canvas } from '@react-three/fiber';
+import { ACESFilmicToneMapping } from 'three';
 import { usePlannerStore } from '../store/plannerStore';
 import { Room } from '../Components/Room';
 import { FurnitureModel } from '../Components/FurnitureModel';
@@ -75,29 +76,63 @@ export function VRRoom() {
       <div className={styles.canvasWrapper}>
         <Canvas
           shadows="variance"
-          gl={{ preserveDrawingBuffer: true }}
+          gl={{
+            preserveDrawingBuffer: true,
+            toneMapping: ACESFilmicToneMapping,
+            toneMappingExposure: 1.15,
+          }}
           camera={{ position: [0, 1.6, 0], fov: 75 }}
         >
           <FPSController eyeHeight={1.6} moveSpeed={2.5} />
 
+          {/* Photorealistic ArchViz Lighting Setup */}
           {atmosphere === 'day' && (
             <>
-              <ambientLight intensity={0.9} />
-              <directionalLight position={[3, 6, 3]} intensity={1.3} castShadow color="#ffffff" />
+              {/* Soft sky fill + warm wood floor bounce */}
+              <hemisphereLight skyColor="#e0f2fe" groundColor="#d97706" intensity={0.7} />
+              {/* Natural directional sunlight streaming into room */}
+              <directionalLight
+                position={[4, 5, 2]}
+                intensity={1.1}
+                castShadow
+                shadow-mapSize={[2048, 2048]}
+                shadow-radius={6}
+                shadow-bias={-0.0001}
+                color="#fffdfa"
+              />
+              {/* Soft ambient indoor bounce */}
+              <directionalLight position={[-3, 4, -3]} intensity={0.3} color="#fef3c7" />
             </>
           )}
 
           {atmosphere === 'sunset' && (
             <>
-              <ambientLight intensity={0.6} color="#ffdfc4" />
-              <directionalLight position={[4, 3, 4]} intensity={1.6} castShadow color="#ffaa55" />
+              <hemisphereLight skyColor="#fdba74" groundColor="#78350f" intensity={0.8} />
+              <directionalLight
+                position={[5, 2, 4]}
+                intensity={1.5}
+                castShadow
+                shadow-mapSize={[2048, 2048]}
+                shadow-radius={8}
+                color="#f97316"
+              />
             </>
           )}
 
           {atmosphere === 'night' && (
             <>
-              <ambientLight intensity={0.35} color="#88aaff" />
-              <directionalLight position={[0, 5, 0]} intensity={0.8} color="#ffd8a8" />
+              <hemisphereLight skyColor="#1e1b4b" groundColor="#0f172a" intensity={0.35} />
+              {/* Downward spotlight for cozy interior illumination */}
+              <spotLight
+                position={[0, 2.4, 0]}
+                intensity={2.2}
+                distance={8}
+                angle={Math.PI / 3}
+                penumbra={0.8}
+                color="#ffedd5"
+                castShadow
+                shadow-mapSize={[1024, 1024]}
+              />
             </>
           )}
 

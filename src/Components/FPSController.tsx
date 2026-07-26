@@ -110,8 +110,8 @@ export function FPSController({
     forward.y = 0; // keep walking horizontal at 1.6m eye level
     forward.normalize();
 
-    const right = new Vector3();
-    right.crossVectors(forward, new Vector3(0, 1, 0)).negate();
+    // Right vector (strafe right for D): forward x UP(0, 1, 0)
+    const right = new Vector3().crossVectors(forward, new Vector3(0, 1, 0)).normalize();
 
     const moveVector = new Vector3();
 

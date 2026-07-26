@@ -101,7 +101,7 @@ export function Room({ disableClipping = false }: RoomProps) {
   );
 
   const ceilingMat = useMemo(
-    () => (disableClipping ? { material: new MeshStandardMaterial({ color: wallColor }) } : createClippedMaterial({ color: wallColor }, 0)),
+    () => (disableClipping ? { material: new MeshStandardMaterial({ color: wallColor, roughness: 0.85 }) } : createClippedMaterial({ color: wallColor, roughness: 0.85 }, 0)),
     [wallColor, disableClipping],
   );
 
@@ -113,9 +113,9 @@ export function Room({ disableClipping = false }: RoomProps) {
   const fixtureLensMat = useMemo(
     () =>
       disableClipping
-        ? { material: new MeshStandardMaterial({ color: '#f5ebd5', emissive: '#ffeedd', emissiveIntensity: Math.min(0.8, lightIntensity * 0.15) }) }
-        : createClippedMaterial({ color: '#f5ebd5', emissive: '#ffeedd', emissiveIntensity: Math.min(0.8, lightIntensity * 0.15) }, 0),
-    [lightIntensity, disableClipping],
+        ? { material: new MeshStandardMaterial({ color: '#fffdfa', emissive: '#ffeedd', emissiveIntensity: 0.12, roughness: 0.3 }) }
+        : createClippedMaterial({ color: '#fffdfa', emissive: '#ffeedd', emissiveIntensity: 0.12, roughness: 0.3 }, 0),
+    [disableClipping],
   );
   const openingMats = useMemo(
     () =>
