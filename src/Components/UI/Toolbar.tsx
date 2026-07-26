@@ -108,6 +108,10 @@ export function Toolbar() {
           Edit room
         </button>
 
+        <button type="button" className={styles.editButton} onClick={() => navigate('/vr-room')} title="Step inside room in VR">
+          🥽 VR Room
+        </button>
+
         <div className={styles.lightControlWrapper} ref={lightRef}>
           <button
             type="button"

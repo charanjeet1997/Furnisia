@@ -189,6 +189,19 @@ export function DimensionsSidebar({
           Click any wall in the plan to edit its thickness.
         </p>
       )}
+
+      {isDrawingWall && (
+        <div className={styles.mobileFloatingActionBar}>
+          <button type="button" onClick={onFinishWall} className={`${styles.mobileActionBtn} ${styles.mobileFinishBtn}`}>
+            <FiCheck size={16} />
+            <span>Finish Wall</span>
+          </button>
+          <button type="button" onClick={onCancelWall} className={`${styles.mobileActionBtn} ${styles.mobileCancelBtn}`}>
+            <FiX size={16} />
+            <span>Cancel</span>
+          </button>
+        </div>
+      )}
     </div>
   );
 }

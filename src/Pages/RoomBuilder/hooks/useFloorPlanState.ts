@@ -106,21 +106,22 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     return { ...edge, thickness: Math.max(edgeThicknesses?.[opening.edgeIndex] ?? WALL_STROKE, 0.07) };
   }
 
-  function clientToSvgPoint(clientX: number, clientY: number): { x: number; z: number } {
+  function clientToSvgPoint(clientX: number, clientY: number, isTouch?: boolean): { x: number; z: number } {
     const svg = pointer.svgRef.current;
     if (!svg) return { x: 0, z: 0 };
     const pt = svg.createSVGPoint();
     pt.x = clientX;
-    pt.y = clientY;
+    // On touchscreens, offset Y by 18px above the finger so user can see where the line lands
+    pt.y = isTouch ? clientY - 18 : clientY;
     const ctm = svg.getScreenCTM();
     if (!ctm) return { x: 0, z: 0 };
     const p = pt.matrixTransform(ctm.inverse());
     return { x: snapDraw(p.x), z: snapDraw(p.y) };
   }
 
-  function startWallDrawAt(clientX: number, clientY: number) {
+  function startWallDrawAt(clientX: number, clientY: number, isTouch?: boolean) {
     if (!onWallDrawComplete) return;
-    const p = clientToSvgPoint(clientX, clientY);
+    const p = clientToSvgPoint(clientX, clientY, isTouch);
     const snapped = findSnap(p);
     const point = snapped?.point ?? p;
     drawing.setDrawStart(point);
@@ -143,12 +144,10 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     editBox = { left, top, angleDeg };
   }
 
-  function handleCanvasMouseMove(e: React.MouseEvent<SVGSVGElement>) {
-    // Only the live draw-preview (updating the in-progress wall's end point) uses mouse
-    // hover on desktop. Revealing the +/delete WallToolMenu from hover alone is mobile-only
-    // (touch reveals it via tap through handleCanvasPointerDown instead).
+  function handleCanvasMouseMove(e: React.MouseEvent<SVGSVGElement> | React.PointerEvent<SVGSVGElement>) {
     if (drawing.drawStart) {
-      const p = clientToSvgPoint(e.clientX, e.clientY);
+      const isTouch = (e as React.PointerEvent<SVGSVGElement>).pointerType === 'touch';
+      const p = clientToSvgPoint(e.clientX, e.clientY, isTouch);
       const snapped = findSnap(p);
       drawing.setDrawEnd(snapped?.point ?? p);
       drawing.setDrawEndSnap(snapped);
@@ -168,17 +167,20 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     const snapped = findSnap(p);
     const snapDist = snapped ? Math.hypot(p.x - snapped.point.x, p.z - snapped.point.z) : Infinity;
 
-    // Tapping anywhere (wall or open space) triggers hoverPoint so WallToolMenu (+) pops up!
-    if (snapped) {
-      drawing.menuAnchorRef.current = snapped.point;
-      drawing.setHoverPoint(snapped.point);
-      drawing.setHoverSnap(snapped);
-      drawing.setHoverOnWall(snapped.host !== 'vertex');
-    } else {
-      drawing.menuAnchorRef.current = p;
-      drawing.setHoverPoint(p);
-      drawing.setHoverSnap(null);
-      drawing.setHoverOnWall(false);
+    // On Touch devices (tablet/phone), tapping triggers hoverPoint so WallToolMenu (+) pops up for touch targets.
+    // On Desktop mouse, zero popups are shown — 1-click directly starts wall drawing.
+    if (e.pointerType === 'touch') {
+      if (snapped) {
+        drawing.menuAnchorRef.current = snapped.point;
+        drawing.setHoverPoint(snapped.point);
+        drawing.setHoverSnap(snapped);
+        drawing.setHoverOnWall(snapped.host !== 'vertex');
+      } else {
+        drawing.menuAnchorRef.current = p;
+        drawing.setHoverPoint(p);
+        drawing.setHoverSnap(null);
+        drawing.setHoverOnWall(false);
+      }
     }
 
     if (!snapped || snapped.host === 'vertex' || snapDist >= WALL_HOVER_DISTANCE) return;
@@ -212,13 +214,23 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
 
   function handleCanvasClick(e: React.MouseEvent<SVGSVGElement>) {
     if (!onWallDrawComplete || pointer.movedRef.current) return;
+    const isTouch = (e.nativeEvent as PointerEvent)?.pointerType === 'touch';
+
     if (!drawing.drawStart) {
-      const p = clientToSvgPoint(e.clientX, e.clientY);
+      const p = clientToSvgPoint(e.clientX, e.clientY, isTouch);
       const snapped = findSnap(p);
-      drawing.menuAnchorRef.current = snapped?.point ?? p;
-      drawing.setHoverPoint(snapped?.point ?? p);
-      drawing.setHoverSnap(snapped);
-      drawing.setHoverOnWall(Boolean(snapped && snapped.host !== 'vertex'));
+      const point = snapped?.point ?? p;
+
+      if (isTouch) {
+        // Touchscreen (mobile/tablet): show + popup menu
+        drawing.menuAnchorRef.current = point;
+        drawing.setHoverPoint(point);
+        drawing.setHoverSnap(snapped);
+        drawing.setHoverOnWall(Boolean(snapped && snapped.host !== 'vertex'));
+      } else {
+        // Desktop mouse: 1st click immediately starts drawing wall with zero + popups!
+        startWallDrawAt(e.clientX, e.clientY, false);
+      }
       return;
     }
     const p = clientToSvgPoint(e.clientX, e.clientY);

@@ -176,18 +176,16 @@ export function InteriorWallsLayer({
                 onPointerCancel={handlePointerUp}
                 onClick={(e) => {
                   if (movedRef.current || drawStart) return;
-                  // Touch/pen keeps tap-to-select (mobile reveals the delete/split menu via
-                  // hover state set on pointerDown). Mouse: single click starts a new wall,
-                  // double-click selects for thickness editing.
-                  if (lastPointerTypeRef.current !== 'mouse' || !onWallClickStartDraw) {
+                  e.stopPropagation();
+
+                  if (!onWallClickStartDraw) {
                     if (onInteriorWallClick) {
-                      e.stopPropagation();
                       const reason = onInteriorWallClick(wall.id);
                       if (reason) flashRejection(undefined, reason);
                     }
                     return;
                   }
-                  e.stopPropagation();
+
                   const pending = clickTimers.current.get(wall.id);
                   if (pending) {
                     clearTimeout(pending);
@@ -198,13 +196,18 @@ export function InteriorWallsLayer({
                     }
                     return;
                   }
+
                   const clientX = e.clientX;
                   const clientY = e.clientY;
-                  const timer = setTimeout(() => {
-                    clickTimers.current.delete(wall.id);
+                  const isTouch = lastPointerTypeRef.current !== 'mouse';
+
+                  if (isTouch) {
+                    // Touch/tablet: single tap triggers wall drawing start
                     onWallClickStartDraw(clientX, clientY);
-                  }, DOUBLE_CLICK_WINDOW);
-                  clickTimers.current.set(wall.id, timer);
+                  } else {
+                    // Desktop mouse: single click immediately starts wall drawing
+                    onWallClickStartDraw(clientX, clientY);
+                  }
                 }}
               />
             )}

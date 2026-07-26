@@ -1,7 +1,8 @@
 import { useState } from 'react';
-import { FiChevronDown, FiChevronUp } from 'react-icons/fi';
+import { FiChevronDown, FiChevronUp, FiPlus, FiX } from 'react-icons/fi';
 import { furnitureCatalog, furnitureCategories, type FurnitureCategory } from '../../Data/FurnitureCatalog';
 import { usePlannerStore } from '../../store/plannerStore';
+import { useDeviceType } from '../../hooks/useDeviceType';
 import { CategoryIcon } from './CategoryIcon';
 import styles from './CatalogPanel.module.css';
 
@@ -19,6 +20,8 @@ const gridClassBySize: Record<CellSize, string | undefined> = { sm: 'itemGridSm'
 
 export function CatalogPanel() {
   const addItem = usePlannerStore((state) => state.addItem);
+  const { isPhone, isTablet } = useDeviceType();
+  const isMobileDevice = isPhone || isTablet;
   // Only affects layout below the mobile breakpoint (see .panel media query) — on desktop
   // the panel is always the docked sidebar regardless of this state.
   const [open, setOpen] = useState(false);
@@ -29,13 +32,26 @@ export function CatalogPanel() {
   const itemGridClassName = gridSizeClass ? `${styles.itemGrid} ${styles[gridSizeClass]}` : styles.itemGrid;
 
   return (
-    <aside className={open ? `${styles.panel} ${styles.panelOpen}` : styles.panel}>
-      <button type="button" className={styles.sheetHandle} onClick={() => setOpen((o) => !o)}>
-        <span className={styles.title}>
-          Furniture <span className={styles.titleCategory}>· {filter}</span>
-        </span>
-        {open ? <FiChevronDown /> : <FiChevronUp />}
-      </button>
+    <>
+      {isMobileDevice && !open && (
+        <button
+          type="button"
+          className={styles.mobileFabButton}
+          onClick={() => setOpen(true)}
+          title="Add Furniture"
+          aria-label="Add Furniture"
+        >
+          <FiPlus size={28} />
+        </button>
+      )}
+
+      <aside className={open ? `${styles.panel} ${styles.panelOpen}` : styles.panel}>
+        <button type="button" className={styles.sheetHandle} onClick={() => setOpen((o) => !o)}>
+          <span className={styles.title}>
+            Furniture <span className={styles.titleCategory}>· {filter}</span>
+          </span>
+          {open ? <FiX size={20} /> : <FiChevronUp />}
+        </button>
 
       <div className={styles.categoryChips}>
         {chipFilters.map((cat) => (
@@ -83,5 +99,6 @@ export function CatalogPanel() {
         ))}
       </div>
     </aside>
-  );
+  </>
+);
 }

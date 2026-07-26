@@ -47,7 +47,10 @@ export function FloorPlanSvgCanvas({ props, state }: FloorPlanSvgCanvasProps) {
       onMouseMove={handleCanvasMouseMove}
       onMouseLeave={handleCanvasMouseLeave}
       onPointerDown={handleCanvasPointerDown}
-      onPointerMove={pointer.handlePointerMove}
+      onPointerMove={(e) => {
+        handleCanvasMouseMove(e);
+        pointer.handlePointerMove(e);
+      }}
       onPointerUp={pointer.handlePointerUp}
       onPointerCancel={pointer.handlePointerUp}
       onClick={handleCanvasClick}
