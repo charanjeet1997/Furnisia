@@ -26,6 +26,7 @@ interface UseInteriorWallActionsProps {
   joinEndpoints: (a: { wallId: string; end: 'start' | 'end' }, b: { wallId: string; end: 'start' | 'end' }) => void;
   leaveJoint: (wallId: string, end: 'start' | 'end') => void;
   remapJointMember: (oldId: string, startOwnerId: string, endOwnerId: string) => void;
+  pushHistory?: () => void;
   normalizedThicknesses: () => number[];
 }
 
@@ -57,7 +58,7 @@ export function useInteriorWallActions({
   onInteriorWallsChange,
   openings,
   onOpeningsChange,
-  edgeThicknesses,
+  edgeThicknesses: _edgeThicknesses,
   onEdgeThicknessesChange,
   attachments,
   setAttachments,
@@ -152,7 +153,7 @@ export function useInteriorWallActions({
     const newWall: InteriorWall = { id: newWallId, start: finalStart, end: finalEnd };
     activeSessionWallIds.current.push(newWallId);
 
-    pushHistory();
+    pushHistory?.();
     let finalWalls = [...currentWalls, newWall];
 
     // Handle T-junction splits and endpoint joins when snapping to an existing interior wall
@@ -163,14 +164,15 @@ export function useInteriorWallActions({
 
     for (const item of snapsToProcess) {
       if (item.snap?.host === 'interior') {
-        const hostWall = finalWalls.find((w) => w.id === item.snap!.wallId);
+        const snapObj = item.snap as any;
+        const hostWall = finalWalls.find((w) => w.id === snapObj.wallId);
         if (!hostWall) continue;
 
-        const t = item.snap.t ?? 0.5;
+        const t = snapObj.t ?? 0.5;
         console.log('[WallIntersection] Evaluating interior snap:', {
           newWallId,
           end: item.end,
-          hostWallId: item.snap.wallId,
+          hostWallId: snapObj.wallId,
           t,
           point: item.point,
         });
@@ -181,37 +183,39 @@ export function useInteriorWallActions({
           console.log('[WallIntersection] Joining directly to interior endpoint:', {
             newWallId,
             newEnd: item.end,
-            hostWallId: item.snap.wallId,
+            hostWallId: snapObj.wallId,
             hostEnd: targetEnd,
           });
-          joinEndpoints({ wallId: newWallId, end: item.end }, { wallId: item.snap.wallId, end: targetEnd });
+          joinEndpoints({ wallId: newWallId, end: item.end }, { wallId: snapObj.wallId, end: targetEnd });
         } else {
           // T-junction: Split host wall at intersection point and join all 3 walls
-          console.log('[WallIntersection] Splitting host interior wall for T-junction:', { hostWallId: item.snap.wallId, point: item.point });
-          const splitResult = splitInteriorWallAt(finalWalls, attachments, currentOpenings, item.snap.wallId, item.point);
-          if (splitResult) {
+          console.log('[WallIntersection] Splitting host interior wall for T-junction:', { hostWallId: snapObj.wallId, point: item.point });
+          const splitResult = splitInteriorWallAt(finalWalls, attachments, currentOpenings, snapObj.wallId, item.point);
+          if (splitResult && splitResult.newJoin) {
             finalWalls = splitResult.walls;
             if (splitResult.openings !== currentOpenings) {
               currentOpenings = splitResult.openings;
               onOpeningsChange(currentOpenings);
             }
-            remapJointMember(item.snap.wallId, splitResult.newJoin[0].wallId, splitResult.newJoin[1].wallId);
+            remapJointMember(snapObj.wallId, splitResult.newJoin[0].wallId, splitResult.newJoin[1].wallId);
             joinEndpoints(splitResult.newJoin[0], splitResult.newJoin[1]);
             joinEndpoints({ wallId: newWallId, end: item.end }, splitResult.newJoin[0]);
             console.log('[WallIntersection] T-junction split and joined successfully!');
           } else {
-            console.warn('[WallIntersection] Split returned null for host wall:', item.snap.wallId);
+            console.warn('[WallIntersection] Split returned null for host wall:', snapObj.wallId);
           }
         }
       }
     }
 
     // Handle corner joins when snapping to an existing interior wall's endpoint
-    if (startSnap?.host === 'interiorEndpoint') {
-      joinEndpoints({ wallId: newWallId, end: 'start' }, { wallId: startSnap.wallId, end: startSnap.endpoint });
+    const startSnapObj = startSnap as any;
+    const endSnapObj = effectiveEndSnap as any;
+    if (startSnapObj?.host === 'interiorEndpoint') {
+      joinEndpoints({ wallId: newWallId, end: 'start' }, { wallId: startSnapObj.wallId, end: startSnapObj.endpoint });
     }
-    if (effectiveEndSnap?.host === 'interiorEndpoint') {
-      joinEndpoints({ wallId: newWallId, end: 'end' }, { wallId: effectiveEndSnap.wallId, end: effectiveEndSnap.endpoint });
+    if (endSnapObj?.host === 'interiorEndpoint') {
+      joinEndpoints({ wallId: newWallId, end: 'end' }, { wallId: endSnapObj.wallId, end: endSnapObj.endpoint });
     }
 
     // Handle mid-segment 4-way cross intersections between interior walls
@@ -221,7 +225,7 @@ export function useInteriorWallActions({
       if (ptInt) {
         console.log('[WallIntersection] Mid-segment 4-way intersection found:', { newWallId, hostWallId: hostWall.id, ptInt });
         const splitHost = splitInteriorWallAt(finalWalls, attachments, currentOpenings, hostWall.id, ptInt);
-        if (splitHost) {
+        if (splitHost && splitHost.newJoin) {
           finalWalls = splitHost.walls;
           if (splitHost.openings !== currentOpenings) {
             currentOpenings = splitHost.openings;
@@ -231,7 +235,7 @@ export function useInteriorWallActions({
           joinEndpoints(splitHost.newJoin[0], splitHost.newJoin[1]);
 
           const splitNew = splitInteriorWallAt(finalWalls, attachments, currentOpenings, newWallId, ptInt);
-          if (splitNew) {
+          if (splitNew && splitNew.newJoin) {
             finalWalls = splitNew.walls;
             if (splitNew.openings !== currentOpenings) {
               currentOpenings = splitNew.openings;
@@ -264,7 +268,7 @@ export function useInteriorWallActions({
   }
 
   function removeInteriorWall(id: string) {
-    pushHistory();
+    pushHistory?.();
     leaveJoint(id, 'start');
     leaveJoint(id, 'end');
     onInteriorWallsChange(interiorWalls.filter((w) => w.id !== id));
@@ -281,7 +285,7 @@ export function useInteriorWallActions({
     const mid = { x: snap((wall.start.x + wall.end.x) / 2), z: snap((wall.start.z + wall.end.z) / 2) };
     const result = splitInteriorWallAt(interiorWalls, attachments, openings, id, mid);
     if (!result) return;
-    pushHistory();
+    pushHistory?.();
     onInteriorWallsChange(result.walls);
     setAttachments(result.attachments);
     if (result.openings !== openings) onOpeningsChange(result.openings);
@@ -351,7 +355,7 @@ export function useInteriorWallActions({
   }
 
   function handleEndpointDetach(wallId: string, end: 'start' | 'end') {
-    pushHistory();
+    pushHistory?.();
     leaveJoint(wallId, end);
     setAttachments((prev) => {
       const current = prev[wallId];
@@ -366,7 +370,7 @@ export function useInteriorWallActions({
   }
 
   function handleFreeEndpointClick(wallId: string, end: 'start' | 'end') {
-    pushHistory();
+    pushHistory?.();
     continuousFrom.current = { wallId, end };
   }
 

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import { FiCheck, FiRotateCcw, FiX } from 'react-icons/fi';
 import type { PlanUnits } from '../types/floorPlanTypes';
 import type { InteriorWall } from '../../../Data/RoomShape';

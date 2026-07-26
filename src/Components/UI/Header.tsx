@@ -15,8 +15,8 @@ export function Header() {
   return (
     <header className={styles.header}>
       <Link to="/" className={styles.brand}>
-        <span className={styles.logo} aria-hidden="true" />
-        Furnisia
+        <img src="/logo.png" alt="Furnisia™ Logo" className={styles.logoImg} />
+        Furnisia™
       </Link>
       <div className={styles.actions}>
         {!loading && (user ? (

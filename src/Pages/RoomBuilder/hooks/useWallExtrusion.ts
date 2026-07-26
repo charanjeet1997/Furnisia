@@ -30,7 +30,7 @@ export function useWallExtrusion({
   onInteriorWallsChange,
   openings,
   onOpeningsChange,
-  edgeThicknesses,
+  edgeThicknesses: _edgeThicknesses,
   onEdgeThicknessesChange,
   attachments,
   setAttachments,

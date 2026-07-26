@@ -208,7 +208,7 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
         scale: pointer.pxScale(),
         normal,
       });
-      onInteriorWallDragStart?.(snapped.wallId);
+      onInteriorWallDrag?.(snapped.wallId, 0, 0);
     }
   }
 

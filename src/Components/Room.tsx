@@ -7,7 +7,7 @@ import { createClippedMaterial } from './createClippedMaterial';
 import { createGlassMaterial } from './createGlassMaterial';
 import { computeEdges, offsetPolygon, boundingBox } from './polygonGeometry';
 import { getDoorStyle, getWindowStyle } from '../Data/OpeningStyles';
-import type { RoomOpening } from '../Data/RoomShape';
+import type { RoomOpening, RoomVertex } from '../Data/RoomShape';
 
 const BASEBOARD_COLOR = '#e8e2d4';
 const BASEBOARD_HEIGHT = 0.05;
@@ -140,14 +140,14 @@ export function Room({ disableClipping = false }: RoomProps) {
     };
     edges.forEach((edge, i) => {
       const mat = wallMats[i];
-      if (!mat) return;
+      if (!mat || !('uniforms' in mat)) return;
       mat.uniforms.cameraAxisValue.value = camera.position.x * edge.normal.x + camera.position.z * edge.normal.z;
       mat.uniforms.targetAxisValue.value = target.x * edge.normal.x + target.z * edge.normal.z;
       mat.uniforms.threshold.value = edge.midpoint.x * edge.normal.x + edge.midpoint.z * edge.normal.z;
     });
     interiorWalls.forEach((wall, i) => {
       const mat = interiorWallMats[i];
-      if (!mat) return;
+      if (!mat || !('uniforms' in mat)) return;
       const dx = wall.end.x - wall.start.x;
       const dz = wall.end.z - wall.start.z;
       const length = Math.hypot(dx, dz);
@@ -160,17 +160,22 @@ export function Room({ disableClipping = false }: RoomProps) {
       mat.uniforms.targetAxisValue.value = target.x * nx + target.z * nz;
       mat.uniforms.threshold.value = midX * nx + midZ * nz;
     });
-    ceilingMat.uniforms.cameraAxisValue.value = camera.position.y;
-    ceilingMat.uniforms.targetAxisValue.value = target.y;
-    ceilingMat.uniforms.threshold.value = height;
+    if ('uniforms' in ceilingMat) {
+      ceilingMat.uniforms.cameraAxisValue.value = camera.position.y;
+      ceilingMat.uniforms.targetAxisValue.value = target.y;
+      ceilingMat.uniforms.threshold.value = height;
+    }
     for (const fixtureMat of [fixtureTrimMat, fixtureLensMat]) {
-      fixtureMat.uniforms.cameraAxisValue.value = camera.position.y;
-      fixtureMat.uniforms.targetAxisValue.value = target.y;
-      fixtureMat.uniforms.threshold.value = height;
+      const matObj = fixtureMat as unknown as { uniforms?: { cameraAxisValue: { value: number }; targetAxisValue: { value: number }; threshold: { value: number } } };
+      if (matObj.uniforms) {
+        matObj.uniforms.cameraAxisValue.value = camera.position.y;
+        matObj.uniforms.targetAxisValue.value = target.y;
+        matObj.uniforms.threshold.value = height;
+      }
     }
     openings.forEach((o, i) => {
       const mat = openingMats[i];
-      if (!mat) return;
+      if (!mat || !('uniforms' in mat)) return;
       let normal: { x: number; z: number };
       let midpoint: { x: number; z: number };
       if (o.interiorWallId) {

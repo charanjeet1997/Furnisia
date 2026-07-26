@@ -25,7 +25,9 @@ export class ToolRunner {
   }
 
   public registerTool(tool: IWallTool): void {
-    this.tools.set ? (this.tools as unknown as Map<string, IWallTool>).set(tool.id, tool) : this.tools.push(tool);
+    if (!this.tools.some((t) => t.id === tool.id)) {
+      this.tools.push(tool);
+    }
     this.notify();
   }
 

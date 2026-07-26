@@ -1,4 +1,3 @@
-import React from 'react';
 import type { RoomVertex } from '../../../../Data/RoomShape';
 import type { WallEdge } from '../../../../Components/polygonGeometry';
 import type { InteriorWall } from '../../../../Data/RoomShape';
@@ -14,7 +13,7 @@ interface DrawPreviewLayerProps {
   onWallDrawComplete?: unknown;
   hoverPoint: RoomVertex | null;
   hoverSnap: SnapTarget | null;
-  hoverOnWall: boolean;
+  hoverOnWall?: boolean;
   edges: WallEdge[];
   interiorWalls: InteriorWall[];
   setDrawStart: (pt: RoomVertex | null) => void;
@@ -36,7 +35,7 @@ export function DrawPreviewLayer({
   onWallDrawComplete,
   hoverPoint,
   hoverSnap,
-  hoverOnWall,
+  hoverOnWall: _hoverOnWall,
   edges,
   interiorWalls,
   setDrawStart,
@@ -100,7 +99,7 @@ export function DrawPreviewLayer({
         !drawStart &&
         hoverPoint &&
         (() => {
-          const snap_ = hoverSnap ?? ({ host: 'free', point: hoverPoint } as SnapTarget);
+          const snap_ = hoverSnap ?? ({ host: 'free', point: hoverPoint } as unknown as SnapTarget);
           const normal =
             hoverSnap?.host === 'boundary'
               ? (edges[hoverSnap.edgeIndex]?.normal ?? { x: 0, z: -1 })

@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { FiChevronDown, FiChevronUp, FiPlus, FiX } from 'react-icons/fi';
+import { FiChevronUp, FiPlus, FiX } from 'react-icons/fi';
 import { furnitureCatalog, furnitureCategories, type FurnitureCategory } from '../../Data/FurnitureCatalog';
 import { usePlannerStore } from '../../store/plannerStore';
 import { useDeviceType } from '../../hooks/useDeviceType';

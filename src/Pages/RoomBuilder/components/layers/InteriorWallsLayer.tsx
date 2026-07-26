@@ -1,8 +1,6 @@
-import React, { useRef } from 'react';
+import { useRef } from 'react';
 import type { InteriorWall, RoomVertex } from '../../../../Data/RoomShape';
 import type { SnapTarget, DragState } from '../../types/floorPlanTypes';
-
-const DOUBLE_CLICK_WINDOW = 280;
 
 interface InteriorWallsLayerProps {
   interiorWalls: InteriorWall[];

@@ -91,7 +91,7 @@ export function VRRoom() {
           {atmosphere === 'day' && (
             <>
               {/* Soft sky fill + warm wood floor bounce */}
-              <hemisphereLight skyColor="#e0f2fe" groundColor="#d97706" intensity={0.7} />
+              <hemisphereLight args={['#e0f2fe', '#d97706', 0.7]} />
               {/* Natural directional sunlight streaming into room */}
               <directionalLight
                 position={[4, 5, 2]}
@@ -109,7 +109,7 @@ export function VRRoom() {
 
           {atmosphere === 'sunset' && (
             <>
-              <hemisphereLight skyColor="#fdba74" groundColor="#78350f" intensity={0.8} />
+              <hemisphereLight args={['#fdba74', '#78350f', 0.8]} />
               <directionalLight
                 position={[5, 2, 4]}
                 intensity={1.5}
@@ -123,7 +123,7 @@ export function VRRoom() {
 
           {atmosphere === 'night' && (
             <>
-              <hemisphereLight skyColor="#1e1b4b" groundColor="#0f172a" intensity={0.35} />
+              <hemisphereLight args={['#1e1b4b', '#0f172a', 0.35]} />
               {/* Downward spotlight for cozy interior illumination */}
               <spotLight
                 position={[0, 2.4, 0]}

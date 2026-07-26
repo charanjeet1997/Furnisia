@@ -3,7 +3,6 @@ import { furnitureCatalog, type ModelForward } from '../Data/FurnitureCatalog';
 import { computeEdges, boundingBox, pointInPolygon, type WallEdge } from '../Components/polygonGeometry';
 import type { PlacedItem } from './plannerStore';
 
-const WALL_MARGIN = 0.03; // 3cm flush inset against walls (IKEA style)
 const ITEM_GAP = 0.15; // 15cm breathing room between pieces
 const GRID_STEP = 0.25; // interior fallback grid resolution
 const DOOR_CLEAR_Z = 1.0; // metres of clearance kept in front of every door
@@ -159,10 +158,8 @@ export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalo
   if (lowerId.includes('bed')) {
     const sortedEdges = [...edges].sort((a, b) => b.length - a.length);
     for (const edge of sortedEdges) {
-      const dirX = (edge.end.x - edge.start.x) / edge.length;
-      const dirZ = (edge.end.z - edge.start.z) / edge.length;
       const rotation = edge.angle + rotOff;
-      const pushIn = iD / 2 + WALL_MARGIN;
+      const pushIn = iD / 2 + 0.05;
       const x = edge.midpoint.x - edge.normal.x * pushIn;
       const z = edge.midpoint.z - edge.normal.z * pushIn;
       if (isFree(x, z, rotation)) {

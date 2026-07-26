@@ -13,7 +13,7 @@ interface WallToolMenuProps {
 }
 
 export function WallToolMenu(props: WallToolMenuProps) {
-  const isFree = !props.snap || props.snap.host === 'free';
+  const isFree = !props.snap || (props.snap as { host?: string }).host === 'free';
   const ctx: WallToolContext = props;
   const positionedTools = toolRunner.getPositionedTools(ctx);
 

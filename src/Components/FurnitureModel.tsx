@@ -6,7 +6,6 @@ import { furnitureCatalog } from '../Data/FurnitureCatalog';
 import { GizmoAnchor } from './GizmoAnchor';
 import { boundingBox } from './polygonGeometry';
 
-const WALL_MARGIN = 0.15;
 
 interface FurnitureModelProps {
   item: PlacedItem;

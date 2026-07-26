@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { FloorPlanPreview } from './FloorPlanPreview';
 import type { RoomOpening, RoomVertex, InteriorWall } from '../../Data/RoomShape';
 import styles from './RoomBuilder.module.css';

@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { WallEdge } from '../../../../Components/polygonGeometry';
 import { formatLength, type PlanUnits, DIM_OFFSET, DIM_TICK } from '../../types/floorPlanTypes';
 

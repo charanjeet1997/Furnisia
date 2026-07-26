@@ -1,4 +1,4 @@
-import React from 'react';
+
 import type { FloorPlanPreviewProps } from '../types/floorPlanTypes';
 import { FLOOR_FILL } from '../types/floorPlanTypes';
 import { BoundaryWallsLayer } from './layers/BoundaryWallsLayer';

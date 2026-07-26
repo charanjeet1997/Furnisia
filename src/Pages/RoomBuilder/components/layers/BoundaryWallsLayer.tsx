@@ -22,7 +22,6 @@ interface BoundaryWallsLayerProps {
   flashRejection: (edgeIndex: number | undefined, message: string) => void;
 }
 
-const DOUBLE_CLICK_WINDOW = 280;
 
 export function BoundaryWallsLayer({
   edges,

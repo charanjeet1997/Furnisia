@@ -1,7 +1,7 @@
 import { useRef, useState } from 'react';
 import { computeEdges, pointInPolygon, type WallEdge } from '../../../Components/polygonGeometry';
 import { DEFAULT_WALL_THICKNESS, type InteriorWall, type RoomOpening, type RoomVertex } from '../../../Data/RoomShape';
-import type { PlanUnits, SnapTarget } from '../types/floorPlanTypes';
+import type { PlanUnits } from '../types/floorPlanTypes';
 import {
   MIN_EDGE,
   snap,

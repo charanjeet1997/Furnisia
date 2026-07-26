@@ -72,6 +72,29 @@
   border-color: var(--color-accent);
 }
 
+.vrButton {
+  display: flex;
+  align-items: center;
+  min-height: 44px;
+  gap: 0.4rem;
+  padding: 0.55rem 1rem;
+  font-size: 0.85rem;
+  font-weight: 600;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all var(--duration-hover) var(--ease-standard);
+}
+
+.vrButton:hover {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+}
+
 .lightControlWrapper {
   position: relative;
 }
