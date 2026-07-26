@@ -98,18 +98,21 @@ export function Toolbar() {
           <FiArrowLeft />
         </button>
 
-        <button type="button" className={styles.saveButton} onClick={handleSave}>
+        <button type="button" className={styles.saveButton} onClick={handleSave} title="Save room">
           <FiSave />
-          {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : saveStatus === 'error' ? 'Failed' : 'Save room'}
+          <span className={styles.buttonLabel}>
+            {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : saveStatus === 'error' ? 'Failed' : 'Save'}
+          </span>
         </button>
 
-        <button type="button" className={styles.editButton} onClick={handleEditRoom}>
+        <button type="button" className={styles.editButton} onClick={handleEditRoom} title="Edit room">
           <FiEdit2 />
-          Edit room
+          <span className={styles.buttonLabel}>Edit</span>
         </button>
 
-        <button type="button" className={styles.editButton} onClick={() => navigate('/vr-room')} title="Step inside room in VR">
-          🥽 VR Room
+        <button type="button" className={styles.vrButton} onClick={() => navigate('/vr-room')} title="VR Room">
+          <span style={{ fontSize: '1rem', lineHeight: 1 }}>🥽</span>
+          <span className={styles.buttonLabel}>VR Room</span>
         </button>
 
         <div className={styles.lightControlWrapper} ref={lightRef}>

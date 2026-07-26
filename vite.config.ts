@@ -6,10 +6,7 @@ import basicSsl from '@vitejs/plugin-basic-ssl'
 export default defineConfig({
   plugins: [react(), basicSsl()],
   server: {
-    // Without this, Chrome's default COOP policy blocks the Firebase Auth popup flow
-    // (signInWithPopup) from checking window.closed, logging noisy warnings and sometimes
-    // stalling the sign-in. "same-origin-allow-popups" keeps isolation for our own origin
-    // while still letting the auth popup be tracked.
+    host: '0.0.0.0',
     headers: {
       'Cross-Origin-Opener-Policy': 'same-origin-allow-popups',
     },

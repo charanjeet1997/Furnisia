@@ -7,6 +7,7 @@ import { usePlannerStore } from '../store/plannerStore';
 import { Room } from '../Components/Room';
 import { FurnitureModel } from '../Components/FurnitureModel';
 import { FPSController } from '../Components/FPSController';
+import { VRController } from '../Components/VRController';
 import styles from './VRRoom.module.css';
 
 type Atmosphere = 'day' | 'sunset' | 'night';
@@ -84,6 +85,7 @@ export function VRRoom() {
           camera={{ position: [0, 1.6, 0], fov: 75 }}
         >
           <FPSController eyeHeight={1.6} moveSpeed={2.5} />
+          <VRController laserColor={0x6366f1} />
 
           {/* Photorealistic ArchViz Lighting Setup */}
           {atmosphere === 'day' && (
