@@ -9,43 +9,43 @@
   width: 100%;
   max-width: min(1400px, 94vw);
   margin: 0 auto;
-  padding: 3.5rem 1.5rem 4rem;
+  padding: clamp(1.25rem, 3vh, 2.5rem) 1.5rem clamp(2rem, 4vh, 3rem);
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--color-text);
 }
 
 .hero {
   text-align: center;
-  padding: 2.75rem 1.5rem;
-  margin-bottom: 2.5rem;
+  padding: clamp(1.5rem, 3.5vh, 2.5rem) 1.25rem;
+  margin-bottom: clamp(1.25rem, 3vh, 2rem);
   border-radius: var(--radius-lg);
   background: linear-gradient(150deg, var(--color-accent-soft) 0%, var(--color-bg) 70%);
 }
 
 .heroTitle {
-  font-size: clamp(1.6rem, 1.2rem + 2.5vw, 2.25rem);
+  font-size: clamp(1.5rem, 1.2rem + 2vw, 2.25rem);
   font-weight: 700;
   letter-spacing: -0.02em;
-  margin: 0 0 0.6rem;
+  margin: 0 0 0.5rem;
   color: var(--color-text);
 }
 
 .heroSubtitle {
   color: var(--color-text-muted);
-  font-size: 1.05rem;
+  font-size: clamp(0.92rem, 0.85rem + 0.4vw, 1.05rem);
   margin: 0;
 }
 
 .startCards {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: 1rem;
-  margin-bottom: 3rem;
+  gap: clamp(0.75rem, 1.5vw, 1.25rem);
+  margin-bottom: clamp(1.5rem, 3.5vh, 2.5rem);
 }
 
 @media (max-width: 640px) {
   .hero {
-    padding: 1.75rem 1.25rem;
+    padding: 1.25rem 1rem;
   }
 
   .startCards {

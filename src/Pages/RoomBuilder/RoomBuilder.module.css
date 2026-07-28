@@ -1,7 +1,8 @@
 .appShell {
-  min-height: 100vh;
+  height: 100vh;
   display: flex;
   flex-direction: column;
+  overflow: hidden;
 }
 
 .page {
@@ -9,11 +10,13 @@
   width: 100%;
   max-width: min(1320px, 94vw);
   margin: 0 auto;
-  padding: 2.5rem 1.5rem 3rem;
+  padding: clamp(0.5rem, 1.5vh, 1.25rem) 1.5rem clamp(0.5rem, 1.5vh, 1rem);
   font-family: system-ui, -apple-system, 'Segoe UI', sans-serif;
   color: var(--color-text);
   display: flex;
   flex-direction: column;
+  overflow: hidden;
+  min-height: 0;
 }
 
 .stepIndicator {
@@ -22,7 +25,8 @@
   color: var(--color-text-muted);
   text-transform: uppercase;
   letter-spacing: 0.05em;
-  margin-bottom: 1rem;
+  margin-bottom: clamp(0.25rem, 1vh, 0.75rem);
+  flex-shrink: 0;
 }
 
 .stepProgress {
@@ -30,6 +34,16 @@
 }
 
 @media (max-width: 640px) {
+  .appShell {
+    height: auto;
+    min-height: 100vh;
+    overflow: auto;
+  }
+
+  .page {
+    overflow: visible;
+  }
+
   .stepProgress {
     display: block;
     height: 4px;
@@ -51,43 +65,62 @@
   display: flex;
   flex-direction: column;
   justify-content: center;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .stepTitle {
-  font-size: 1.5rem;
+  font-size: clamp(1.2rem, 1.5vw, 1.5rem);
   font-weight: 700;
-  margin: 0 0 1.25rem;
+  margin: 0 0 clamp(0.4rem, 1vh, 1rem);
+  flex-shrink: 0;
 }
 
 .stepSubtitle {
   font-size: 0.85rem;
   font-weight: 600;
   color: var(--color-text-muted);
-  margin: 1.25rem 0 0.6rem;
+  margin: clamp(0.4rem, 1vh, 1rem) 0 0.5rem;
+  flex-shrink: 0;
 }
 
 .nav {
   display: flex;
   justify-content: space-between;
-  margin-top: 2rem;
-  padding-top: 1.5rem;
+  align-items: center;
+  margin-top: clamp(0.5rem, 1.5vh, 1.25rem);
+  padding-top: clamp(0.5rem, 1.2vh, 1rem);
   border-top: 1px solid var(--color-border);
+  flex-shrink: 0;
+  width: 100%;
 }
 
 .backButton,
 .nextButton {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   min-height: 44px;
-  padding: 0.65rem 1.4rem;
+  padding: 0.6rem 1.6rem;
   border-radius: var(--radius-pill);
   font-size: 0.9rem;
   font-weight: 600;
   cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all var(--duration-hover) var(--ease-standard);
 }
 
 .backButton {
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   color: var(--color-text);
+}
+
+.backButton:hover {
+  background: var(--color-accent-soft);
+  border-color: var(--color-accent);
+  color: var(--color-accent);
+  transform: translateY(-1px);
 }
 
 .nextButton {
@@ -98,6 +131,14 @@
 
 .nextButton:hover {
   background: var(--color-accent-hover);
+  border-color: var(--color-accent-hover);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-md);
+}
+
+.backButton:active,
+.nextButton:active {
+  transform: translateY(0);
 }
 
 @media (max-width: 640px) {
@@ -180,18 +221,40 @@
 
 /* Step 2 & 3 shared: params/openings + preview */
 .dimensionsLayout {
+  flex: 1;
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  gap: 2rem;
-  align-items: start;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: clamp(1.25rem, 2.5vw, 2.5rem);
+  align-items: center;
+  width: 100%;
+  min-height: 0;
+  overflow: hidden;
 }
 
 .previewPane {
-  aspect-ratio: 1;
+  width: 100%;
+  max-width: min(100%, calc(100vh - 210px));
+  max-height: calc(100vh - 210px);
+  aspect-ratio: 1 / 1;
+  justify-self: center;
+  align-self: center;
   background: var(--color-surface);
   border: 1px solid var(--color-border);
   border-radius: var(--radius-md);
   padding: 0.5rem;
+  box-sizing: border-box;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+}
+
+/* Specifically scale up preview box on 1440p, 4K & large monitors without affecting 1080p, laptops, or mobile */
+@media (min-width: 1400px) and (min-height: 800px) {
+  .previewPane {
+    max-width: min(100%, calc(100vh - 240px));
+    max-height: min(580px, calc(100vh - 240px));
+  }
 }
 
 @media (max-width: 860px) {
