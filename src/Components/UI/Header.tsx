@@ -14,10 +14,16 @@ export function Header() {
 
   return (
     <header className={styles.header}>
-      <Link to="/" className={styles.brand}>
-        <img src="/logo.png" alt="Furnisia™ Logo" className={styles.logoImg} />
-        Furnisia™
-      </Link>
+      <div className={styles.brandGroup}>
+        <Link to="/" className={styles.brand}>
+          <img src="/logo.png" alt="Furnisia™ Logo" className={styles.logoImg} />
+          Furnisia™
+        </Link>
+        <nav className={styles.navLinks}>
+          <Link to="/" className={styles.navLink}>Home</Link>
+          <Link to="/about" className={styles.navLink}>About</Link>
+        </nav>
+      </div>
       <div className={styles.actions}>
         {!loading && (user ? (
           <div className={styles.account}>

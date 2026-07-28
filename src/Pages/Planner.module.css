@@ -8,3 +8,13 @@
   position: relative;
   flex: 1;
 }
+
+/* On iPad landscape & mobile/tablet viewports under 820px height, allow vertical scrolling so controls & canvas are never cut off */
+@media (max-width: 1024px), (max-height: 820px) {
+  .layout {
+    height: auto;
+    min-height: 100dvh;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+}

@@ -44,7 +44,7 @@ export function RoomBuilder() {
   const [shapeType, setShapeType] = useState<RoomShapeType>('rectangular');
   // Vertices are STATE, not derived from params: a shape pick seeds the polygon, then Step 2's
   // wall/corner drags and inline dimension edits mutate the vertex list directly, so moving
-  // one wall never disturbs the others (IKEA/Revit-style free-form editing).
+  // one wall never disturbs the others (free-form CAD editing).
   const [vertices, setVertices] = useState<RoomVertex[]>(
     () => initialRoom?.vertices ?? generateVertices('rectangular', SHAPE_DEFAULT_PARAMS.rectangular),
   );

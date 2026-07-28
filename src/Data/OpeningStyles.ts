@@ -1,4 +1,4 @@
-// Simplified, not pixel-matched to IKEA's real door/window assets — each style is built from
+// Simplified parametric door/window styles — each style is built from
 // the same box + glass-material primitives Room.tsx already uses, varied by leaf/pane count
 // and solid-vs-glass material so they're visually distinct rather than identical placeholders.
 

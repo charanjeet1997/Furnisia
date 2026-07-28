@@ -120,7 +120,7 @@ export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalo
 
   const lowerId = newCatalogId.toLowerCase();
 
-  // --- IKEA Rule 1: Coffee Table (Placed 0.45m in front of sofa) ---
+  // --- Smart Placement Rule 1: Coffee Table (Placed 0.45m in front of sofa) ---
   if (lowerId.includes('table') || lowerId.includes('coffee')) {
     const sofa = existing.find((item) => item.catalogId.toLowerCase().includes('sofa') || item.catalogId.toLowerCase().includes('seating'));
     if (sofa) {
@@ -136,7 +136,7 @@ export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalo
     }
   }
 
-  // --- IKEA Rule 2: Nightstand / Shelf (Placed beside bed headboard) ---
+  // --- Smart Placement Rule 2: Nightstand / Shelf (Placed beside bed headboard) ---
   if (lowerId.includes('shelf') || lowerId.includes('nightstand')) {
     const bed = existing.find((item) => item.catalogId.toLowerCase().includes('bed'));
     if (bed) {
@@ -154,7 +154,7 @@ export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalo
     }
   }
 
-  // --- IKEA Rule 3: Bed (Prefers longest empty wall, headboard against wall) ---
+  // --- Smart Placement Rule 3: Bed (Prefers longest empty wall, headboard against wall) ---
   if (lowerId.includes('bed')) {
     const sortedEdges = [...edges].sort((a, b) => b.length - a.length);
     for (const edge of sortedEdges) {
@@ -168,7 +168,7 @@ export function findPlacement(room: RoomShape, existing: PlacedItem[], newCatalo
     }
   }
 
-  // --- IKEA Rule 4: General Wall-Hugging candidates (Sofa, Lamp, Plant, etc.) ---
+  // --- Smart Placement Rule 4: General Wall-Hugging candidates (Sofa, Lamp, Plant, etc.) ---
   const SAMPLES = 7;
   const wallCandidateLists: [number, number, number][][] = edges.map((edge) => {
     const dirX = (edge.end.x - edge.start.x) / edge.length;

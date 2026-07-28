@@ -13,9 +13,16 @@ export function RoomCard({ preset, onSelect }: RoomCardProps) {
       <div className={styles.thumbnail}>
         <MiniRoomIcon vertices={preset.vertices} />
       </div>
-      <h3 className={styles.name}>{preset.name}</h3>
-      <p className={styles.size}>{footprintFt(preset.vertices)}</p>
-      <span className={styles.cta}>Design this room</span>
+      <div className={styles.content}>
+        <div className={styles.metaRow}>
+          <span className={styles.badge}>Preset</span>
+          <span className={styles.size}>{footprintFt(preset.vertices)}</span>
+        </div>
+        <h3 className={styles.name}>{preset.name}</h3>
+        <div className={styles.footer}>
+          <span className={styles.cta}>Design room <span className={styles.ctaArrow}>➔</span></span>
+        </div>
+      </div>
     </button>
   );
 }

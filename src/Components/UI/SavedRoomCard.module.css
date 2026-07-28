@@ -1,25 +1,32 @@
 .wrapper {
   position: relative;
+  width: 100%;
 }
 
 .deleteButton {
   position: absolute;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 2;
-  width: 30px;
-  height: 30px;
+  top: 0.6rem;
+  right: 0.6rem;
+  z-index: 10;
+  width: 32px;
+  height: 32px;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: var(--radius-pill);
+  border-radius: 50%;
   border: 1px solid var(--color-border);
-  background: var(--color-surface);
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   color: var(--color-danger);
   cursor: pointer;
   box-shadow: var(--shadow-sm);
+  transition: all 0.15s ease;
 }
 
 .deleteButton:hover {
-  background: var(--color-danger-soft);
+  background: var(--color-danger);
+  color: #ffffff;
+  border-color: var(--color-danger);
+  transform: scale(1.08);
 }

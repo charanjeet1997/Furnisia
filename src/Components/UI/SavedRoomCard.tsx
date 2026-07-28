@@ -12,15 +12,26 @@ interface SavedRoomCardProps {
 }
 
 export function SavedRoomCard({ saved, onSelect, onDelete }: SavedRoomCardProps) {
+  const itemCount = saved.placedItems.length;
+
   return (
     <div className={styles.wrapper}>
       <button type="button" className={cardStyles.card} onClick={onSelect}>
         <div className={cardStyles.thumbnail}>
           <MiniRoomIcon vertices={saved.room.vertices} />
         </div>
-        <h3 className={cardStyles.name}>{saved.name}</h3>
-        <p className={cardStyles.size}>{footprintFt(saved.room.vertices)} &middot; {saved.placedItems.length} items</p>
-        <span className={cardStyles.cta}>Open room</span>
+        <div className={cardStyles.content}>
+          <div className={cardStyles.metaRow}>
+            <span className={cardStyles.savedBadge}>☁️ Saved</span>
+            <span className={cardStyles.size}>
+              {footprintFt(saved.room.vertices)} &middot; {itemCount} {itemCount === 1 ? 'item' : 'items'}
+            </span>
+          </div>
+          <h3 className={cardStyles.name}>{saved.name}</h3>
+          <div className={cardStyles.footer}>
+            <span className={cardStyles.cta}>Open room <span className={cardStyles.ctaArrow}>➔</span></span>
+          </div>
+        </div>
       </button>
       <button
         type="button"

@@ -3,113 +3,156 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: 0.65rem 1.5rem;
-  background: var(--color-surface);
+  padding: 0.75rem 2rem;
+  background: var(--glass-bg);
+  backdrop-filter: var(--glass-blur);
+  -webkit-backdrop-filter: var(--glass-blur);
   border-bottom: 1px solid var(--color-border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  transition: background-color 0.2s ease, border-color 0.2s ease;
 }
 
 @media (max-width: 640px) {
   .header {
-    padding: 0.75rem 1rem;
+    padding: 0.65rem 1rem;
   }
+}
+
+.brandGroup {
+  display: flex;
+  align-items: center;
+  gap: 1.75rem;
 }
 
 .brand {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  font-size: 1.05rem;
+  gap: 0.6rem;
+  font-family: 'Outfit', sans-serif;
+  font-size: 1.15rem;
   font-weight: 700;
   color: var(--color-text);
   text-decoration: none;
+  letter-spacing: -0.01em;
+  transition: transform 0.15s ease;
+}
+
+.brand:hover {
+  transform: scale(1.02);
 }
 
 .logoImg {
-  width: 28px;
-  height: 28px;
+  width: 30px;
+  height: 30px;
   object-fit: contain;
   border-radius: var(--radius-sm);
+  filter: drop-shadow(0 2px 6px rgba(16, 185, 129, 0.3));
+}
+
+.navLinks {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.navLink {
+  font-size: 0.88rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-decoration: none;
+  transition: color 0.15s ease;
+}
+
+.navLink:hover {
+  color: var(--color-accent);
 }
 
 .actions {
   display: flex;
   align-items: center;
-  gap: 0.9rem;
+  gap: 1rem;
 }
 
 .account {
   display: flex;
   align-items: center;
-  gap: 0.6rem;
+  gap: 0.75rem;
 }
 
 .accountLink {
   display: flex;
   align-items: center;
   gap: 0.5rem;
-  min-width: 44px;
-  min-height: 44px;
   text-decoration: none;
   border-radius: var(--radius-pill);
-  padding: 0.2rem 0.5rem 0.2rem 0.2rem;
+  padding: 0.25rem 0.6rem 0.25rem 0.25rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  transition: all 0.15s ease;
 }
 
 .accountLink:hover {
-  background: var(--color-bg);
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
 }
 
 .accountAvatar {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
 }
 
 .accountAvatarFallback {
-  width: 26px;
-  height: 26px;
+  width: 28px;
+  height: 28px;
   border-radius: 50%;
   flex-shrink: 0;
   display: flex;
   align-items: center;
   justify-content: center;
   background: var(--color-accent-soft);
-  color: var(--color-accent-hover);
-  font-size: 0.75rem;
+  color: var(--color-accent);
+  font-size: 0.82rem;
   font-weight: 700;
 }
 
 .signOutButton {
-  min-height: 44px;
-  padding: 0.4rem 0.85rem;
-  border-radius: var(--radius-pill);
-  border: 1px solid var(--color-border);
-  background: var(--color-surface-2);
-  color: var(--color-text);
-  font-size: 0.8rem;
+  min-height: 36px;
+  padding: 0.45rem 1rem;
+  font-size: 0.84rem;
   font-weight: 600;
+  background: var(--color-surface);
+  color: var(--color-text-muted);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-pill);
   cursor: pointer;
-  transition: border-color var(--duration-hover) var(--ease-standard);
+  transition: all 0.15s ease;
 }
 
 .signOutButton:hover {
-  border-color: var(--color-accent);
+  background: var(--color-danger-soft);
+  color: var(--color-danger);
+  border-color: var(--color-danger-soft);
 }
 
 .signInLink {
-  display: flex;
-  align-items: center;
-  min-height: 44px;
-  padding: 0.45rem 1rem;
-  border-radius: var(--radius-pill);
-  background: var(--color-accent);
-  color: var(--color-on-accent);
+  min-height: 36px;
+  padding: 0.45rem 1.25rem;
   font-size: 0.85rem;
   font-weight: 600;
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-radius: var(--radius-pill);
   text-decoration: none;
+  box-shadow: 0 4px 14px var(--color-accent-glow);
+  transition: all 0.15s ease;
 }
 
 .signInLink:hover {
   background: var(--color-accent-hover);
+  transform: translateY(-1px);
 }
