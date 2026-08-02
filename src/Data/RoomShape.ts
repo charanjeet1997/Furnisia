@@ -281,6 +281,15 @@ export function sqFt(vertices: RoomVertex[]): number {
   return Math.round((Math.abs(area) / 2) * 10.7639);
 }
 
+export function detectShapeType(vertices: RoomVertex[]): RoomShapeType {
+  const n = vertices.length;
+  if (n === 4) return 'rectangular';
+  if (n === 5) return 'cut';
+  if (n === 6) return 'l-shape';
+  if (n === 8) return 't-shape';
+  return 'rectangular';
+}
+
 const METERS_TO_FEET = 3.28084;
 
 // "20 × 24 ft" style label from the room's bounding box — matches how preset cards label

@@ -3,6 +3,7 @@ import { Room } from '../Components/Room';
 import { FurnitureModel } from '../Components/FurnitureModel';
 import { CatalogPanel } from '../Components/UI/CatalogPanel';
 import { Toolbar } from '../Components/UI/Toolbar';
+import { DownloadProgressHUD } from '../Components/UI/DownloadProgressHUD';
 import { SpotlightTour, type TourStep } from '../Components/UI/SpotlightTour';
 import { usePlannerStore } from '../store/plannerStore';
 import styles from './Planner.module.css';
@@ -87,6 +88,7 @@ export function Planner() {
 
   return (
     <div className={styles.layout}>
+      <DownloadProgressHUD />
       <div className={styles.canvasArea}>
         <Toolbar />
         <Scene>

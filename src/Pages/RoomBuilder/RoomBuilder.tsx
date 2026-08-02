@@ -8,6 +8,7 @@ import {
   SHAPE_DEFAULT_PARAMS,
   generateVertices,
   centerVertices,
+  detectShapeType,
   type RoomShape,
   type RoomShapeType,
   type RoomOpening,
@@ -23,12 +24,19 @@ import { Header } from '../../Components/UI/Header';
 import { Footer } from '../../Components/UI/Footer';
 import styles from './RoomBuilder.module.css';
 
+interface RoomBuilderNavState {
+  initialRoom?: RoomShape;
+  initialStep?: number;
+  returnTo?: string;
+}
+
+const STEP_TITLES = ['ROOM SHAPE', 'DIMENSIONS & WALLS', 'DOORS & WINDOWS', 'WALL & FLOOR FINISHES'];
+
 export function RoomBuilder() {
   const navigate = useNavigate();
   const location = useLocation();
   const setRoom = usePlannerStore((state) => state.setRoom);
 
-  // Opened from the Planner's "Edit room" button instead of "Build a room" — seed the wizard
   const state = location.state as RoomBuilderNavState | null;
   const initialRoom = state?.initialRoom;
   const entryStep = state?.initialStep ?? 0;
@@ -76,64 +84,80 @@ export function RoomBuilder() {
       openings,
       interiorWalls: interiorWalls.map((w) => ({ ...w, start: shift(w.start), end: shift(w.end) })),
     });
-    navigate('/planner');
+    navigate(returnTo);
   }
 
   return (
     <div className={styles.appShell}>
       <Header />
-      <div className={styles.page}>
-      <div id="tour-rb-progress" className={styles.stepProgress}>
-        <div className={styles.stepProgressBar} style={{ width: `${((step + 1) / 4) * 100}%` }} />
-      </div>
-      <div className={styles.stepIndicator}>Step {step + 1} of 4</div>
+      <main className={styles.page}>
+        <div className={styles.stepIndicator}>
+          STEP {step + 1} OF 4 — {STEP_TITLES[step]}
+        </div>
 
-      <div id="tour-rb-body" className={styles.stepBody}>
-        {step === 0 && <StepShape shapeType={shapeType} onSelect={handleShapeSelect} />}
-        {step === 1 && (
-          <StepDimensions
-            vertices={vertices}
-            onVerticesChange={setVertices}
-            height={height}
-            onHeightChange={setHeight}
-            edgeThicknesses={edgeThicknesses}
-            onEdgeThicknessesChange={setEdgeThicknesses}
-            interiorWalls={interiorWalls}
-            onInteriorWallsChange={setInteriorWalls}
-            openings={openings}
-            onOpeningsChange={setOpenings}
-          />
-        )}
-        {step === 2 && (
-          <StepOpenings vertices={vertices} openings={openings} onOpeningsChange={setOpenings} interiorWalls={interiorWalls} />
-        )}
-        {step === 3 && (
-          <StepStyle
-            wallColor={wallColor}
-            floorColor={floorColor}
-            onWallColorChange={setWallColor}
-            onFloorColorChange={setFloorColor}
-          />
-        )}
-      </div>
+        <div className={styles.stepBody}>
+          {step === 0 && <StepShape shapeType={shapeType} onSelect={handleShapeSelect} />}
+          {step === 1 && (
+            <StepDimensions
+              vertices={vertices}
+              onVerticesChange={setVertices}
+              height={height}
+              onHeightChange={setHeight}
+              edgeThicknesses={edgeThicknesses}
+              onEdgeThicknessesChange={setEdgeThicknesses}
+              interiorWalls={interiorWalls}
+              onInteriorWallsChange={setInteriorWalls}
+              openings={openings}
+              onOpeningsChange={setOpenings}
+            />
+          )}
+          {step === 2 && (
+            <StepOpenings
+              vertices={vertices}
+              openings={openings}
+              interiorWalls={interiorWalls}
+              onChangeOpenings={setOpenings}
+              onNext={() => setStep(3)}
+              onBack={() => setStep(1)}
+            />
+          )}
+          {step === 3 && (
+            <StepStyle
+              wallColor={wallColor}
+              floorColor={floorColor}
+              onChangeWallColor={setWallColor}
+              onChangeFloorColor={setFloorColor}
+              onFinish={handleFinish}
+              onBack={() => setStep(2)}
+            />
+          )}
+        </div>
 
-      <div id="tour-rb-nav" className={styles.nav}>
-        <button type="button" className={styles.backButton} onClick={() => (step === entryStep ? navigate(returnTo) : setStep(step - 1))}>
-          Go back
-        </button>
-        {step < 3 ? (
-          <button type="button" className={styles.nextButton} onClick={() => setStep(step + 1)}>
-            Next
+        <div className={styles.nav}>
+          <button
+            type="button"
+            className={styles.backButton}
+            onClick={() => {
+              if (step === 0) navigate(returnTo);
+              else setStep((s) => s - 1);
+            }}
+          >
+            {step === 0 ? 'Cancel' : 'Back'}
           </button>
-        ) : (
-          <button type="button" className={styles.nextButton} onClick={handleFinish}>
-            Design this room
+
+          <button
+            type="button"
+            className={styles.nextButton}
+            onClick={() => {
+              if (step === 3) handleFinish();
+              else setStep((s) => s + 1);
+            }}
+          >
+            {step === 3 ? 'Finish & Open 3D Room' : 'Next Step →'}
           </button>
-        )}
-      </div>
-      </div>
+        </div>
+      </main>
       <Footer />
-      <SpotlightTour tourKey="room_builder" steps={BUILDER_STEPS} />
     </div>
   );
 }

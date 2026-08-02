@@ -42,6 +42,7 @@ export function Toolbar() {
   const duplicateSelected = usePlannerStore((state) => state.duplicateSelected);
   const selectItem = usePlannerStore((state) => state.selectItem);
   const updateItemTransform = usePlannerStore((state) => state.updateItemTransform);
+  const updateItemScale = usePlannerStore((state) => state.updateItemScale);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
   const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
   const [showLightPopover, setShowLightPopover] = useState(false);
@@ -288,6 +289,25 @@ export function Toolbar() {
               title="Rotate"
             >
               <FiRotateCw />
+            </button>
+
+            <button
+              type="button"
+              className={styles.itemButton}
+              onClick={() => updateItemScale(selectedItem.id, (selectedItem.scale || 1) * 0.8)}
+              title="Scale Down (Make smaller)"
+              aria-label="Scale Down"
+            >
+              🔍−
+            </button>
+            <button
+              type="button"
+              className={styles.itemButton}
+              onClick={() => updateItemScale(selectedItem.id, (selectedItem.scale || 1) * 1.25)}
+              title="Scale Up (Make bigger)"
+              aria-label="Scale Up"
+            >
+              🔍+
             </button>
 
             <span className={styles.itemDivider} />

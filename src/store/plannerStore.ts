@@ -7,6 +7,10 @@ export interface PlacedItem {
   catalogId: string;
   position: [number, number, number];
   rotationY: number;
+  scale?: number;
+  customModelUrl?: string;
+  customName?: string;
+  sketchfabToken?: string;
 }
 
 export type GizmoMode = 'translate' | 'rotate';
@@ -26,9 +30,11 @@ interface PlannerState {
   loadRoom: (room: RoomShape, placedItems: PlacedItem[], savedRoomId?: string | null, savedRoomName?: string | null) => void;
   setSavedRoomInfo: (id: string | null, name: string | null) => void;
   addItem: (catalogId: string) => void;
+  addCustomItem: (url: string, name?: string, token?: string) => void;
   duplicateSelected: () => void;
   selectItem: (id: string | null) => void;
   updateItemTransform: (id: string, position: [number, number, number], rotationY: number) => void;
+  updateItemScale: (id: string, scale: number) => void;
   removeItem: (id: string) => void;
   removeSelected: () => void;
   setGizmoMode: (mode: GizmoMode) => void;
@@ -76,6 +82,29 @@ export const usePlannerStore = create<PlannerState>((set) => ({
       };
     }),
 
+  addCustomItem: (url, name, token) =>
+    set((state) => {
+      const catalogId = 'custom';
+      const id = `custom-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
+      const { position, rotationY } = findPlacement(state.room, state.placedItems, catalogId);
+      return {
+        placedItems: [
+          ...state.placedItems,
+          {
+            id,
+            catalogId: 'custom',
+            customModelUrl: url,
+            customName: name?.trim() || 'Custom 3D Model',
+            sketchfabToken: token?.trim() || undefined,
+            position,
+            rotationY,
+          },
+        ],
+        selectedId: id,
+        isCatalogOpen: false,
+      };
+    }),
+
   duplicateSelected: () =>
     set((state) => {
       const source = state.placedItems.find((item) => item.id === state.selectedId);
@@ -95,6 +124,13 @@ export const usePlannerStore = create<PlannerState>((set) => ({
     set((state) => ({
       placedItems: state.placedItems.map((item) =>
         item.id === id ? { ...item, position, rotationY } : item,
+      ),
+    })),
+
+  updateItemScale: (id, scale) =>
+    set((state) => ({
+      placedItems: state.placedItems.map((item) =>
+        item.id === id ? { ...item, scale: Math.max(0.05, Math.min(20, scale)) } : item,
       ),
     })),
 
