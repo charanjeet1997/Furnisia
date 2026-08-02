@@ -42,7 +42,7 @@ export function Profile() {
   }
 
   function openSavedRoom(saved: SavedRoom) {
-    loadRoom(saved.room, saved.placedItems);
+    loadRoom(saved.room, saved.placedItems, saved.id, saved.name);
     navigate('/planner');
   }
 

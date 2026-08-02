@@ -1,5 +1,6 @@
 import { useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
+import { Grid } from '@react-three/drei';
 import { Shape, MeshStandardMaterial } from 'three';
 import { usePlannerStore } from '../store/plannerStore';
 import { buildWallSegments, type WallOpening } from './wallSegments';
@@ -53,6 +54,8 @@ interface RoomProps {
 
 export function Room({ disableClipping = false }: RoomProps) {
   const room = usePlannerStore((state) => state.room);
+  const showGrid = usePlannerStore((state) => state.showGrid);
+  const gridSize = usePlannerStore((state) => state.gridSize);
   const { vertices, height, wallColor, floorColor, openings } = room;
   const wallThickness = room.wallThickness ?? 0.1;
   const interiorWalls = room.interiorWalls ?? [];
@@ -205,6 +208,21 @@ export function Room({ disableClipping = false }: RoomProps) {
         <shapeGeometry args={[floorShape]} />
         <meshStandardMaterial color={floorColor} roughness={0.8} />
       </mesh>
+
+      {showGrid && (
+        <Grid
+          position={[0, 0.002, 0]}
+          args={[30, 30]}
+          cellSize={gridSize}
+          cellThickness={1}
+          cellColor="#64748b"
+          sectionSize={gridSize * 4}
+          sectionThickness={1.5}
+          sectionColor="#475569"
+          fadeDistance={30}
+          fadeStrength={1.2}
+        />
+      )}
 
       {/* Ceiling is the exact room polygon (same Shape as the floor), extruded to wall
           thickness. The -90° X rotation maps the extrude direction onto world +Y, so the

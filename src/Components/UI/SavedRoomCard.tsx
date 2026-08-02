@@ -11,8 +11,22 @@ interface SavedRoomCardProps {
   onDelete: () => void;
 }
 
+function formatLastSaved(timestamp: SavedRoom['updatedAt']): string {
+  if (!timestamp) return '';
+  const date = typeof timestamp.toDate === 'function' ? timestamp.toDate() : new Date((timestamp as any).seconds * 1000);
+  if (isNaN(date.getTime())) return '';
+  return date.toLocaleDateString(undefined, {
+    month: 'short',
+    day: 'numeric',
+    year: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+}
+
 export function SavedRoomCard({ saved, onSelect, onDelete }: SavedRoomCardProps) {
   const itemCount = saved.placedItems.length;
+  const timeText = formatLastSaved(saved.updatedAt);
 
   return (
     <div className={styles.wrapper}>
@@ -28,6 +42,7 @@ export function SavedRoomCard({ saved, onSelect, onDelete }: SavedRoomCardProps)
             </span>
           </div>
           <h3 className={cardStyles.name}>{saved.name}</h3>
+          {timeText && <div className={styles.updatedAt}>🕒 {timeText}</div>}
           <div className={cardStyles.footer}>
             <span className={cardStyles.cta}>Open room <span className={cardStyles.ctaArrow}>➔</span></span>
           </div>

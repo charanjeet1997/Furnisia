@@ -20,11 +20,10 @@ const gridClassBySize: Record<CellSize, string | undefined> = { sm: 'itemGridSm'
 
 export function CatalogPanel() {
   const addItem = usePlannerStore((state) => state.addItem);
+  const open = usePlannerStore((state) => state.isCatalogOpen);
+  const setOpen = usePlannerStore((state) => state.setCatalogOpen);
   const { isPhone, isTablet } = useDeviceType();
   const isMobileDevice = isPhone || isTablet;
-  // Only affects layout below the mobile breakpoint (see .panel media query) — on desktop
-  // the panel is always the docked sidebar regardless of this state.
-  const [open, setOpen] = useState(false);
   const [filter, setFilter] = useState<ChipFilter>(ALL);
   const [cellSize, setCellSize] = useState<CellSize>('md');
   const items = filter === ALL ? furnitureCatalog : furnitureCatalog.filter((item) => item.category === filter);

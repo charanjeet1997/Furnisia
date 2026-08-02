@@ -16,8 +16,15 @@ interface PlannerState {
   placedItems: PlacedItem[];
   selectedId: string | null;
   gizmoMode: GizmoMode;
+  isCatalogOpen: boolean;
+  showGrid: boolean;
+  gridSize: number;
+  snapToGrid: boolean;
+  savedRoomId: string | null;
+  savedRoomName: string | null;
   setRoom: (room: RoomShape) => void;
-  loadRoom: (room: RoomShape, placedItems: PlacedItem[]) => void;
+  loadRoom: (room: RoomShape, placedItems: PlacedItem[], savedRoomId?: string | null, savedRoomName?: string | null) => void;
+  setSavedRoomInfo: (id: string | null, name: string | null) => void;
   addItem: (catalogId: string) => void;
   duplicateSelected: () => void;
   selectItem: (id: string | null) => void;
@@ -26,6 +33,11 @@ interface PlannerState {
   removeSelected: () => void;
   setGizmoMode: (mode: GizmoMode) => void;
   updateLightIntensity: (val: number) => void;
+  setCatalogOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
+  setShowGrid: (show: boolean) => void;
+  toggleGrid: () => void;
+  setGridSize: (size: number) => void;
+  setSnapToGrid: (snap: boolean) => void;
 }
 
 export const usePlannerStore = create<PlannerState>((set) => ({
@@ -33,8 +45,14 @@ export const usePlannerStore = create<PlannerState>((set) => ({
   placedItems: [],
   selectedId: null,
   gizmoMode: 'translate',
+  isCatalogOpen: false,
+  showGrid: true,
+  gridSize: 0.5,
+  snapToGrid: true,
+  savedRoomId: null,
+  savedRoomName: null,
 
-  setRoom: (room) => set({ room, placedItems: [], selectedId: null }),
+  setRoom: (room) => set((state) => ({ room, placedItems: [], selectedId: null, savedRoomId: state.savedRoomId, savedRoomName: state.savedRoomName })),
   updateLightIntensity: (val) =>
     set((state) => ({
       room: { ...state.room, lightIntensity: val },
@@ -42,7 +60,10 @@ export const usePlannerStore = create<PlannerState>((set) => ({
 
   // Restores a saved room (from Firestore) with its furniture intact, unlike setRoom which
   // always clears placedItems — used when a user loads one of their own saved rooms.
-  loadRoom: (room, placedItems) => set({ room, placedItems, selectedId: null }),
+  loadRoom: (room, placedItems, savedRoomId = null, savedRoomName = null) =>
+    set({ room, placedItems, selectedId: null, savedRoomId, savedRoomName }),
+
+  setSavedRoomInfo: (savedRoomId, savedRoomName) => set({ savedRoomId, savedRoomName }),
 
   addItem: (catalogId) =>
     set((state) => {
@@ -51,6 +72,7 @@ export const usePlannerStore = create<PlannerState>((set) => ({
       return {
         placedItems: [...state.placedItems, { id, catalogId, position, rotationY }],
         selectedId: id,
+        isCatalogOpen: false,
       };
     }),
 
@@ -91,4 +113,14 @@ export const usePlannerStore = create<PlannerState>((set) => ({
     })),
 
   setGizmoMode: (mode) => set({ gizmoMode: mode }),
+
+  setCatalogOpen: (open) =>
+    set((state) => ({
+      isCatalogOpen: typeof open === 'function' ? open(state.isCatalogOpen) : open,
+    })),
+
+  setShowGrid: (show) => set({ showGrid: show }),
+  toggleGrid: () => set((state) => ({ showGrid: !state.showGrid })),
+  setGridSize: (size) => set({ gridSize: Math.max(0.1, size) }),
+  setSnapToGrid: (snap) => set({ snapToGrid: snap }),
 }));

@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiCopy, FiEdit2, FiMove, FiRotateCw, FiSave, FiTrash2 } from 'react-icons/fi';
+import { FiArrowLeft, FiCopy, FiEdit2, FiGrid, FiMove, FiRotateCw, FiSave, FiTrash2 } from 'react-icons/fi';
 import { usePlannerStore } from '../../store/plannerStore';
 import { useAuth } from '../../store/AuthContext';
 import { newRoomId, saveRoom } from '../../store/rooms';
@@ -26,6 +26,13 @@ export function Toolbar() {
   const room = usePlannerStore((state) => state.room);
   const updateLightIntensity = usePlannerStore((state) => state.updateLightIntensity);
   const placedItems = usePlannerStore((state) => state.placedItems);
+  const isCatalogOpen = usePlannerStore((state) => state.isCatalogOpen);
+  const showGrid = usePlannerStore((state) => state.showGrid);
+  const toggleGrid = usePlannerStore((state) => state.toggleGrid);
+  const gridSize = usePlannerStore((state) => state.gridSize);
+  const setGridSize = usePlannerStore((state) => state.setGridSize);
+  const snapToGrid = usePlannerStore((state) => state.snapToGrid);
+  const setSnapToGrid = usePlannerStore((state) => state.setSnapToGrid);
   const selectedId = usePlannerStore((state) => state.selectedId);
   const selectedItem = usePlannerStore((state) => state.placedItems.find((item) => item.id === state.selectedId));
   const gizmoMode = usePlannerStore((state) => state.gizmoMode);
@@ -35,8 +42,15 @@ export function Toolbar() {
   const selectItem = usePlannerStore((state) => state.selectItem);
   const updateItemTransform = usePlannerStore((state) => state.updateItemTransform);
   const [saveStatus, setSaveStatus] = useState<'idle' | 'saving' | 'saved' | 'error'>('idle');
+  const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
   const [showLightPopover, setShowLightPopover] = useState(false);
+  const [showGridPopover, setShowGridPopover] = useState(false);
   const lightRef = useRef<HTMLDivElement>(null);
+  const gridRef = useRef<HTMLDivElement>(null);
+
+  const savedRoomId = usePlannerStore((state) => state.savedRoomId);
+  const savedRoomName = usePlannerStore((state) => state.savedRoomName);
+  const setSavedRoomInfo = usePlannerStore((state) => state.setSavedRoomInfo);
 
   const lightIntensity = room.lightIntensity ?? 1.8;
 
@@ -53,12 +67,26 @@ export function Toolbar() {
       navigate('/login');
       return;
     }
-    const name = window.prompt('Name this room', room.name || 'My Room');
-    if (!name) return;
     setSaveStatus('saving');
     try {
-      await saveRoom(user.uid, newRoomId(user.uid), { name, room, placedItems });
+      if (savedRoomId) {
+        // Update existing saved room directly without prompting for a new name or creating duplicates
+        const roomName = savedRoomName || room.name || 'My Room';
+        await saveRoom(user.uid, savedRoomId, { name: roomName, room, placedItems });
+        setSavedRoomInfo(savedRoomId, roomName);
+      } else {
+        // Saving a new room for the first time
+        const name = window.prompt('Name this room', room.name || 'My Room');
+        if (!name) {
+          setSaveStatus('idle');
+          return;
+        }
+        const roomId = newRoomId(user.uid);
+        await saveRoom(user.uid, roomId, { name, room, placedItems });
+        setSavedRoomInfo(roomId, name);
+      }
       setSaveStatus('saved');
+      setLastSavedTime(new Date());
     } catch {
       setSaveStatus('error');
     } finally {
@@ -84,12 +112,15 @@ export function Toolbar() {
       if (lightRef.current && !lightRef.current.contains(e.target as Node)) {
         setShowLightPopover(false);
       }
+      if (gridRef.current && !gridRef.current.contains(e.target as Node)) {
+        setShowGridPopover(false);
+      }
     }
-    if (showLightPopover) {
+    if (showLightPopover || showGridPopover) {
       document.addEventListener('mousedown', handleClickOutside);
     }
     return () => document.removeEventListener('mousedown', handleClickOutside);
-  }, [showLightPopover]);
+  }, [showLightPopover, showGridPopover]);
 
   return (
     <>
@@ -98,10 +129,23 @@ export function Toolbar() {
           <FiArrowLeft />
         </button>
 
-        <button type="button" className={styles.saveButton} onClick={handleSave} title="Save room">
+        <button
+          type="button"
+          className={styles.saveButton}
+          onClick={handleSave}
+          title={lastSavedTime ? `Last saved at ${lastSavedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}` : 'Save room'}
+        >
           <FiSave />
           <span className={styles.buttonLabel}>
-            {saveStatus === 'saving' ? 'Saving…' : saveStatus === 'saved' ? 'Saved' : saveStatus === 'error' ? 'Failed' : 'Save'}
+            {saveStatus === 'saving'
+              ? 'Saving…'
+              : saveStatus === 'saved'
+              ? 'Saved!'
+              : saveStatus === 'error'
+              ? 'Failed'
+              : lastSavedTime
+              ? `Saved ${lastSavedTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}`
+              : 'Save'}
           </span>
         </button>
 
@@ -114,6 +158,65 @@ export function Toolbar() {
           <span style={{ fontSize: '1rem', lineHeight: 1 }}>🥽</span>
           <span className={styles.buttonLabel}>VR Room</span>
         </button>
+
+        <div className={styles.gridControlWrapper} ref={gridRef}>
+          <button
+            type="button"
+            className={showGridPopover || showGrid ? styles.gridButtonActive : styles.gridButton}
+            onClick={() => setShowGridPopover((prev) => !prev)}
+            title="Floor Grid Settings"
+            aria-label="Floor Grid Settings"
+          >
+            <FiGrid size={18} />
+          </button>
+          {showGridPopover && (
+            <div className={styles.gridPopover}>
+              <div className={styles.gridToggleRow}>
+                <span>Show Grid</span>
+                <label className={styles.switchToggle}>
+                  <input type="checkbox" checked={showGrid} onChange={() => toggleGrid()} />
+                  <span className={styles.sliderSwitch} />
+                </label>
+              </div>
+
+              <div className={styles.gridToggleRow}>
+                <span>Grid Size</span>
+                <span className={styles.popoverVal}>{gridSize < 1 ? `${Math.round(gridSize * 100)} cm` : `${gridSize} m`}</span>
+              </div>
+
+              <div className={styles.gridPresetRow}>
+                {[0.25, 0.5, 1.0, 2.0].map((size) => (
+                  <button
+                    key={size}
+                    type="button"
+                    className={gridSize === size ? styles.gridPresetBtnActive : styles.gridPresetBtn}
+                    onClick={() => setGridSize(size)}
+                  >
+                    {size < 1 ? `${size * 100}cm` : `${size}m`}
+                  </button>
+                ))}
+              </div>
+
+              <input
+                type="range"
+                min="0.1"
+                max="2.0"
+                step="0.05"
+                value={gridSize}
+                onChange={(e) => setGridSize(parseFloat(e.target.value))}
+                className={styles.popoverRange}
+              />
+
+              <div className={styles.gridToggleRow}>
+                <span>Snap to Grid</span>
+                <label className={styles.switchToggle}>
+                  <input type="checkbox" checked={snapToGrid} onChange={(e) => setSnapToGrid(e.target.checked)} />
+                  <span className={styles.sliderSwitch} />
+                </label>
+              </div>
+            </div>
+          )}
+        </div>
 
         <div className={styles.lightControlWrapper} ref={lightRef}>
           <button
@@ -148,7 +251,7 @@ export function Toolbar() {
       </div>
 
       {selectedId && selectedItem && (
-        <div className={styles.floatingStack}>
+        <div className={isCatalogOpen ? `${styles.floatingStack} ${styles.floatingStackCatalogOpen}` : styles.floatingStack}>
           {gizmoMode === 'rotate' && (
             <RotationSlider
               degrees={normalizeDegrees((selectedItem.rotationY * 180) / Math.PI)}

@@ -139,6 +139,129 @@
   gap: 0.5rem;
 }
 
+.gridControlWrapper {
+  position: relative;
+}
+
+.gridButton,
+.gridButtonActive {
+  width: 44px;
+  height: 44px;
+  min-width: 44px;
+  min-height: 44px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.1rem;
+  background: var(--color-surface);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  border-radius: 50%;
+  box-shadow: var(--shadow-sm);
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.gridButton:hover,
+.gridButtonActive {
+  background: var(--color-accent);
+  color: var(--color-on-accent);
+  border-color: var(--color-accent);
+}
+
+.gridPopover {
+  position: absolute;
+  top: calc(100% + 0.6rem);
+  left: 0;
+  width: 220px;
+  padding: 0.85rem 1rem;
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-lg, 12px);
+  box-shadow: var(--shadow-md);
+  z-index: 20;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.gridToggleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: var(--color-text);
+}
+
+.gridPresetRow {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.gridPresetBtn,
+.gridPresetBtnActive {
+  flex: 1;
+  padding: 0.3rem 0;
+  font-size: 0.72rem;
+  font-weight: 600;
+  border-radius: var(--radius-sm, 6px);
+  border: 1px solid var(--color-border);
+  background: var(--color-bg);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s ease;
+}
+
+.gridPresetBtnActive {
+  border-color: var(--color-accent);
+  background: var(--color-accent-soft);
+  color: var(--color-accent-hover);
+}
+
+.switchToggle {
+  position: relative;
+  display: inline-block;
+  width: 36px;
+  height: 20px;
+}
+
+.switchToggle input {
+  opacity: 0;
+  width: 0;
+  height: 0;
+}
+
+.sliderSwitch {
+  position: absolute;
+  cursor: pointer;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: var(--color-border);
+  transition: .2s;
+  border-radius: 20px;
+}
+
+.sliderSwitch:before {
+  position: absolute;
+  content: "";
+  height: 14px;
+  width: 14px;
+  left: 3px;
+  bottom: 3px;
+  background-color: white;
+  transition: .2s;
+  border-radius: 50%;
+}
+
+.switchToggle input:checked + .sliderSwitch {
+  background-color: var(--color-accent);
+}
+
+.switchToggle input:checked + .sliderSwitch:before {
+  transform: translateX(16px);
+}
+
 .popoverHeader {
   display: flex;
   align-items: center;
@@ -177,11 +300,25 @@
   bottom: 1.5rem;
   left: 50%;
   transform: translateX(-50%);
-  z-index: 10;
+  z-index: 25;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 0.75rem;
+  transition: bottom 0.3s var(--ease-standard, ease);
+  max-width: calc(100vw - 1.5rem);
+  pointer-events: auto;
+}
+
+@media (max-width: 768px) {
+  .floatingStack {
+    bottom: calc(56px + 1.25rem + env(safe-area-inset-bottom, 0px));
+    z-index: 25;
+  }
+
+  .floatingStackCatalogOpen {
+    bottom: calc(65vh + 1rem + env(safe-area-inset-bottom, 0px));
+  }
 }
 
 .itemToolbar {

@@ -31,11 +31,12 @@ export function Dashboard() {
 
   function goToRoom(room: RoomShape) {
     setRoom(room);
+    usePlannerStore.getState().setSavedRoomInfo(null, null);
     navigate('/planner');
   }
 
   function openSavedRoom(saved: SavedRoom) {
-    loadRoom(saved.room, saved.placedItems);
+    loadRoom(saved.room, saved.placedItems, saved.id, saved.name);
     navigate('/planner');
   }
 

@@ -20,6 +20,8 @@
 .sliderTrack {
   position: relative;
   width: 280px;
+  max-width: calc(100vw - 2rem);
+  box-sizing: border-box;
   height: 2.75rem;
   background: var(--color-dark);
   border-radius: var(--radius-pill);
