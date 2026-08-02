@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiCopy, FiShare2, FiCheck, FiSun, FiMoon } from 'react-icons/fi';
+import { FiArrowLeft, FiCopy, FiShare2, FiCheck, FiSun, FiMoon, FiHelpCircle } from 'react-icons/fi';
 import { Canvas } from '@react-three/fiber';
 import { ACESFilmicToneMapping } from 'three';
 import { usePlannerStore } from '../store/plannerStore';
@@ -11,6 +11,29 @@ import { VRController } from '../Components/VRController';
 import styles from './VRRoom.module.css';
 
 type Atmosphere = 'day' | 'sunset' | 'night';
+
+import { SpotlightTour, type TourStep } from '../Components/UI/SpotlightTour';
+
+const VR_STEPS: TourStep[] = [
+  {
+    targetId: 'tour-vr-back',
+    icon: '⬅️',
+    title: 'Return to 3D Planner',
+    description: 'Click Planner to exit VR mode and return to editing room walls or furniture placement.',
+  },
+  {
+    targetId: 'tour-vr-atmosphere',
+    icon: '🌅',
+    title: 'Lighting & Atmosphere',
+    description: 'Switch between Day, Sunset, and Night lighting to experience your room layout under different lighting conditions.',
+  },
+  {
+    targetId: 'tour-vr-banner',
+    icon: '🥽',
+    title: '1:1 Scale FPS Controls',
+    description: 'Click and drag your mouse to look 360° around the room. Use W, A, S, D or Arrow Keys to walk inside at true 1:1 human scale!',
+  },
+];
 
 export function VRRoom() {
   const navigate = useNavigate();
@@ -31,12 +54,12 @@ export function VRRoom() {
     <div className={styles.container}>
       <div className={styles.topBar}>
         <div className={styles.leftGroup}>
-          <button type="button" className={styles.headerButton} onClick={() => navigate('/planner')}>
+          <button id="tour-vr-back" type="button" className={styles.headerButton} onClick={() => navigate('/planner')}>
             <FiArrowLeft size={18} />
             <span>Planner</span>
           </button>
 
-          <div className={styles.atmosphereGroup}>
+          <div id="tour-vr-atmosphere" className={styles.atmosphereGroup}>
             <button
               type="button"
               className={`${styles.atmosphereBtn} ${atmosphere === 'day' ? styles.atmosphereBtnActive : ''}`}
@@ -67,6 +90,15 @@ export function VRRoom() {
         </div>
 
         <div className={styles.rightGroup}>
+          <button
+            type="button"
+            className={styles.headerButton}
+            onClick={() => window.dispatchEvent(new CustomEvent('furnisia-start-tour'))}
+            title="VR Tour & Controls Guide"
+          >
+            <FiHelpCircle size={16} />
+            <span>Guide</span>
+          </button>
           <button type="button" className={styles.headerButton} onClick={() => setShowShareModal(true)}>
             <FiShare2 size={16} />
             <span>VR Headset URL</span>
@@ -146,7 +178,7 @@ export function VRRoom() {
         </Canvas>
       </div>
 
-      <div className={styles.vrBanner}>
+      <div id="tour-vr-banner" className={styles.vrBanner}>
         <div className={styles.vrBannerTitle}>🥽 1:1 Scale Immersive VR Experience</div>
         <div>Drag mouse to look 360° inside · Use <strong>W A S D</strong> or <strong>Arrow Keys</strong> to walk</div>
       </div>
@@ -175,6 +207,8 @@ export function VRRoom() {
           </div>
         </div>
       )}
+
+      <SpotlightTour tourKey="vr" steps={VR_STEPS} />
     </div>
   );
 }

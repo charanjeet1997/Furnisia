@@ -44,7 +44,7 @@ export function CatalogPanel() {
         </button>
       )}
 
-      <aside className={open ? `${styles.panel} ${styles.panelOpen}` : styles.panel}>
+      <aside id="tour-plan-catalog" className={open ? `${styles.panel} ${styles.panelOpen}` : styles.panel}>
         <button type="button" className={styles.sheetHandle} onClick={() => setOpen((o) => !o)}>
           <span className={styles.title}>
             Furniture <span className={styles.titleCategory}>· {filter}</span>

@@ -8,7 +8,35 @@ import { RoomCard } from '../Components/UI/RoomCard';
 import { SavedRoomCard } from '../Components/UI/SavedRoomCard';
 import { Header } from '../Components/UI/Header';
 import { Footer } from '../Components/UI/Footer';
+import { SpotlightTour, type TourStep } from '../Components/UI/SpotlightTour';
 import styles from './Dashboard.module.css';
+
+const DASHBOARD_STEPS: TourStep[] = [
+  {
+    targetId: 'tour-dash-quickstart',
+    icon: '⚡',
+    title: 'Quick Start & Custom Builder',
+    description: 'Jump straight into a 3D canvas or use the parametric Room Builder to draw custom walls, doors, and windows.',
+  },
+  {
+    targetId: 'tour-dash-saved',
+    icon: '☁️',
+    title: 'My Saved Rooms',
+    description: 'Access all your cloud-saved rooms along with their last-edited timestamps. Click any card to resume editing.',
+  },
+  {
+    targetId: 'tour-dash-presets',
+    icon: '📐',
+    title: 'Room Presets',
+    description: 'Pick pre-built room templates like Studio, L-Shape, T-Shape, or Open Plan apartments as starting points.',
+  },
+  {
+    targetId: 'tour-theme-toggle',
+    icon: '🌙',
+    title: 'Dark / Light Theme Toggle',
+    description: 'Switch between Dark Glass mode and clean Light Mode anytime.',
+  },
+];
 
 export function Dashboard() {
   const navigate = useNavigate();
@@ -70,7 +98,7 @@ export function Dashboard() {
           </div>
         </div>
 
-        <section className={styles.startCards}>
+        <section id="tour-dash-quickstart" className={styles.startCards}>
           <button type="button" className={styles.startCard} onClick={() => goToRoom(defaultRoom)}>
             <div className={styles.cardHeader}>
               <div className={styles.startCardIconWrapper}>
@@ -100,7 +128,7 @@ export function Dashboard() {
           </button>
         </section>
 
-        <section className={styles.section}>
+        <section id="tour-dash-saved" className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>My rooms</h2>
             {user && savedRooms.length > 0 && (
@@ -136,7 +164,7 @@ export function Dashboard() {
           )}
         </section>
 
-        <section className={styles.section}>
+        <section id="tour-dash-presets" className={styles.section}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Empty room presets</h2>
             <span className={styles.sectionBadge}>{roomPresets.length} templates</span>
@@ -149,6 +177,8 @@ export function Dashboard() {
         </section>
       </div>
       <Footer />
+
+      <SpotlightTour tourKey="dashboard" steps={DASHBOARD_STEPS} />
     </div>
   );
 }

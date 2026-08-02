@@ -1,11 +1,12 @@
 import { useEffect, useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { FiArrowLeft, FiCopy, FiEdit2, FiGrid, FiMove, FiRotateCw, FiSave, FiTrash2 } from 'react-icons/fi';
+import { FiArrowLeft, FiCopy, FiEdit2, FiGrid, FiHelpCircle, FiMove, FiRotateCw, FiSave, FiTrash2 } from 'react-icons/fi';
 import { usePlannerStore } from '../../store/plannerStore';
 import { useAuth } from '../../store/AuthContext';
 import { newRoomId, saveRoom } from '../../store/rooms';
 import { RotationSlider } from './RotationSlider';
 import { ThemeToggle } from './ThemeToggle';
+import { OnboardingModal } from './OnboardingModal';
 import styles from './Toolbar.module.css';
 
 function normalizeDegrees(deg: number) {
@@ -45,6 +46,7 @@ export function Toolbar() {
   const [lastSavedTime, setLastSavedTime] = useState<Date | null>(null);
   const [showLightPopover, setShowLightPopover] = useState(false);
   const [showGridPopover, setShowGridPopover] = useState(false);
+  const [showOnboarding, setShowOnboarding] = useState(false);
   const lightRef = useRef<HTMLDivElement>(null);
   const gridRef = useRef<HTMLDivElement>(null);
 
@@ -55,10 +57,6 @@ export function Toolbar() {
   const lightIntensity = room.lightIntensity ?? 1.8;
 
   function handleEditRoom() {
-    // Skips straight to the Dimensions (wall-editing) step — the room's shape already exists
-    // (it's the one currently loaded in the scene), so re-picking a shape template isn't the
-    // point of this button. "Go back" from there returns to the Planner instead of stepping
-    // back to shape-picking.
     navigate('/room-builder', { state: { initialRoom: room, initialStep: 1, returnTo: '/planner' } });
   }
 
@@ -70,12 +68,10 @@ export function Toolbar() {
     setSaveStatus('saving');
     try {
       if (savedRoomId) {
-        // Update existing saved room directly without prompting for a new name or creating duplicates
         const roomName = savedRoomName || room.name || 'My Room';
         await saveRoom(user.uid, savedRoomId, { name: roomName, room, placedItems });
         setSavedRoomInfo(savedRoomId, roomName);
       } else {
-        // Saving a new room for the first time
         const name = window.prompt('Name this room', room.name || 'My Room');
         if (!name) {
           setSaveStatus('idle');
@@ -130,6 +126,7 @@ export function Toolbar() {
         </button>
 
         <button
+          id="tour-plan-save"
           type="button"
           className={styles.saveButton}
           onClick={handleSave}
@@ -149,17 +146,27 @@ export function Toolbar() {
           </span>
         </button>
 
-        <button type="button" className={styles.editButton} onClick={handleEditRoom} title="Edit room">
+        <button id="tour-plan-edit" type="button" className={styles.editButton} onClick={handleEditRoom} title="Edit room">
           <FiEdit2 />
           <span className={styles.buttonLabel}>Edit</span>
         </button>
 
-        <button type="button" className={styles.vrButton} onClick={() => navigate('/vr-room')} title="VR Room">
+        <button id="tour-plan-vr" type="button" className={styles.vrButton} onClick={() => navigate('/vr-room')} title="VR Room">
           <span style={{ fontSize: '1rem', lineHeight: 1 }}>🥽</span>
           <span className={styles.buttonLabel}>VR Room</span>
         </button>
 
-        <div className={styles.gridControlWrapper} ref={gridRef}>
+        <button
+          type="button"
+          className={styles.editButton}
+          onClick={() => window.dispatchEvent(new CustomEvent('furnisia-start-tour'))}
+          title="App Tour & Feature Guide"
+        >
+          <FiHelpCircle />
+          <span className={styles.buttonLabel}>Guide</span>
+        </button>
+
+        <div id="tour-plan-grid" className={styles.gridControlWrapper} ref={gridRef}>
           <button
             type="button"
             className={showGridPopover || showGrid ? styles.gridButtonActive : styles.gridButton}
@@ -218,7 +225,7 @@ export function Toolbar() {
           )}
         </div>
 
-        <div className={styles.lightControlWrapper} ref={lightRef}>
+        <div id="tour-plan-light" className={styles.lightControlWrapper} ref={lightRef}>
           <button
             type="button"
             className={showLightPopover ? styles.lightButtonActive : styles.lightButton}
@@ -247,11 +254,13 @@ export function Toolbar() {
           )}
         </div>
 
-        <ThemeToggle />
+        <div id="tour-theme-toggle">
+          <ThemeToggle />
+        </div>
       </div>
 
       {selectedId && selectedItem && (
-        <div className={isCatalogOpen ? `${styles.floatingStack} ${styles.floatingStackCatalogOpen}` : styles.floatingStack}>
+        <div id="tour-furn-stack" className={isCatalogOpen ? `${styles.floatingStack} ${styles.floatingStackCatalogOpen}` : styles.floatingStack}>
           {gizmoMode === 'rotate' && (
             <RotationSlider
               degrees={normalizeDegrees((selectedItem.rotationY * 180) / Math.PI)}
@@ -261,6 +270,7 @@ export function Toolbar() {
 
           <div className={styles.itemToolbar}>
             <button
+              id="tour-furn-move"
               type="button"
               className={gizmoMode === 'translate' ? styles.itemButtonActive : styles.itemButton}
               onClick={() => setGizmoMode('translate')}
@@ -270,6 +280,7 @@ export function Toolbar() {
               <FiMove />
             </button>
             <button
+              id="tour-furn-rotate"
               type="button"
               className={gizmoMode === 'rotate' ? styles.itemButtonActive : styles.itemButton}
               onClick={() => setGizmoMode('rotate')}
@@ -281,18 +292,20 @@ export function Toolbar() {
 
             <span className={styles.itemDivider} />
 
-            <button type="button" className={styles.itemButton} onClick={() => duplicateSelected()} aria-label="Make copy" title="Make copy">
+            <button id="tour-furn-copy" type="button" className={styles.itemButton} onClick={() => duplicateSelected()} aria-label="Make copy" title="Make copy">
               <FiCopy />
             </button>
 
             <span className={styles.itemDivider} />
 
-            <button type="button" className={styles.itemButtonDanger} onClick={() => removeSelected()} aria-label="Remove" title="Remove">
+            <button id="tour-furn-delete" type="button" className={styles.itemButtonDanger} onClick={() => removeSelected()} aria-label="Remove" title="Remove">
               <FiTrash2 />
             </button>
           </div>
         </div>
       )}
+
+      <OnboardingModal isOpen={showOnboarding} onClose={() => setShowOnboarding(false)} />
     </>
   );
 }

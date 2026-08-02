@@ -1,6 +1,9 @@
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
+import { FiHelpCircle } from 'react-icons/fi';
 import { useAuth } from '../../store/AuthContext';
 import { ThemeToggle } from './ThemeToggle';
+import { OnboardingModal } from './OnboardingModal';
 import styles from './Header.module.css';
 
 export function Header() {
@@ -10,6 +13,10 @@ export function Header() {
   async function handleSignOut() {
     await signOutUser();
     navigate('/');
+  }
+
+  function handleStartTour() {
+    window.dispatchEvent(new CustomEvent('furnisia-start-tour'));
   }
 
   return (
@@ -25,6 +32,15 @@ export function Header() {
         </nav>
       </div>
       <div className={styles.actions}>
+        <button
+          type="button"
+          className={styles.helpButton}
+          onClick={handleStartTour}
+          title="App Feature Guide & Spotlight Tour"
+          aria-label="Help & Guide"
+        >
+          <FiHelpCircle size={18} />
+        </button>
         {!loading && (user ? (
           <div className={styles.account}>
             <Link to="/profile" className={styles.accountLink} title={user.email ?? undefined}>
@@ -45,7 +61,9 @@ export function Header() {
             Sign in
           </Link>
         ))}
-        <ThemeToggle />
+        <div id="tour-theme-toggle">
+          <ThemeToggle />
+        </div>
       </div>
     </header>
   );
