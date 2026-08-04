@@ -63,6 +63,10 @@ function FallbackFurnitureBox({ item }: { item: PlacedItem }) {
         ref={setGroupNode}
         position={item.position}
         rotation={[0, item.rotationY, 0]}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          selectItem(item.id);
+        }}
         onClick={(e) => {
           e.stopPropagation();
           selectItem(item.id);
@@ -168,12 +172,42 @@ function FurnitureModelContent({ item }: FurnitureModelProps) {
         ref={setGroupNode}
         position={item.position}
         rotation={[0, item.rotationY, 0]}
+        onPointerDown={(e) => {
+          e.stopPropagation();
+          selectItem(item.id);
+        }}
         onClick={(e) => {
           e.stopPropagation();
           selectItem(item.id);
         }}
       >
+        {/* Invisible raycast hit-mesh ensuring 100% reliable click/pointer selection for 3D GLTF models */}
+        <mesh
+          position={[0, halfHeight, 0]}
+          onPointerDown={(e) => {
+            e.stopPropagation();
+            selectItem(item.id);
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            selectItem(item.id);
+          }}
+        >
+          <boxGeometry args={[Math.max(0.4, halfWidth * 2.1), Math.max(0.4, halfHeight * 2.1), Math.max(0.4, halfDepth * 2.1)]} />
+          <meshBasicMaterial visible={false} />
+        </mesh>
+
         <primitive object={pivoted} />
+
+        {/* Selected Item Bounding Box Highlight */}
+        {isSelected && (
+          <group position={[0, halfHeight, 0]}>
+            <mesh>
+              <boxGeometry args={[halfWidth * 2 + 0.08, halfHeight * 2 + 0.08, halfDepth * 2 + 0.08]} />
+              <meshBasicMaterial color="#10b981" wireframe transparent opacity={0.65} />
+            </mesh>
+          </group>
+        )}
       </group>
 
       {isSelected && groupNode && gizmoMode === 'translate' && (
