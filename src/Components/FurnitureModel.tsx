@@ -1,4 +1,4 @@
-import { Component, ReactNode, Suspense, useMemo, useState } from 'react';
+import { Component, type ReactNode, Suspense, useMemo, useState } from 'react';
 import { useGLTF, Html, useProgress } from '@react-three/drei';
 import { Box3, Vector3, type Group, type Mesh } from 'three';
 import { usePlannerStore, type PlacedItem } from '../store/plannerStore';

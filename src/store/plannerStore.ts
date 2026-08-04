@@ -39,6 +39,9 @@ interface PlannerState {
   removeSelected: () => void;
   setGizmoMode: (mode: GizmoMode) => void;
   updateLightIntensity: (val: number) => void;
+  addOpening: (opening: RoomOpening) => void;
+  updateOpening: (index: number, opening: RoomOpening) => void;
+  removeOpening: (index: number) => void;
   setCatalogOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
   setShowGrid: (show: boolean) => void;
   toggleGrid: () => void;
@@ -149,6 +152,30 @@ export const usePlannerStore = create<PlannerState>((set) => ({
     })),
 
   setGizmoMode: (mode) => set({ gizmoMode: mode }),
+
+  addOpening: (opening) =>
+    set((state) => ({
+      room: {
+        ...state.room,
+        openings: [...state.room.openings, opening],
+      },
+    })),
+
+  updateOpening: (index, opening) =>
+    set((state) => ({
+      room: {
+        ...state.room,
+        openings: state.room.openings.map((o, i) => (i === index ? opening : o)),
+      },
+    })),
+
+  removeOpening: (index) =>
+    set((state) => ({
+      room: {
+        ...state.room,
+        openings: state.room.openings.filter((_, i) => i !== index),
+      },
+    })),
 
   setCatalogOpen: (open) =>
     set((state) => ({

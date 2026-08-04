@@ -116,19 +116,15 @@ export function RoomBuilder() {
               vertices={vertices}
               openings={openings}
               interiorWalls={interiorWalls}
-              onChangeOpenings={setOpenings}
-              onNext={() => setStep(3)}
-              onBack={() => setStep(1)}
+              onOpeningsChange={setOpenings}
             />
           )}
           {step === 3 && (
             <StepStyle
               wallColor={wallColor}
               floorColor={floorColor}
-              onChangeWallColor={setWallColor}
-              onChangeFloorColor={setFloorColor}
-              onFinish={handleFinish}
-              onBack={() => setStep(2)}
+              onWallColorChange={setWallColor}
+              onFloorColorChange={setFloorColor}
             />
           )}
         </div>

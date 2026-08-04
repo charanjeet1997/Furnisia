@@ -1,4 +1,5 @@
-import { Canvas } from '@react-three/fiber';
+ import { Canvas } from '@react-three/fiber';
+import { ContactShadows } from '@react-three/drei';
 import type { ReactNode } from 'react';
 import { OrbitControlsHandler } from './OrbitControlsHandler';
 import { usePlannerStore } from '../store/plannerStore';
@@ -28,6 +29,16 @@ export function Scene({ children }: SceneProps) {
         shadow-camera-bottom={-10}
         shadow-camera-near={1}
         shadow-camera-far={25}
+      />
+      {/* Real-time Ambient Occlusion & Contact Shadows */}
+      <ContactShadows
+        position={[0, 0.001, 0]}
+        opacity={0.65}
+        scale={40}
+        blur={1.8}
+        far={4}
+        resolution={1024}
+        color="#000000"
       />
       <OrbitControlsHandler />
       {children}

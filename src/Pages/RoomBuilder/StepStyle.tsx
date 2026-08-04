@@ -12,7 +12,7 @@ interface StepStyleProps {
 
 export function StepStyle({ wallColor, floorColor, onWallColorChange, onFloorColorChange }: StepStyleProps) {
   return (
-    <div>
+    <div className={styles.controlsSection} style={{ maxWidth: '480px', margin: '0 auto' }}>
       <h2 className={styles.stepTitle}>Choose your room style</h2>
 
       <p className={styles.stepSubtitle}>Wall color</p>

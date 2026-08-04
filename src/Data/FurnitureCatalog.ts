@@ -1,4 +1,4 @@
-export type FurnitureCategory = 'Seating' | 'Tables' | 'Storage' | 'Bedroom' | 'Lighting' | 'Decor';
+export type FurnitureCategory = 'Seating' | 'Tables' | 'Storage' | 'Bedroom' | 'Lighting' | 'Decor' | 'Doors & Windows';
 
 export interface Footprint {
   width: number; // meters, along local X
@@ -30,6 +30,8 @@ export const furnitureCatalog: FurnitureCatalogItem[] = [
   { id: 'bed',          name: 'Bed',          category: 'Bedroom',  modelPath: '/assets/GLB/bedDouble.glb',        footprint: { width: 1.62, depth: 1.91 }, forward: 'south' },
   { id: 'floor-lamp',   name: 'Floor Lamp',   category: 'Lighting', modelPath: '/assets/GLB/lampSquareFloor.glb',  footprint: { width: 0.12, depth: 0.12 }, forward: 'north' },
   { id: 'plant',        name: 'Plant',        category: 'Decor',    modelPath: '/assets/GLB/pottedPlant.glb',      footprint: { width: 0.26, depth: 0.29 }, forward: 'north' },
+  { id: 'door-single',  name: 'Single Door',  category: 'Doors & Windows', modelPath: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/SheenChair/glTF-Binary/SheenChair.glb', footprint: { width: 0.9, depth: 0.15 }, forward: 'south' },
+  { id: 'window-single', name: 'Glass Window', category: 'Doors & Windows', modelPath: 'https://raw.githubusercontent.com/KhronosGroup/glTF-Sample-Assets/main/Models/Avocado/glTF-Binary/Avocado.glb', footprint: { width: 1.0, depth: 0.15 }, forward: 'south' },
 ];
 
 export const furnitureCategories: FurnitureCategory[] = [
@@ -39,4 +41,5 @@ export const furnitureCategories: FurnitureCategory[] = [
   'Bedroom',
   'Lighting',
   'Decor',
+  'Doors & Windows',
 ];

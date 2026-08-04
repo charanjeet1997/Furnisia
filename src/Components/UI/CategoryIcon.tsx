@@ -48,6 +48,13 @@ const GLYPHS: Record<FurnitureCategory, React.ReactNode> = {
       <path d="M12 13c5 0 6-5 6-5s-6-1-6 5Z" />
     </>
   ),
+  'Doors & Windows': (
+    <>
+      <rect x="4" y="3" width="16" height="18" rx="1" />
+      <path d="M12 3v18" />
+      <circle cx="9" cy="12" r="1" fill="currentColor" />
+    </>
+  ),
 };
 
 export function CategoryIcon({ category, size = 22 }: CategoryIconProps) {

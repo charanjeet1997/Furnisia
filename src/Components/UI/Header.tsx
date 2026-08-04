@@ -1,9 +1,7 @@
-import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { FiHelpCircle } from 'react-icons/fi';
 import { useAuth } from '../../store/AuthContext';
 import { ThemeToggle } from './ThemeToggle';
-import { OnboardingModal } from './OnboardingModal';
 import styles from './Header.module.css';
 
 export function Header() {
