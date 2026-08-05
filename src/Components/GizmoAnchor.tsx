@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, type RefObject } from 'react';
 import { PivotControls } from '@react-three/drei';
 import { useThree } from '@react-three/fiber';
 import { MathUtils, type Group } from 'three';
@@ -10,6 +10,8 @@ interface GizmoAnchorProps {
   item: PlacedItem;
   /** The furniture mesh group — its XZ position is kept in sync while dragging. */
   groupNode: Group;
+  /** Optional ref to sync anchor group position directly during direct dragging */
+  gizmoGroupRef?: RefObject<Group | null>;
   /** Half the model's bounding-box height. */
   halfHeight: number;
   /** XZ clamp limits derived from room size and model footprint. */
@@ -17,14 +19,15 @@ interface GizmoAnchorProps {
   maxZ: number;
 }
 
-export function GizmoAnchor({ item, groupNode, maxX, maxZ }: GizmoAnchorProps) {
+export function GizmoAnchor({ item, groupNode, gizmoGroupRef, maxX, maxZ }: GizmoAnchorProps) {
   const updateItemTransform = usePlannerStore((s) => s.updateItemTransform);
   const showGrid = usePlannerStore((s) => s.showGrid);
   const gridSize = usePlannerStore((s) => s.gridSize);
   const snapToGrid = usePlannerStore((s) => s.snapToGrid);
   const { controls } = useThree();
 
-  const anchorGroupRef = useRef<Group>(null);
+  const internalGroupRef = useRef<Group>(null);
+  const anchorGroupRef = gizmoGroupRef || internalGroupRef;
   const lastPosRef = useRef<[number, number]>([item.position[0], item.position[2]]);
 
   useEffect(() => {
@@ -32,10 +35,10 @@ export function GizmoAnchor({ item, groupNode, maxX, maxZ }: GizmoAnchorProps) {
       anchorGroupRef.current.position.x = item.position[0];
       anchorGroupRef.current.position.z = item.position[2];
     }
-  }, [item.position]);
+  }, [item.position, anchorGroupRef]);
 
   return (
-    <group ref={anchorGroupRef} position={[item.position[0], 0.02, item.position[2]]} rotation={[0, item.rotationY, 0]}>
+    <group ref={anchorGroupRef as RefObject<Group>} position={[item.position[0], 0.02, item.position[2]]} rotation={[0, item.rotationY, 0]}>
       <PivotControls
         scale={0.75}
         depthTest={false}

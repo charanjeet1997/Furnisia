@@ -1,4 +1,5 @@
 import { useTheme } from '../../store/useTheme';
+import { trackFeatureUse } from '../../utils/analytics';
 import styles from './ThemeToggle.module.css';
 
 // Rendered inside Header (see Header.tsx) so it sits inline with the rest of the top bar
@@ -7,11 +8,17 @@ export function ThemeToggle() {
   const [theme, toggle] = useTheme();
   const isDark = theme === 'dark';
 
+  const handleToggle = () => {
+    const newTheme = isDark ? 'light' : 'dark';
+    toggle();
+    trackFeatureUse('toggle_theme', { new_theme: newTheme });
+  };
+
   return (
     <button
       type="button"
       className={styles.toggle}
-      onClick={toggle}
+      onClick={handleToggle}
       aria-label={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
       title={isDark ? 'Switch to light mode' : 'Switch to dark mode'}
     >

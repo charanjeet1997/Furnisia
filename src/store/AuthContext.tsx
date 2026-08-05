@@ -9,6 +9,7 @@ import {
   type User,
 } from 'firebase/auth';
 import { auth } from '../firebase';
+import { setAnalyticsUser, trackLogin, trackSignUp } from '../utils/analytics';
 
 interface AuthContextValue {
   user: User | null;
@@ -28,22 +29,37 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   useEffect(() => onAuthStateChanged(auth, (u) => {
     setUser(u);
     setLoading(false);
+    if (u) {
+      setAnalyticsUser({ uid: u.uid, email: u.email, displayName: u.displayName });
+    } else {
+      setAnalyticsUser(null);
+    }
   }), []);
 
   const value: AuthContextValue = {
     user,
     loading,
     signInGoogle: async () => {
-      await signInWithPopup(auth, new GoogleAuthProvider());
+      const res = await signInWithPopup(auth, new GoogleAuthProvider());
+      if (res.user) {
+        trackLogin('google', { uid: res.user.uid, email: res.user.email, displayName: res.user.displayName });
+      }
     },
     signInEmail: async (email, password) => {
-      await signInWithEmailAndPassword(auth, email, password);
+      const res = await signInWithEmailAndPassword(auth, email, password);
+      if (res.user) {
+        trackLogin('email', { uid: res.user.uid, email: res.user.email, displayName: res.user.displayName });
+      }
     },
     registerEmail: async (email, password) => {
-      await createUserWithEmailAndPassword(auth, email, password);
+      const res = await createUserWithEmailAndPassword(auth, email, password);
+      if (res.user) {
+        trackSignUp('email', { uid: res.user.uid, email: res.user.email, displayName: res.user.displayName });
+      }
     },
     signOutUser: async () => {
       await signOut(auth);
+      setAnalyticsUser(null);
     },
   };
 

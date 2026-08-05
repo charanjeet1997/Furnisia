@@ -9,10 +9,13 @@ import { Profile } from './Pages/Profile';
 import { About } from './Pages/About';
 import { AuthProvider } from './store/AuthContext';
 
+import { AnalyticsTracker } from './Components/AnalyticsTracker';
+
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <AnalyticsTracker />
         <Routes>
           <Route path="/" element={<Dashboard />} />
           <Route path="/about" element={<About />} />

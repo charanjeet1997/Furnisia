@@ -3,7 +3,8 @@ import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCopy, FiEdit2, FiGrid, FiHelpCircle, FiMove, FiRotateCw, FiSave, FiTrash2 } from 'react-icons/fi';
 import { usePlannerStore } from '../../store/plannerStore';
 import { useAuth } from '../../store/AuthContext';
-import { newRoomId, saveRoom } from '../../store/rooms';
+import { newRoomId, saveRoom, saveSharedRoom } from '../../store/rooms';
+import { encodeRoomToUrl } from '../../utils/roomEncoder';
 import { RotationSlider } from './RotationSlider';
 import { ThemeToggle } from './ThemeToggle';
 import { OnboardingModal } from './OnboardingModal';
@@ -71,7 +72,9 @@ export function Toolbar() {
       if (savedRoomId) {
         const roomName = savedRoomName || room.name || 'My Room';
         await saveRoom(user.uid, savedRoomId, { name: roomName, room, placedItems });
+        await saveSharedRoom(savedRoomId, { name: roomName, room, placedItems });
         setSavedRoomInfo(savedRoomId, roomName);
+        navigate(`/planner?roomId=${savedRoomId}`, { replace: true });
       } else {
         const name = window.prompt('Name this room', room.name || 'My Room');
         if (!name) {
@@ -80,11 +83,14 @@ export function Toolbar() {
         }
         const roomId = newRoomId(user.uid);
         await saveRoom(user.uid, roomId, { name, room, placedItems });
+        await saveSharedRoom(roomId, { name, room, placedItems });
         setSavedRoomInfo(roomId, name);
+        navigate(`/planner?roomId=${roomId}`, { replace: true });
       }
       setSaveStatus('saved');
       setLastSavedTime(new Date());
-    } catch {
+    } catch (err) {
+      console.error('[Furnisia] Save room error details:', err);
       setSaveStatus('error');
     } finally {
       setTimeout(() => setSaveStatus('idle'), 2000);
@@ -119,6 +125,34 @@ export function Toolbar() {
     return () => document.removeEventListener('mousedown', handleClickOutside);
   }, [showLightPopover, showGridPopover]);
 
+  function handleOpenVR() {
+    const encodedData = encodeRoomToUrl(room, placedItems);
+    const dataParam = encodedData ? `data=${encodedData}` : '';
+    let roomId = savedRoomId;
+
+    if (user && !roomId) {
+      roomId = newRoomId(user.uid);
+      setSavedRoomInfo(roomId, room.name || 'My Room');
+    }
+
+    const roomIdParam = roomId ? `roomId=${roomId}` : '';
+    const queryStr = [roomIdParam, dataParam].filter(Boolean).join('&');
+
+    // Navigate INSTANTLY (0ms) so VR Loading Screen pops up immediately!
+    navigate(`/vr-room${queryStr ? `?${queryStr}` : ''}`);
+
+    // Perform Firestore sync asynchronously in background without blocking UI navigation
+    if (user && roomId) {
+      const name = savedRoomName || room.name || 'My Room';
+      Promise.all([
+        saveRoom(user.uid, roomId, { name, room, placedItems }),
+        saveSharedRoom(roomId, { name, room, placedItems }),
+      ]).catch((err) => {
+        console.warn('Background VR auto-save notice:', err);
+      });
+    }
+  }
+
   return (
     <>
       <div className={styles.topLeftStack}>
@@ -152,7 +186,7 @@ export function Toolbar() {
           <span className={styles.buttonLabel}>Edit</span>
         </button>
 
-        <button id="tour-plan-vr" type="button" className={styles.vrButton} onClick={() => navigate('/vr-room')} title="VR Room">
+        <button id="tour-plan-vr" type="button" className={styles.vrButton} onClick={handleOpenVR} title="VR Room">
           <span style={{ fontSize: '1rem', lineHeight: 1 }}>🥽</span>
           <span className={styles.buttonLabel}>VR Room</span>
         </button>

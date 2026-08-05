@@ -65,7 +65,7 @@ export function Dashboard() {
 
   function openSavedRoom(saved: SavedRoom) {
     loadRoom(saved.room, saved.placedItems, saved.id, saved.name);
-    navigate('/planner');
+    navigate(`/planner?roomId=${saved.id}`);
   }
 
   async function removeSavedRoom(saved: SavedRoom) {

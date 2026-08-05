@@ -4,6 +4,7 @@ import { furnitureCatalog, furnitureCategories, type FurnitureCategory } from '.
 import { usePlannerStore } from '../../store/plannerStore';
 import { useDeviceType } from '../../hooks/useDeviceType';
 import { CategoryIcon } from './CategoryIcon';
+import { trackCatalogSearch } from '../../utils/analytics';
 import styles from './CatalogPanel.module.css';
 
 const ALL = 'All' as const;
@@ -396,7 +397,10 @@ export function CatalogPanel() {
               key={cat}
               type="button"
               className={cat === filter ? styles.chipActive : styles.chip}
-              onClick={() => setFilter(cat)}
+              onClick={() => {
+                setFilter(cat);
+                trackCatalogSearch('', cat);
+              }}
             >
               {cat}
             </button>

@@ -1,6 +1,7 @@
-import { Component, type ReactNode, Suspense, useMemo, useState } from 'react';
+import { Component, type ReactNode, Suspense, useMemo, useRef, useState } from 'react';
 import { useGLTF, Html, useProgress } from '@react-three/drei';
-import { Box3, Vector3, type Group, type Mesh } from 'three';
+import { useThree, type ThreeEvent } from '@react-three/fiber';
+import { Box3, Vector3, Vector2, Plane, MathUtils, type Group, type Mesh } from 'three';
 import { usePlannerStore, type PlacedItem } from '../store/plannerStore';
 import { furnitureCatalog } from '../Data/FurnitureCatalog';
 import { GizmoAnchor } from './GizmoAnchor';
@@ -106,13 +107,19 @@ function FurnitureModelContent({ item }: FurnitureModelProps) {
   const catalogEntry = furnitureCatalog.find((entry) => entry.id === item.catalogId);
   const modelPath = item.customModelUrl || catalogEntry?.modelPath || '';
   const { scene } = useGLTF(modelPath);
+  const { camera, raycaster, controls, gl } = useThree();
 
   const [groupNode, setGroupNode] = useState<Group | null>(null);
+  const gizmoGroupRef = useRef<Group | null>(null);
 
   const selectItem = usePlannerStore((s) => s.selectItem);
+  const updateItemTransform = usePlannerStore((s) => s.updateItemTransform);
   const isSelected = usePlannerStore((s) => s.selectedId === item.id);
   const gizmoMode = usePlannerStore((s) => s.gizmoMode);
   const room = usePlannerStore((s) => s.room);
+  const showGrid = usePlannerStore((s) => s.showGrid);
+  const gridSize = usePlannerStore((s) => s.gridSize);
+  const snapToGrid = usePlannerStore((s) => s.snapToGrid);
 
   const userScale = item.scale ?? 1;
 
@@ -125,24 +132,20 @@ function FurnitureModelContent({ item }: FurnitureModelProps) {
       }
     });
 
-    // 1. Measure raw bounding box before scale normalization
     let rawBox = new Box3().setFromObject(clone);
     const size = new Vector3();
     rawBox.getSize(size);
     const maxDim = Math.max(size.x, size.y, size.z);
 
-    // 2. Auto-scale oversized (e.g. Sketchfab cm exports 100m wide) or tiny models to ~1.2m realistic furniture scale
     if (maxDim > 2.5 || maxDim < 0.2) {
       const autoScale = 1.2 / Math.max(0.001, maxDim);
       clone.scale.setScalar(autoScale);
     }
 
-    // 3. Apply user custom scale multiplier
     if (userScale !== 1) {
       clone.scale.multiplyScalar(userScale);
     }
 
-    // 4. Recompute box & center to pivot correctly at geometric center floor level
     let box = new Box3().setFromObject(clone);
     const center = new Vector3();
     box.getCenter(center);
@@ -166,34 +169,83 @@ function FurnitureModelContent({ item }: FurnitureModelProps) {
   const maxX = Math.max(0, roomWidth / 2 - halfWidth - wallMargin);
   const maxZ = Math.max(0, roomDepth / 2 - halfDepth - wallMargin);
 
+  function handleDirectPointerDown(e: ThreeEvent<PointerEvent>) {
+    e.stopPropagation();
+    selectItem(item.id);
+
+    if (controls) (controls as any).enabled = false;
+
+    const floorPlane = new Plane(new Vector3(0, 1, 0), 0);
+    const initialIntersection = new Vector3();
+    e.ray.intersectPlane(floorPlane, initialIntersection);
+
+    const startX = item.position[0];
+    const startZ = item.position[2];
+
+    let lastX = startX;
+    let lastZ = startZ;
+
+    const handlePointerMove = (moveEv: PointerEvent) => {
+      const canvasEl = gl.domElement;
+      const rect = canvasEl.getBoundingClientRect();
+
+      const pointer = new Vector2(
+        ((moveEv.clientX - rect.left) / rect.width) * 2 - 1,
+        -((moveEv.clientY - rect.top) / rect.height) * 2 + 1
+      );
+
+      raycaster.setFromCamera(pointer, camera);
+      const currentIntersection = new Vector3();
+      if (raycaster.ray.intersectPlane(floorPlane, currentIntersection)) {
+        const deltaX = currentIntersection.x - initialIntersection.x;
+        const deltaZ = currentIntersection.z - initialIntersection.z;
+
+        let targetX = startX + deltaX;
+        let targetZ = startZ + deltaZ;
+
+        if (showGrid && snapToGrid && gridSize > 0) {
+          targetX = Math.round(targetX / gridSize) * gridSize;
+          targetZ = Math.round(targetZ / gridSize) * gridSize;
+        }
+
+        targetX = MathUtils.clamp(targetX, -maxX, maxX);
+        targetZ = MathUtils.clamp(targetZ, -maxZ, maxZ);
+
+        if (groupNode) {
+          groupNode.position.x = targetX;
+          groupNode.position.z = targetZ;
+        }
+        if (gizmoGroupRef.current) {
+          gizmoGroupRef.current.position.x = targetX;
+          gizmoGroupRef.current.position.z = targetZ;
+        }
+        lastX = targetX;
+        lastZ = targetZ;
+      }
+    };
+
+    const handlePointerUp = () => {
+      window.removeEventListener('pointermove', handlePointerMove);
+      window.removeEventListener('pointerup', handlePointerUp);
+      if (controls) (controls as any).enabled = true;
+      updateItemTransform(item.id, [lastX, 0, lastZ], item.rotationY);
+    };
+
+    window.addEventListener('pointermove', handlePointerMove);
+    window.addEventListener('pointerup', handlePointerUp);
+  }
+
   return (
     <>
       <group
         ref={setGroupNode}
         position={item.position}
         rotation={[0, item.rotationY, 0]}
-        onPointerDown={(e) => {
-          e.stopPropagation();
-          selectItem(item.id);
-        }}
-        onClick={(e) => {
-          e.stopPropagation();
-          selectItem(item.id);
-        }}
+        onPointerDown={handleDirectPointerDown}
       >
-        {/* Invisible raycast hit-mesh ensuring 100% reliable click/pointer selection for 3D GLTF models */}
-        <mesh
-          position={[0, halfHeight, 0]}
-          onPointerDown={(e) => {
-            e.stopPropagation();
-            selectItem(item.id);
-          }}
-          onClick={(e) => {
-            e.stopPropagation();
-            selectItem(item.id);
-          }}
-        >
-          <boxGeometry args={[Math.max(0.4, halfWidth * 2.1), Math.max(0.4, halfHeight * 2.1), Math.max(0.4, halfDepth * 2.1)]} />
+        {/* Precise raycast hit-box matching exact furniture dimensions */}
+        <mesh position={[0, halfHeight, 0]}>
+          <boxGeometry args={[halfWidth * 2, halfHeight * 2, halfDepth * 2]} />
           <meshBasicMaterial visible={false} />
         </mesh>
 
@@ -203,7 +255,7 @@ function FurnitureModelContent({ item }: FurnitureModelProps) {
         {isSelected && (
           <group position={[0, halfHeight, 0]}>
             <mesh>
-              <boxGeometry args={[halfWidth * 2 + 0.08, halfHeight * 2 + 0.08, halfDepth * 2 + 0.08]} />
+              <boxGeometry args={[halfWidth * 2 + 0.04, halfHeight * 2 + 0.04, halfDepth * 2 + 0.04]} />
               <meshBasicMaterial color="#10b981" wireframe transparent opacity={0.65} />
             </mesh>
           </group>
@@ -211,7 +263,14 @@ function FurnitureModelContent({ item }: FurnitureModelProps) {
       </group>
 
       {isSelected && groupNode && gizmoMode === 'translate' && (
-        <GizmoAnchor item={item} groupNode={groupNode} halfHeight={halfHeight} maxX={maxX} maxZ={maxZ} />
+        <GizmoAnchor
+          item={item}
+          groupNode={groupNode}
+          gizmoGroupRef={gizmoGroupRef}
+          halfHeight={halfHeight}
+          maxX={maxX}
+          maxZ={maxZ}
+        />
       )}
     </>
   );

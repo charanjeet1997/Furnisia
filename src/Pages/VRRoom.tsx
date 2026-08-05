@@ -1,9 +1,14 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useState, useEffect } from 'react';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { trackVREnter } from '../utils/analytics';
 import { FiArrowLeft, FiCopy, FiShare2, FiCheck, FiSun, FiMoon, FiHelpCircle } from 'react-icons/fi';
 import { Canvas } from '@react-three/fiber';
+import { useProgress } from '@react-three/drei';
 import { ACESFilmicToneMapping } from 'three';
 import { usePlannerStore } from '../store/plannerStore';
+import { useAuth } from '../store/AuthContext';
+import { getSavedRoom, getSharedRoom } from '../store/rooms';
+import { decodeRoomFromUrl, encodeRoomToUrl } from '../utils/roomEncoder';
 import { Room } from '../Components/Room';
 import { FurnitureModel } from '../Components/FurnitureModel';
 import { FPSController } from '../Components/FPSController';
@@ -35,14 +40,112 @@ const VR_STEPS: TourStep[] = [
   },
 ];
 
+function VRLoaderOverlay() {
+  const { progress, active } = useProgress();
+  const [visible, setVisible] = useState(true);
+
+  useEffect(() => {
+    if (!active && progress >= 100) {
+      const timer = setTimeout(() => setVisible(false), 600);
+      return () => clearTimeout(timer);
+    } else {
+      setVisible(true);
+    }
+  }, [active, progress]);
+
+  if (!visible) return null;
+
+  const displayPercent = Math.min(Math.round(progress), 100);
+
+  return (
+    <div className={styles.loadingOverlay}>
+      <div className={styles.loadingBox}>
+        <div className={styles.loadingVrHeadset}>🥽</div>
+        <div className={styles.loadingTitle}>Loading VR Room</div>
+        <div className={styles.loadingSubtext}>
+          Preparing 1:1 scale spatial 3D environment, furniture models, and realistic lighting…
+        </div>
+        <div className={styles.progressTrack}>
+          <div className={styles.progressFill} style={{ width: `${displayPercent}%` }} />
+        </div>
+        <div className={styles.progressPercent}>{displayPercent}%</div>
+      </div>
+    </div>
+  );
+}
+
 export function VRRoom() {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const urlRoomId = searchParams.get('roomId');
+  const urlData = searchParams.get('data');
+  const { user } = useAuth();
   const placedItems = usePlannerStore((state) => state.placedItems);
+  const savedRoomId = usePlannerStore((state) => state.savedRoomId);
+  const loadRoom = usePlannerStore((state) => state.loadRoom);
   const [atmosphere, setAtmosphere] = useState<Atmosphere>('day');
   const [showShareModal, setShowShareModal] = useState(false);
   const [copied, setCopied] = useState(false);
 
-  const vrUrl = window.location.href;
+  const activeRoomId = urlRoomId || savedRoomId;
+
+  useEffect(() => {
+    trackVREnter(activeRoomId || undefined);
+  }, [activeRoomId]);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    if (urlRoomId) {
+      // Always fetch latest saved room layout from Firestore first
+      getSharedRoom(urlRoomId)
+        .then((shared) => {
+          if (cancelled) return;
+          if (shared) {
+            loadRoom(shared.room, shared.placedItems, shared.id, shared.name);
+            return;
+          }
+          if (user) {
+            return getSavedRoom(user.uid, urlRoomId).then((saved) => {
+              if (cancelled) return;
+              if (saved) {
+                loadRoom(saved.room, saved.placedItems, saved.id, saved.name);
+                return;
+              }
+              if (urlData) {
+                const decoded = decodeRoomFromUrl(urlData);
+                if (decoded) loadRoom(decoded.room, decoded.placedItems, urlRoomId, decoded.room.name || 'VR Room');
+              }
+            });
+          }
+          if (urlData) {
+            const decoded = decodeRoomFromUrl(urlData);
+            if (decoded) loadRoom(decoded.room, decoded.placedItems, urlRoomId, decoded.room.name || 'VR Room');
+          }
+        })
+        .catch((err) => {
+          console.warn('Firestore room fetch notice:', err);
+          if (!cancelled && urlData) {
+            const decoded = decodeRoomFromUrl(urlData);
+            if (decoded) loadRoom(decoded.room, decoded.placedItems, urlRoomId, decoded.room.name || 'VR Room');
+          }
+        });
+    } else if (urlData) {
+      const decoded = decodeRoomFromUrl(urlData);
+      if (decoded) {
+        loadRoom(decoded.room, decoded.placedItems, null, decoded.room.name || 'VR Room');
+      }
+    }
+
+    return () => {
+      cancelled = true;
+    };
+  }, [urlRoomId, urlData, user, loadRoom]);
+
+  const room = usePlannerStore((state) => state.room);
+  const encodedData = encodeRoomToUrl(room, placedItems);
+  const roomIdParam = activeRoomId ? `roomId=${activeRoomId}&` : '';
+  const vrUrl = `${window.location.origin}/vr-room?${roomIdParam}data=${encodedData}`;
 
   function handleCopy() {
     navigator.clipboard.writeText(vrUrl);
@@ -52,6 +155,7 @@ export function VRRoom() {
 
   return (
     <div className={styles.container}>
+      <VRLoaderOverlay />
       <div className={styles.topBar}>
         <div className={styles.leftGroup}>
           <button id="tour-vr-back" type="button" className={styles.headerButton} onClick={() => navigate('/planner')}>
@@ -212,3 +316,4 @@ export function VRRoom() {
     </div>
   );
 }
+
