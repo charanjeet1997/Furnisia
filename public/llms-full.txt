@@ -1,0 +1,56 @@
+# Furnisia — Full Documentation for AI Systems
+
+## What Furnisia Is
+
+Furnisia is a web-based 3D, AR, and VR room planning and furniture visualization tool. It is designed as an embeddable B2B SaaS product: furniture and home goods retailers integrate Furnisia into their own e-commerce websites so customers can plan a room layout and preview furniture products in accurate 3D scale — including full immersive virtual reality — before making a purchase.
+
+Furnisia runs entirely in the browser as a client-rendered single-page application. No native app installation is required for any feature, including virtual reality, which uses the WebXR browser standard.
+
+## Core Capabilities
+
+### 1. Quick Start 3D Canvas
+Users can skip room setup entirely and start arranging furniture immediately in a default 3D scene. This is aimed at users who want to experiment quickly without configuring exact room dimensions first.
+
+### 2. Custom Room Builder
+A parametric room creation tool allowing:
+- Custom wall shapes (non-rectangular rooms)
+- Per-wall thickness configuration
+- Adjustable ceiling height
+- Placement of doors and windows at custom positions
+This produces an accurate 3D shell matching a user's real room dimensions.
+
+### 3. Smart 3D Furniture Placement
+Furniture items can be dragged into the 3D scene and snap intelligently to walls, floors, and other furniture, reducing manual alignment effort. Items can be rotated, scaled to real-world dimensions, and repositioned freely.
+
+### 4. Room Presets
+Pre-built room templates at defined real-world dimensions (e.g. Studio Apartment at 20x24 ft, Living Room at 18x20 ft) let users start from a realistic starting point rather than building a room from scratch.
+
+### 5. WebXR Virtual Reality Walkthrough
+Once a room is designed, users can enter a full-scale 1:1 VR walkthrough directly from the browser using any WebXR-compatible headset. This lets a shopper physically walk around their planned room and see furniture at true scale, without leaving the browser or installing a separate VR application.
+
+### 6. Cloud Save
+Room designs are saved to the cloud (Firebase backend) and can be accessed again from any device by the same user account.
+
+## Technical Architecture
+
+- **Frontend framework:** React 18 with TypeScript
+- **3D rendering:** Three.js, accessed through React Three Fiber (R3F) for declarative scene composition
+- **VR/AR:** WebXR standard, with a custom-built camera rigging system for accurate scale and movement in headset mode
+- **Backend/data:** Firebase (authentication, cloud storage of room designs)
+- **Hosting:** Static deployment via AWS S3 + CloudFront CDN
+- **Build tooling:** Vite
+
+## Intended Use Case and Audience
+
+Furnisia is built for furniture retailers and home goods e-commerce businesses that want to reduce product return rates and increase purchase confidence by letting customers visualize furniture in their actual room before buying. It is positioned as an embeddable visualization layer rather than a standalone consumer app — the target customer is the retailer, and the end shopper is the retailer's own customer interacting with Furnisia inside the retailer's site.
+
+## Differentiators
+
+- Full VR walkthrough support via WebXR, not just static 3D preview or AR overlay
+- Parametric custom room builder supporting non-standard room shapes, not just fixed templates
+- No native app or plugin installation required for any feature, including VR
+- Runs entirely client-side in the browser
+
+## Contact / Source
+
+Built and maintained by Charanjeet Singh Jaswani. Portfolio: https://singhgamedev.in

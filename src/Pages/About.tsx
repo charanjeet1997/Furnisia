@@ -9,7 +9,7 @@ export function About() {
   return (
     <div className={styles.appShell}>
       <Header />
-      <div className={styles.page}>
+      <main className={styles.page}>
         {/* Hero Banner */}
         <section className={styles.hero}>
           <div className={styles.badge}>✦ FURNISIA™ SPATIAL ARCHITECTURE PLATFORM</div>
@@ -111,7 +111,7 @@ export function About() {
             <Link to="/" className={styles.authorLink}>← Back to Dashboard</Link>
           </div>
         </section>
-      </div>
+      </main>
       <Footer />
     </div>
   );

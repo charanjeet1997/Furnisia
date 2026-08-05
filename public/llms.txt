@@ -1,0 +1,34 @@
+# Furnisia
+
+> Furnisia is a 3D/AR/VR room planner and furniture visualizer built with React, Three.js, and WebXR. Furniture retailers embed Furnisia directly into their e-commerce sites so customers can plan rooms and preview furniture in 3D and full-scale virtual reality before buying.
+
+Furnisia lets anyone design a room from scratch or start from a preset template, arrange furniture in an accurate 3D scene, and step into a 1:1 scale VR walkthrough using WebXR-compatible headsets — no app install required.
+
+## Core Features
+
+- **Quick Start 3D Canvas** — jump directly into a default 3D room and start arranging furniture immediately.
+- **Custom Room Builder** — parametric room creation with custom wall shapes, per-wall thickness, ceiling height, doors, and windows.
+- **Smart 3D Furniture Snap** — drag-and-drop furniture placement with snapping to walls, floors, and other objects.
+- **Room Presets** — pre-built room templates (e.g. Studio Apartment, Living Room) at defined real-world dimensions to start designing quickly.
+- **WebXR VR Walkthrough** — full-scale virtual reality room walkthroughs directly in a compatible browser/headset, no native app required.
+- **Cloud Save** — save rooms to the cloud and access them anytime across devices.
+
+## Tech Stack
+
+React 18, TypeScript, Three.js / React Three Fiber (R3F), Firebase, custom WebXR camera rigging. Deployed as a client-rendered single-page application.
+
+## Who It's For
+
+Furniture and home goods retailers who want to embed a 3D/AR/VR room visualizer into their e-commerce site so shoppers can preview products in their own space before purchasing, reducing returns and increasing purchase confidence.
+
+## Pages
+
+- [Home](https://furnisia.singhgamedev.in/) — product overview and quick start
+- [About](https://furnisia.singhgamedev.in/about) — what Furnisia is and who it's for
+- [Planner](https://furnisia.singhgamedev.in/planner) — room planning entry point
+- [Room Builder](https://furnisia.singhgamedev.in/room-builder) — custom parametric room creation
+- [VR Room](https://furnisia.singhgamedev.in/vr-room) — WebXR virtual reality walkthrough mode
+
+## More Information
+
+See [llms-full.txt](https://furnisia.singhgamedev.in/llms-full.txt) for complete technical and functional documentation.

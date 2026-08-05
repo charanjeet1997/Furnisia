@@ -10,11 +10,13 @@ import { About } from './Pages/About';
 import { AuthProvider } from './store/AuthContext';
 
 import { AnalyticsTracker } from './Components/AnalyticsTracker';
+import { SEOHead } from './Components/SEOHead';
 
 function App() {
   return (
     <AuthProvider>
       <BrowserRouter>
+        <SEOHead />
         <AnalyticsTracker />
         <Routes>
           <Route path="/" element={<Dashboard />} />

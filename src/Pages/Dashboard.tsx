@@ -78,7 +78,7 @@ export function Dashboard() {
   return (
     <div className={styles.appShell}>
       <Header />
-      <div className={styles.page}>
+      <main className={styles.page}>
         <div className={styles.hero}>
           <div className={styles.heroBadge}>
             <span className={styles.badgeDot} />
@@ -175,7 +175,7 @@ export function Dashboard() {
             ))}
           </div>
         </section>
-      </div>
+      </main>
       <Footer />
 
       <SpotlightTour tourKey="dashboard" steps={DASHBOARD_STEPS} />
