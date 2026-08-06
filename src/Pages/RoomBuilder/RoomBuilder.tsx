@@ -36,6 +36,7 @@ export function RoomBuilder() {
   const navigate = useNavigate();
   const location = useLocation();
   const setRoom = usePlannerStore((state) => state.setRoom);
+  const updateRoom = usePlannerStore((state) => state.updateRoom);
 
   const state = location.state as RoomBuilderNavState | null;
   const initialRoom = state?.initialRoom;
@@ -50,6 +51,9 @@ export function RoomBuilder() {
   const [openings, setOpenings] = useState<RoomOpening[]>(initialRoom?.openings ?? []);
   const [wallColor, setWallColor] = useState(initialRoom?.wallColor ?? DEFAULT_WALL_COLOR);
   const [floorColor, setFloorColor] = useState(initialRoom?.floorColor ?? DEFAULT_FLOOR_COLOR);
+  const [ceilingColor, setCeilingColor] = useState(initialRoom?.ceilingColor ?? '#f8fafc');
+  const [wallTexture, setWallTexture] = useState<string | undefined>(initialRoom?.wallTexture);
+  const [floorTexture, setFloorTexture] = useState<string | undefined>(initialRoom?.floorTexture);
   const [height, setHeight] = useState(initialRoom?.height ?? DEFAULT_HEIGHT);
   const wallThickness = initialRoom?.wallThickness ?? DEFAULT_WALL_THICKNESS;
   const [edgeThicknesses, setEdgeThicknesses] = useState<number[]>(
@@ -72,7 +76,7 @@ export function RoomBuilder() {
     const offsetZ = (Math.min(...zs) + Math.max(...zs)) / 2;
     const shift = (p: RoomVertex) => ({ x: p.x - offsetX, z: p.z - offsetZ });
 
-    setRoom({
+    const newRoom: RoomShape = {
       id: initialRoom?.id ?? 'custom',
       name: initialRoom?.name ?? 'Custom Room',
       vertices: centerVertices(vertices),
@@ -81,9 +85,18 @@ export function RoomBuilder() {
       edgeThicknesses,
       wallColor,
       floorColor,
+      ceilingColor,
+      wallTexture,
+      floorTexture,
       openings,
       interiorWalls: interiorWalls.map((w) => ({ ...w, start: shift(w.start), end: shift(w.end) })),
-    });
+    };
+
+    if (initialRoom) {
+      updateRoom(newRoom);
+    } else {
+      setRoom(newRoom);
+    }
     navigate(returnTo);
   }
 
@@ -123,8 +136,20 @@ export function RoomBuilder() {
             <StepStyle
               wallColor={wallColor}
               floorColor={floorColor}
+              ceilingColor={ceilingColor}
+              wallTexture={wallTexture}
+              floorTexture={floorTexture}
               onWallColorChange={setWallColor}
               onFloorColorChange={setFloorColor}
+              onCeilingColorChange={setCeilingColor}
+              onWallTextureChange={setWallTexture}
+              onFloorTextureChange={setFloorTexture}
+              vertices={vertices}
+              height={height}
+              wallThickness={wallThickness}
+              edgeThicknesses={edgeThicknesses}
+              openings={openings}
+              interiorWalls={interiorWalls}
             />
           )}
         </div>

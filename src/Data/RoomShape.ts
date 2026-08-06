@@ -43,6 +43,13 @@ export interface RoomShape {
   edgeThicknesses?: number[];
   wallColor: string;
   floorColor: string;
+  ceilingColor?: string;
+  wallTexture?: string;
+  floorTexture?: string;
+  wallTextureScaleX?: number;
+  wallTextureScaleY?: number;
+  floorTextureScaleX?: number;
+  floorTextureScaleY?: number;
   openings: RoomOpening[];
   interiorWalls: InteriorWall[];
   lightIntensity?: number;

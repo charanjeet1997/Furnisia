@@ -1,0 +1,974 @@
+[
+  {
+    "id": "sofa",
+    "name": "Lounge Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/loungeDesignSofa.glb",
+    "thumbnailPath": "/assets/thumbnails/sofa.png",
+    "footprint": {
+      "width": 1.12,
+      "depth": 0.41
+    },
+    "forward": "south"
+  },
+  {
+    "id": "coffee-table",
+    "name": "Coffee Table",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/tableCoffee.glb",
+    "thumbnailPath": "/assets/thumbnails/coffee-table.png",
+    "footprint": {
+      "width": 0.66,
+      "depth": 0.4
+    },
+    "forward": "north"
+  },
+  {
+    "id": "shelf",
+    "name": "Open Bookcase",
+    "category": "Storage",
+    "modelPath": "/assets/GLB/storage/bookcaseOpen.glb",
+    "thumbnailPath": "/assets/thumbnails/shelf.png",
+    "footprint": {
+      "width": 0.4,
+      "depth": 0.25
+    },
+    "forward": "north"
+  },
+  {
+    "id": "bed",
+    "name": "Double Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/bedDouble.glb",
+    "thumbnailPath": "/assets/thumbnails/bed.png",
+    "footprint": {
+      "width": 1.62,
+      "depth": 1.91
+    },
+    "forward": "south"
+  },
+  {
+    "id": "floor-lamp",
+    "name": "Floor Lamp",
+    "category": "Lighting",
+    "modelPath": "/assets/GLB/lampSquareFloor.glb",
+    "thumbnailPath": "/assets/thumbnails/floor-lamp.png",
+    "footprint": {
+      "width": 0.12,
+      "depth": 0.12
+    },
+    "forward": "north"
+  },
+  {
+    "id": "plant",
+    "name": "Potted Plant",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/pottedPlant.glb",
+    "thumbnailPath": "/assets/thumbnails/plant.png",
+    "footprint": {
+      "width": 0.26,
+      "depth": 0.29
+    },
+    "forward": "north"
+  },
+  {
+    "id": "light-grey-bed-zcf81b",
+    "name": "Light Grey Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/light_grey_bed_zcf81b.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/light-grey-bed-zcf81b.png"
+  },
+  {
+    "id": "minimalist-bed-5xsqfj",
+    "name": "Minimalist Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/minimalist_bed_5xsqfj.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/minimalist-bed-5xsqfj.png"
+  },
+  {
+    "id": "modern-bed-gqyxz6",
+    "name": "Modern Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/modern_bed_gqyxz6.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-bed-gqyxz6.png"
+  },
+  {
+    "id": "modern-platform-bed-pggcmb",
+    "name": "Modern Platform Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/modern_platform_bed_pggcmb.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-platform-bed-pggcmb.png"
+  },
+  {
+    "id": "modern-platform-bed-z3oacp",
+    "name": "Modern Platform Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/modern_platform_bed_z3oacp.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-platform-bed-z3oacp.png"
+  },
+  {
+    "id": "modern-upholstered-bed-frame-ocbztd",
+    "name": "Modern Upholstered Bed Frame",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/modern_upholstered_bed_frame_ocbztd.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-upholstered-bed-frame-ocbztd.png"
+  },
+  {
+    "id": "modern-upholstered-bed-frame-xkmkdf",
+    "name": "Modern Upholstered Bed Frame",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/modern_upholstered_bed_frame_xkmkdf.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-upholstered-bed-frame-xkmkdf.png"
+  },
+  {
+    "id": "modern-upholstered-platform-bed-anjq6e",
+    "name": "Modern Upholstered Platform Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/modern_upholstered_platform_bed_anjq6e.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-upholstered-platform-bed-anjq6e.png"
+  },
+  {
+    "id": "modern-upholstered-platform-bed-lylfmr",
+    "name": "Modern Upholstered Platform Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/modern_upholstered_platform_bed_lylfmr.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-upholstered-platform-bed-lylfmr.png"
+  },
+  {
+    "id": "modern-upholstered-platform-bed-vnlhpi",
+    "name": "Modern Upholstered Platform Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/modern_upholstered_platform_bed_vnlhpi.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-upholstered-platform-bed-vnlhpi.png"
+  },
+  {
+    "id": "rustic-style-bed-aqh3y8",
+    "name": "Rustic Style Bed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/beds/rustic_style_bed_aqh3y8.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/rustic-style-bed-aqh3y8.png"
+  },
+  {
+    "id": "contemporary-floor-lamp-vfzfbg",
+    "name": "Contemporary Floor Lamp",
+    "category": "Lighting",
+    "modelPath": "/assets/GLB/lighting/contemporary_floor_lamp_vfzfbg.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-floor-lamp-vfzfbg.png"
+  },
+  {
+    "id": "classic-bistro-style-bar-stool-xr5r4e",
+    "name": "Classic Bistro Style Bar Stool",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/classic_bistro_style_bar_stool_xr5r4e.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/classic-bistro-style-bar-stool-xr5r4e.png"
+  },
+  {
+    "id": "comfortable-armchair-9mrr2j",
+    "name": "Comfortable Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/comfortable_armchair_9mrr2j.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/comfortable-armchair-9mrr2j.png"
+  },
+  {
+    "id": "contemporary-armchair-usjpit",
+    "name": "Contemporary Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_armchair_usjpit.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-armchair-usjpit.png"
+  },
+  {
+    "id": "contemporary-armchair-ynv7ou",
+    "name": "Contemporary Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_armchair_ynv7ou.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-armchair-ynv7ou.png"
+  },
+  {
+    "id": "contemporary-bar-stool-1ubysq",
+    "name": "Contemporary Bar Stool",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_bar_stool_1ubysq.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-bar-stool-1ubysq.png"
+  },
+  {
+    "id": "contemporary-bar-stool-9yfyls",
+    "name": "Contemporary Bar Stool",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_bar_stool_9yfyls.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-bar-stool-9yfyls.png"
+  },
+  {
+    "id": "contemporary-bar-stool-fkwvza",
+    "name": "Contemporary Bar Stool",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_bar_stool_fkwvza.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-bar-stool-fkwvza.png"
+  },
+  {
+    "id": "contemporary-bar-stool-kwvza1",
+    "name": "Contemporary Bar Stool",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_bar_stool_kwvza1.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-bar-stool-kwvza1.png"
+  },
+  {
+    "id": "contemporary-bench-rryg8o",
+    "name": "Contemporary Bench",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_bench_rryg8o.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-bench-rryg8o.png"
+  },
+  {
+    "id": "contemporary-chaise-lounge-2zmmuv",
+    "name": "Contemporary Chaise Lounge",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_chaise_lounge_2zmmuv.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-chaise-lounge-2zmmuv.png"
+  },
+  {
+    "id": "contemporary-outdoor-armchair-nqliuz",
+    "name": "Contemporary Outdoor Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/contemporary_outdoor_armchair_nqliuz.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-outdoor-armchair-nqliuz.png"
+  },
+  {
+    "id": "high-back-executive-office-chair-o6fwwg",
+    "name": "High Back Executive Office Chair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/high_back_executive_office_chair_o6fwwg.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/high-back-executive-office-chair-o6fwwg.png"
+  },
+  {
+    "id": "modern-armchair-s4kpud",
+    "name": "Modern Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/modern_armchair_s4kpud.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-armchair-s4kpud.png"
+  },
+  {
+    "id": "modern-armchair-zkdt0z",
+    "name": "Modern Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/modern_armchair_zkdt0z.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-armchair-zkdt0z.png"
+  },
+  {
+    "id": "modern-dining-chair-chvii0",
+    "name": "Modern Dining Chair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/modern_dining_chair_chvii0.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-dining-chair-chvii0.png"
+  },
+  {
+    "id": "modern-lounge-armchair-pcjy64",
+    "name": "Modern Lounge Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/modern_lounge_armchair_pcjy64.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-lounge-armchair-pcjy64.png"
+  },
+  {
+    "id": "modern-lounge-chair-armchair-jvwe7f",
+    "name": "Modern Lounge Chair Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/modern_lounge_chair_armchair_jvwe7f.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-lounge-chair-armchair-jvwe7f.png"
+  },
+  {
+    "id": "modern-upholstered-armchair-fmkr41",
+    "name": "Modern Upholstered Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/modern_upholstered_armchair_fmkr41.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-upholstered-armchair-fmkr41.png"
+  },
+  {
+    "id": "modern-upholstered-lounge-chair-viewed-armchair-5brsxg",
+    "name": "Modern Upholstered Lounge Chair Viewed Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/modern_upholstered_lounge_chair_viewed_armchair_5brsxg.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-upholstered-lounge-chair-viewed-armchair-5brsxg.png"
+  },
+  {
+    "id": "modern-wooden-chair-55i856",
+    "name": "Modern Wooden Chair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/modern_wooden_chair_55i856.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-wooden-chair-55i856.png"
+  },
+  {
+    "id": "plush-armchair-ayddu5",
+    "name": "Plush Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/plush_armchair_ayddu5.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/plush-armchair-ayddu5.png"
+  },
+  {
+    "id": "plush-armchair-mdswkq",
+    "name": "Plush Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/plush_armchair_mdswkq.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/plush-armchair-mdswkq.png"
+  },
+  {
+    "id": "plush-armchair-yhyehj",
+    "name": "Plush Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/plush_armchair_yhyehj.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/plush-armchair-yhyehj.png"
+  },
+  {
+    "id": "stylish-barrel-back-armchair-ouqvsb",
+    "name": "Stylish Barrel Back Armchair",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/seating/stylish_barrel_back_armchair_ouqvsb.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/stylish-barrel-back-armchair-ouqvsb.png"
+  },
+  {
+    "id": "contemporary-l-shaped-sectional-sofa-0lqjw8",
+    "name": "Contemporary L Shaped Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_l_shaped_sectional_sofa_0lqjw8.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-l-shaped-sectional-sofa-0lqjw8.png"
+  },
+  {
+    "id": "contemporary-l-shaped-sectional-sofa-e45mfe",
+    "name": "Contemporary L Shaped Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_l_shaped_sectional_sofa_e45mfe.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-l-shaped-sectional-sofa-e45mfe.png"
+  },
+  {
+    "id": "contemporary-l-shaped-sectional-sofa-ot2l5a",
+    "name": "Contemporary L Shaped Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_l_shaped_sectional_sofa_ot2l5a.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-l-shaped-sectional-sofa-ot2l5a.png"
+  },
+  {
+    "id": "contemporary-sofa-6naivh",
+    "name": "Contemporary Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_sofa_6naivh.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-sofa-6naivh.png"
+  },
+  {
+    "id": "contemporary-sofa-lnxp3p",
+    "name": "Contemporary Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_sofa_lnxp3p.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-sofa-lnxp3p.png"
+  },
+  {
+    "id": "contemporary-sofa-pphv6k",
+    "name": "Contemporary Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_sofa_pphv6k.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-sofa-pphv6k.png"
+  },
+  {
+    "id": "contemporary-three-seater-sofa-4qgqdr",
+    "name": "Contemporary Three Seater Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_three_seater_sofa_4qgqdr.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-three-seater-sofa-4qgqdr.png"
+  },
+  {
+    "id": "contemporary-three-seat-sectional-sofa-znkhpn",
+    "name": "Contemporary Three Seat Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_three_seat_sectional_sofa_znkhpn.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-three-seat-sectional-sofa-znkhpn.png"
+  },
+  {
+    "id": "contemporary-two-seater-loveseat-anxm65",
+    "name": "Contemporary Two Seater Loveseat",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/contemporary_two_seater_loveseat_anxm65.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-two-seater-loveseat-anxm65.png"
+  },
+  {
+    "id": "light-gray-modular-sectional-sofa-zjbsr0",
+    "name": "Light Gray Modular Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/light_gray_modular_sectional_sofa_zjbsr0.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/light-gray-modular-sectional-sofa-zjbsr0.png"
+  },
+  {
+    "id": "l-shaped-contemporary-modular-sectional-sofa-3rweje",
+    "name": "L Shaped Contemporary Modular Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/l_shaped_contemporary_modular_sectional_sofa_3rweje.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/l-shaped-contemporary-modular-sectional-sofa-3rweje.png"
+  },
+  {
+    "id": "l-shaped-modern-sectional-sofa-4jvynj",
+    "name": "L Shaped Modern Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/l_shaped_modern_sectional_sofa_4jvynj.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/l-shaped-modern-sectional-sofa-4jvynj.png"
+  },
+  {
+    "id": "l-shaped-sectional-sofa-s8c7yw",
+    "name": "L Shaped Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/l_shaped_sectional_sofa_s8c7yw.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/l-shaped-sectional-sofa-s8c7yw.png"
+  },
+  {
+    "id": "modern-daybed-6dvh6m",
+    "name": "Modern Daybed",
+    "category": "Bedroom",
+    "modelPath": "/assets/GLB/sofas/modern_daybed_6dvh6m.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-daybed-6dvh6m.png"
+  },
+  {
+    "id": "modern-modular-sectional-sofa-7tyakw",
+    "name": "Modern Modular Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/modern_modular_sectional_sofa_7tyakw.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-modular-sectional-sofa-7tyakw.png"
+  },
+  {
+    "id": "modern-three-seater-sofa-9eoodn",
+    "name": "Modern Three Seater Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/modern_three_seater_sofa_9eoodn.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-three-seater-sofa-9eoodn.png"
+  },
+  {
+    "id": "modern-two-seater-sofa-mm8pye",
+    "name": "Modern Two Seater Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/modern_two_seater_sofa_mm8pye.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-two-seater-sofa-mm8pye.png"
+  },
+  {
+    "id": "modular-sectional-sofa-bbtpfk",
+    "name": "Modular Sectional Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/modular_sectional_sofa_bbtpfk.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modular-sectional-sofa-bbtpfk.png"
+  },
+  {
+    "id": "traditional-two-seater-loveseat-mw4oaf",
+    "name": "Traditional Two Seater Loveseat",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/traditional_two_seater_loveseat_mw4oaf.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/traditional-two-seater-loveseat-mw4oaf.png"
+  },
+  {
+    "id": "two-seater-sofa-bnnzo8",
+    "name": "Two Seater Sofa",
+    "category": "Seating",
+    "modelPath": "/assets/GLB/sofas/two_seater_sofa_bnnzo8.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/two-seater-sofa-bnnzo8.png"
+  },
+  {
+    "id": "rustic-wine-bar-cabinet-kcu0qz",
+    "name": "Rustic Wine Bar Cabinet",
+    "category": "Storage",
+    "modelPath": "/assets/GLB/storage/rustic_wine_bar_cabinet_kcu0qz.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/rustic-wine-bar-cabinet-kcu0qz.png"
+  },
+  {
+    "id": "contemporary-square-accent-table-side-table-xrf3yu",
+    "name": "Contemporary Square Accent Table Side Table",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/contemporary_square_accent_table_side_table_xrf3yu.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-square-accent-table-side-table-xrf3yu.png"
+  },
+  {
+    "id": "contemporary-square-coffee-table-hteled",
+    "name": "Contemporary Square Coffee Table",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/contemporary_square_coffee_table_hteled.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/contemporary-square-coffee-table-hteled.png"
+  },
+  {
+    "id": "modern-and-minimalist-nightstand-nclwup",
+    "name": "Modern And Minimalist Nightstand",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/modern_and_minimalist_nightstand_nclwup.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-and-minimalist-nightstand-nclwup.png"
+  },
+  {
+    "id": "modern-console-table-hpwhuj",
+    "name": "Modern Console Table",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/modern_console_table_hpwhuj.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-console-table-hpwhuj.png"
+  },
+  {
+    "id": "modern-pedestal-accent-table-side-table-7t8mrj",
+    "name": "Modern Pedestal Accent Table Side Table",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/modern_pedestal_accent_table_side_table_7t8mrj.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-pedestal-accent-table-side-table-7t8mrj.png"
+  },
+  {
+    "id": "modern-rectangular-coffee-table-crafted-ntxdir",
+    "name": "Modern Rectangular Coffee Table Crafted",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/modern_rectangular_coffee_table_crafted_ntxdir.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/modern-rectangular-coffee-table-crafted-ntxdir.png"
+  },
+  {
+    "id": "organically-shaped-coffee-table-hxfkn3",
+    "name": "Organically Shaped Coffee Table",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/organically_shaped_coffee_table_hxfkn3.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/organically-shaped-coffee-table-hxfkn3.png"
+  },
+  {
+    "id": "oval-coffee-table-kxrjdr",
+    "name": "Oval Coffee Table",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/oval_coffee_table_kxrjdr.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/oval-coffee-table-kxrjdr.png"
+  },
+  {
+    "id": "oval-shaped-coffee-table-oa9ncx",
+    "name": "Oval Shaped Coffee Table",
+    "category": "Tables",
+    "modelPath": "/assets/GLB/tables/oval_shaped_coffee_table_oa9ncx.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/oval-shaped-coffee-table-oa9ncx.png"
+  },
+  {
+    "id": "unidentified-model-09lrou",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_09lrou.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-09lrou.png"
+  },
+  {
+    "id": "unidentified-model-2fwdsf",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_2fwdsf.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-2fwdsf.png"
+  },
+  {
+    "id": "unidentified-model-4hxzxu",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_4hxzxu.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-4hxzxu.png"
+  },
+  {
+    "id": "unidentified-model-8dz2ua",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_8dz2ua.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-8dz2ua.png"
+  },
+  {
+    "id": "unidentified-model-fdtwun",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_fdtwun.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-fdtwun.png"
+  },
+  {
+    "id": "unidentified-model-k4ohmd",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_k4ohmd.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-k4ohmd.png"
+  },
+  {
+    "id": "unidentified-model-kbznms",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_kbznms.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-kbznms.png"
+  },
+  {
+    "id": "unidentified-model-once6y",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_once6y.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-once6y.png"
+  },
+  {
+    "id": "unidentified-model-tspyuu",
+    "name": "Unidentified Model",
+    "category": "Decor",
+    "modelPath": "/assets/GLB/uncategorized/unidentified_model_tspyuu.glb",
+    "footprint": {
+      "width": 0.8,
+      "depth": 0.8
+    },
+    "forward": "north",
+    "thumbnailPath": "/assets/thumbnails/unidentified-model-tspyuu.png"
+  }
+]

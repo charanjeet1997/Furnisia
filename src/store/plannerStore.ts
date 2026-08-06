@@ -36,9 +36,19 @@ interface PlannerState {
   updateItemTransform: (id: string, position: [number, number, number], rotationY: number) => void;
   updateItemScale: (id: string, scale: number) => void;
   removeItem: (id: string) => void;
-  removeSelected: () => void;
+  setRoom: (room: RoomShape) => void;
+  updateRoom: (room: RoomShape) => void;
   setGizmoMode: (mode: GizmoMode) => void;
   updateLightIntensity: (val: number) => void;
+  setWallTexture: (texturePath?: string) => void;
+  setFloorTexture: (texturePath?: string) => void;
+  setWallTextureScaleX: (scale: number) => void;
+  setWallTextureScaleY: (scale: number) => void;
+  setFloorTextureScaleX: (scale: number) => void;
+  setFloorTextureScaleY: (scale: number) => void;
+  setWallColor: (color: string) => void;
+  setFloorColor: (color: string) => void;
+  setCeilingColor: (color: string) => void;
   setCatalogOpen: (open: boolean | ((prev: boolean) => boolean)) => void;
   setShowGrid: (show: boolean) => void;
   toggleGrid: () => void;
@@ -59,9 +69,46 @@ export const usePlannerStore = create<PlannerState>((set) => ({
   savedRoomName: null,
 
   setRoom: (room) => set((state) => ({ room, placedItems: [], selectedId: null, savedRoomId: state.savedRoomId, savedRoomName: state.savedRoomName })),
+  updateRoom: (room) => set((state) => ({ room })),
   updateLightIntensity: (val) =>
     set((state) => ({
       room: { ...state.room, lightIntensity: val },
+    })),
+  setWallTexture: (wallTexture) =>
+    set((state) => ({
+      room: { ...state.room, wallTexture },
+    })),
+  setFloorTexture: (floorTexture) =>
+    set((state) => ({
+      room: { ...state.room, floorTexture },
+    })),
+  setWallTextureScaleX: (wallTextureScaleX) =>
+    set((state) => ({
+      room: { ...state.room, wallTextureScaleX },
+    })),
+  setWallTextureScaleY: (wallTextureScaleY) =>
+    set((state) => ({
+      room: { ...state.room, wallTextureScaleY },
+    })),
+  setFloorTextureScaleX: (floorTextureScaleX) =>
+    set((state) => ({
+      room: { ...state.room, floorTextureScaleX },
+    })),
+  setFloorTextureScaleY: (floorTextureScaleY) =>
+    set((state) => ({
+      room: { ...state.room, floorTextureScaleY },
+    })),
+  setWallColor: (wallColor) =>
+    set((state) => ({
+      room: { ...state.room, wallColor },
+    })),
+  setFloorColor: (floorColor) =>
+    set((state) => ({
+      room: { ...state.room, floorColor },
+    })),
+  setCeilingColor: (ceilingColor) =>
+    set((state) => ({
+      room: { ...state.room, ceilingColor },
     })),
 
   // Restores a saved room (from Firestore) with its furniture intact, unlike setRoom which

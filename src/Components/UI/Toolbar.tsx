@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { FiArrowLeft, FiCopy, FiEdit2, FiGrid, FiHelpCircle, FiMove, FiRotateCw, FiSave, FiTrash2 } from 'react-icons/fi';
 import { usePlannerStore } from '../../store/plannerStore';
 import { useAuth } from '../../store/AuthContext';
-import { newRoomId, saveRoom, saveSharedRoom } from '../../store/rooms';
+import { listRooms, newRoomId, saveRoom, saveSharedRoom } from '../../store/rooms';
 import { encodeRoomToUrl } from '../../utils/roomEncoder';
 import { RotationSlider } from './RotationSlider';
 import { ThemeToggle } from './ThemeToggle';
@@ -69,24 +69,62 @@ export function Toolbar() {
     }
     setSaveStatus('saving');
     try {
-      if (savedRoomId) {
-        const roomName = savedRoomName || room.name || 'My Room';
-        await saveRoom(user.uid, savedRoomId, { name: roomName, room, placedItems });
-        await saveSharedRoom(savedRoomId, { name: roomName, room, placedItems });
-        setSavedRoomInfo(savedRoomId, roomName);
-        navigate(`/planner?roomId=${savedRoomId}`, { replace: true });
-      } else {
-        const name = window.prompt('Name this room', room.name || 'My Room');
-        if (!name) {
+      // 1. Fetch user's existing saved rooms
+      const existingRooms = await listRooms(user.uid);
+
+      let targetRoomId = savedRoomId;
+      let targetName = savedRoomName || room.name || 'My Room';
+
+      if (!savedRoomId) {
+        const inputName = window.prompt('Name this room', room.name || 'My Room');
+        if (!inputName || !inputName.trim()) {
           setSaveStatus('idle');
           return;
         }
-        const roomId = newRoomId(user.uid);
-        await saveRoom(user.uid, roomId, { name, room, placedItems });
-        await saveSharedRoom(roomId, { name, room, placedItems });
-        setSavedRoomInfo(roomId, name);
-        navigate(`/planner?roomId=${roomId}`, { replace: true });
+        targetName = inputName.trim();
       }
+
+      // 2. Check if another room with the exact same name exists
+      const duplicate = existingRooms.find(
+        (r) => r.name.trim().toLowerCase() === targetName.trim().toLowerCase() && r.id !== targetRoomId,
+      );
+
+      if (duplicate) {
+        const confirmOverwrite = window.confirm(
+          `A room named "${duplicate.name}" already exists.\n\nDo you want to overwrite it?`,
+        );
+
+        if (confirmOverwrite) {
+          // Overwrite the existing room
+          targetRoomId = duplicate.id;
+        } else {
+          // Solicit a unique name or exit
+          const newName = window.prompt('Enter a different name for this room:', `${targetName} (Copy)`);
+          if (!newName || !newName.trim()) {
+            setSaveStatus('idle');
+            return;
+          }
+          targetName = newName.trim();
+
+          const reCheck = existingRooms.find(
+            (r) => r.name.trim().toLowerCase() === targetName.trim().toLowerCase() && r.id !== targetRoomId,
+          );
+          if (reCheck) {
+            targetRoomId = reCheck.id;
+          } else {
+            targetRoomId = newRoomId(user.uid);
+          }
+        }
+      }
+
+      if (!targetRoomId) {
+        targetRoomId = newRoomId(user.uid);
+      }
+
+      await saveRoom(user.uid, targetRoomId, { name: targetName, room, placedItems });
+      await saveSharedRoom(targetRoomId, { name: targetName, room, placedItems });
+      setSavedRoomInfo(targetRoomId, targetName);
+      navigate(`/planner?roomId=${targetRoomId}`, { replace: true });
       setSaveStatus('saved');
       setLastSavedTime(new Date());
     } catch (err) {

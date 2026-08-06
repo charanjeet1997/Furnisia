@@ -1,7 +1,7 @@
 import { useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Grid } from '@react-three/drei';
-import { Shape, MeshStandardMaterial } from 'three';
+import { Shape, MeshStandardMaterial, TextureLoader, RepeatWrapping, ShapeGeometry, Float32BufferAttribute } from 'three';
 import { usePlannerStore } from '../store/plannerStore';
 import { buildWallSegments, type WallOpening } from './wallSegments';
 import { createClippedMaterial } from './createClippedMaterial';
@@ -50,17 +50,19 @@ function computeRoomLightingGrid(vertices: RoomVertex[]) {
 
 interface RoomProps {
   disableClipping?: boolean;
+  roomOverride?: RoomShape;
 }
 
-export function Room({ disableClipping = false }: RoomProps) {
-  const room = usePlannerStore((state) => state.room);
+export function Room({ disableClipping = false, roomOverride }: RoomProps) {
+  const storeRoom = usePlannerStore((state) => state.room);
+  const room = roomOverride ?? storeRoom;
   const showGrid = usePlannerStore((state) => state.showGrid);
   const gridSize = usePlannerStore((state) => state.gridSize);
-  const { vertices, height, wallColor, floorColor, openings } = room;
+  const { vertices, height, wallColor, floorColor, wallTexture, floorTexture, openings } = room;
   const wallThickness = room.wallThickness ?? 0.1;
   const interiorWalls = room.interiorWalls ?? [];
   const edgeThicknesses = room.edgeThicknesses ?? [];
-  const { camera, controls } = useThree();
+  const { camera, controls, invalidate } = useThree();
 
   const edges = useMemo(() => computeEdges(vertices), [vertices]);
   const edgeTh = (i: number) => edgeThicknesses[i] ?? wallThickness;
@@ -71,6 +73,35 @@ export function Room({ disableClipping = false }: RoomProps) {
     return computeRoomLightingGrid(vertices);
   }, [vertices]);
 
+  const floorScaleX = room.floorTextureScaleX ?? room.floorTextureScale ?? 3;
+  const floorScaleY = room.floorTextureScaleY ?? room.floorTextureScale ?? 3;
+  const wallScaleX = room.wallTextureScaleX ?? room.wallTextureScale ?? 2;
+  const wallScaleY = room.wallTextureScaleY ?? room.wallTextureScale ?? 2;
+
+  const floorMap = useMemo(() => {
+    if (!floorTexture) return null;
+    const tex = new TextureLoader().load(floorTexture, () => {
+      tex.needsUpdate = true;
+      invalidate();
+    });
+    tex.wrapS = RepeatWrapping;
+    tex.wrapT = RepeatWrapping;
+    tex.repeat.set(floorScaleX, floorScaleY);
+    return tex;
+  }, [floorTexture, floorScaleX, floorScaleY, invalidate]);
+
+  const wallMap = useMemo(() => {
+    if (!wallTexture) return null;
+    const tex = new TextureLoader().load(wallTexture, () => {
+      tex.needsUpdate = true;
+      invalidate();
+    });
+    tex.wrapS = RepeatWrapping;
+    tex.wrapT = RepeatWrapping;
+    tex.repeat.set(wallScaleX, wallScaleY);
+    return tex;
+  }, [wallTexture, wallScaleX, wallScaleY, invalidate]);
+
   const floorShape = useMemo(() => {
     const shape = new Shape();
     vertices.forEach((v, i) => {
@@ -80,6 +111,30 @@ export function Room({ disableClipping = false }: RoomProps) {
     shape.closePath();
     return shape;
   }, [vertices]);
+
+  const floorGeo = useMemo(() => {
+    const geo = new ShapeGeometry(floorShape);
+    const pos = geo.attributes.position;
+    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
+    for (let i = 0; i < pos.count; i++) {
+      const x = pos.getX(i);
+      const y = pos.getY(i);
+      if (x < minX) minX = x;
+      if (x > maxX) maxX = x;
+      if (y < minY) minY = y;
+      if (y > maxY) maxY = y;
+    }
+    const rangeX = maxX - minX || 1;
+    const rangeY = maxY - minY || 1;
+    const uvs = new Float32Array(pos.count * 2);
+    for (let i = 0; i < pos.count; i++) {
+      uvs[i * 2] = (pos.getX(i) - minX) / rangeX;
+      uvs[i * 2 + 1] = (pos.getY(i) - minY) / rangeY;
+    }
+    geo.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
+    geo.attributes.uv.needsUpdate = true;
+    return geo;
+  }, [floorShape]);
 
   const ceilingShape = useMemo(() => {
     const maxTh = Math.max(wallThickness, ...edgeThicknesses);
@@ -93,19 +148,33 @@ export function Room({ disableClipping = false }: RoomProps) {
     return shape;
   }, [vertices, wallThickness, edgeThicknesses]);
 
+  const effectiveWallColor = wallTexture ? '#ffffff' : wallColor;
+  const effectiveFloorColor = floorTexture ? '#ffffff' : floorColor;
+
   const wallMats = useMemo(
-    () => edges.map(() => (disableClipping ? { material: new MeshStandardMaterial({ color: wallColor }) } : createClippedMaterial({ color: wallColor }, 0))),
-    [edges.length, wallColor, disableClipping],
+    () =>
+      edges.map(() =>
+        disableClipping
+          ? { material: new MeshStandardMaterial({ color: effectiveWallColor, map: wallMap }) }
+          : createClippedMaterial({ color: effectiveWallColor, map: wallMap }, 0),
+      ),
+    [edges.length, effectiveWallColor, wallMap, disableClipping],
   );
 
   const interiorWallMats = useMemo(
-    () => interiorWalls.map(() => (disableClipping ? { material: new MeshStandardMaterial({ color: wallColor }) } : createClippedMaterial({ color: wallColor }, 0))),
-    [interiorWalls.length, wallColor, disableClipping],
+    () =>
+      interiorWalls.map(() =>
+        disableClipping
+          ? { material: new MeshStandardMaterial({ color: effectiveWallColor, map: wallMap }) }
+          : createClippedMaterial({ color: effectiveWallColor, map: wallMap }, 0),
+      ),
+    [interiorWalls.length, effectiveWallColor, wallMap, disableClipping],
   );
 
+  const effectiveCeilingColor = room.ceilingColor ?? '#f8fafc';
   const ceilingMat = useMemo(
-    () => (disableClipping ? { material: new MeshStandardMaterial({ color: wallColor, roughness: 0.85 }) } : createClippedMaterial({ color: wallColor, roughness: 0.85 }, 0)),
-    [wallColor, disableClipping],
+    () => (disableClipping ? { material: new MeshStandardMaterial({ color: effectiveCeilingColor, roughness: 0.85 }) } : createClippedMaterial({ color: effectiveCeilingColor, roughness: 0.85 }, 0)),
+    [effectiveCeilingColor, disableClipping],
   );
 
   const fixtureTrimMat = useMemo(
@@ -204,9 +273,8 @@ export function Room({ disableClipping = false }: RoomProps) {
 
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
-        <shapeGeometry args={[floorShape]} />
-        <meshStandardMaterial color={floorColor} roughness={0.8} />
+      <mesh rotation={[-Math.PI / 2, 0, 0]} geometry={floorGeo} receiveShadow>
+        <meshStandardMaterial color={effectiveFloorColor} map={floorMap} roughness={0.8} />
       </mesh>
 
       {showGrid && (

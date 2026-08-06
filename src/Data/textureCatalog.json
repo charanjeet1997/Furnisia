@@ -1,0 +1,190 @@
+{
+  "floors": [
+    {
+      "id": "brown_floor_tiles",
+      "name": "Brown Floor Tiles",
+      "texturePath": "/assets/textures/floors/brown_floor_tiles.jpg",
+      "normalPath": "/assets/textures/floors/brown_floor_tiles_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/brown_floor_tiles_rough.jpg",
+      "previewPath": "/assets/textures/previews/brown_floor_tiles.png"
+    },
+    {
+      "id": "clay_floor_001",
+      "name": "Clay Floor 001",
+      "texturePath": "/assets/textures/floors/clay_floor_001.jpg",
+      "normalPath": "/assets/textures/floors/clay_floor_001_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/clay_floor_001_rough.jpg",
+      "previewPath": "/assets/textures/previews/clay_floor_001.png"
+    },
+    {
+      "id": "concrete_floor_02",
+      "name": "Concrete Floor 02",
+      "texturePath": "/assets/textures/floors/concrete_floor_02.jpg",
+      "normalPath": "/assets/textures/floors/concrete_floor_02_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/concrete_floor_02_rough.jpg",
+      "previewPath": "/assets/textures/previews/concrete_floor_02.png"
+    },
+    {
+      "id": "dark_wooden_planks",
+      "name": "Dark Wooden Planks",
+      "texturePath": "/assets/textures/floors/dark_wooden_planks.jpg",
+      "normalPath": "/assets/textures/floors/dark_wooden_planks_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/dark_wooden_planks_rough.jpg",
+      "previewPath": "/assets/textures/previews/dark_wooden_planks.png"
+    },
+    {
+      "id": "herringbone_parquet",
+      "name": "Herringbone Parquet",
+      "texturePath": "/assets/textures/floors/herringbone_parquet.jpg",
+      "normalPath": "/assets/textures/floors/herringbone_parquet_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/herringbone_parquet_rough.jpg",
+      "previewPath": "/assets/textures/previews/herringbone_parquet.png"
+    },
+    {
+      "id": "laminate_floor",
+      "name": "Laminate Floor",
+      "texturePath": "/assets/textures/floors/laminate_floor.jpg",
+      "normalPath": "/assets/textures/floors/laminate_floor_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/laminate_floor_rough.jpg",
+      "previewPath": "/assets/textures/previews/laminate_floor.png"
+    },
+    {
+      "id": "laminate_floor_02",
+      "name": "Laminate Floor 02",
+      "texturePath": "/assets/textures/floors/laminate_floor_02.jpg",
+      "normalPath": "/assets/textures/floors/laminate_floor_02_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/laminate_floor_02_rough.jpg",
+      "previewPath": "/assets/textures/previews/laminate_floor_02.png"
+    },
+    {
+      "id": "marble_01",
+      "name": "Marble 01",
+      "texturePath": "/assets/textures/floors/marble_01.jpg",
+      "normalPath": "/assets/textures/floors/marble_01_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/marble_01_rough.jpg",
+      "previewPath": "/assets/textures/previews/marble_01.png"
+    },
+    {
+      "id": "slate_floor",
+      "name": "Slate Floor",
+      "texturePath": "/assets/textures/floors/slate_floor.jpg",
+      "normalPath": "/assets/textures/floors/slate_floor_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/slate_floor_rough.jpg",
+      "previewPath": "/assets/textures/previews/slate_floor.png"
+    },
+    {
+      "id": "wood_floor",
+      "name": "Wood Floor",
+      "texturePath": "/assets/textures/floors/wood_floor.jpg",
+      "normalPath": "/assets/textures/floors/wood_floor_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/wood_floor_rough.jpg",
+      "previewPath": "/assets/textures/previews/wood_floor.png"
+    },
+    {
+      "id": "wood_floor_deck",
+      "name": "Wood Floor Deck",
+      "texturePath": "/assets/textures/floors/wood_floor_deck.jpg",
+      "normalPath": "/assets/textures/floors/wood_floor_deck_nor.jpg",
+      "roughnessPath": "/assets/textures/floors/wood_floor_deck_rough.jpg",
+      "previewPath": "/assets/textures/previews/wood_floor_deck.png"
+    }
+  ],
+  "walls": [
+    {
+      "id": "beige_wall_001",
+      "name": "Beige Wall 001",
+      "texturePath": "/assets/textures/walls/beige_wall_001.jpg",
+      "normalPath": "/assets/textures/walls/beige_wall_001_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/beige_wall_001_rough.jpg",
+      "previewPath": "/assets/textures/previews/beige_wall_001.png"
+    },
+    {
+      "id": "castle_brick_07",
+      "name": "Castle Brick 07",
+      "texturePath": "/assets/textures/walls/castle_brick_07.jpg",
+      "normalPath": "/assets/textures/walls/castle_brick_07_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/castle_brick_07_rough.jpg",
+      "previewPath": "/assets/textures/previews/castle_brick_07.png"
+    },
+    {
+      "id": "concrete_wall_003",
+      "name": "Concrete Wall 003",
+      "texturePath": "/assets/textures/walls/concrete_wall_003.jpg",
+      "normalPath": "/assets/textures/walls/concrete_wall_003_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/concrete_wall_003_rough.jpg",
+      "previewPath": "/assets/textures/previews/concrete_wall_003.png"
+    },
+    {
+      "id": "concrete_wall_008",
+      "name": "Concrete Wall 008",
+      "texturePath": "/assets/textures/walls/concrete_wall_008.jpg",
+      "normalPath": "/assets/textures/walls/concrete_wall_008_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/concrete_wall_008_rough.jpg",
+      "previewPath": "/assets/textures/previews/concrete_wall_008.png"
+    },
+    {
+      "id": "leather_white",
+      "name": "Leather White",
+      "texturePath": "/assets/textures/walls/leather_white.jpg",
+      "normalPath": "/assets/textures/walls/leather_white_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/leather_white_rough.jpg",
+      "previewPath": "/assets/textures/previews/leather_white.png"
+    },
+    {
+      "id": "plastered_wall",
+      "name": "Plastered Wall",
+      "texturePath": "/assets/textures/walls/plastered_wall.jpg",
+      "normalPath": "/assets/textures/walls/plastered_wall_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/plastered_wall_rough.jpg",
+      "previewPath": "/assets/textures/previews/plastered_wall.png"
+    },
+    {
+      "id": "plastered_wall_02",
+      "name": "Plastered Wall 02",
+      "texturePath": "/assets/textures/walls/plastered_wall_02.jpg",
+      "normalPath": "/assets/textures/walls/plastered_wall_02_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/plastered_wall_02_rough.jpg",
+      "previewPath": "/assets/textures/previews/plastered_wall_02.png"
+    },
+    {
+      "id": "red_brick_03",
+      "name": "Red Brick 03",
+      "texturePath": "/assets/textures/walls/red_brick_03.jpg",
+      "normalPath": "/assets/textures/walls/red_brick_03_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/red_brick_03_rough.jpg",
+      "previewPath": "/assets/textures/previews/red_brick_03.png"
+    },
+    {
+      "id": "rough_plasterbrick_05",
+      "name": "Rough Plasterbrick 05",
+      "texturePath": "/assets/textures/walls/rough_plasterbrick_05.jpg",
+      "normalPath": "/assets/textures/walls/rough_plasterbrick_05_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/rough_plasterbrick_05_rough.jpg",
+      "previewPath": "/assets/textures/previews/rough_plasterbrick_05.png"
+    },
+    {
+      "id": "stone_wall",
+      "name": "Stone Wall",
+      "texturePath": "/assets/textures/walls/stone_wall.jpg",
+      "normalPath": "/assets/textures/walls/stone_wall_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/stone_wall_rough.jpg",
+      "previewPath": "/assets/textures/previews/stone_wall.png"
+    },
+    {
+      "id": "stone_wall_03",
+      "name": "Stone Wall 03",
+      "texturePath": "/assets/textures/walls/stone_wall_03.jpg",
+      "normalPath": "/assets/textures/walls/stone_wall_03_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/stone_wall_03_rough.jpg",
+      "previewPath": "/assets/textures/previews/stone_wall_03.png"
+    },
+    {
+      "id": "white_plaster_02",
+      "name": "White Plaster 02",
+      "texturePath": "/assets/textures/walls/white_plaster_02.jpg",
+      "normalPath": "/assets/textures/walls/white_plaster_02_nor.jpg",
+      "roughnessPath": "/assets/textures/walls/white_plaster_02_rough.jpg",
+      "previewPath": "/assets/textures/previews/white_plaster_02.png"
+    }
+  ]
+}
