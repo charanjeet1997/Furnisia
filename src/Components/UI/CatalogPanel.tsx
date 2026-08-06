@@ -261,7 +261,7 @@ export function CatalogPanel() {
           aria-label={open ? 'Close catalog' : 'Open catalog'}
         >
           <span className={styles.title}>
-            Catalog <span className={styles.titleCategory}>{mainTab === 'furniture' ? filter : mainTab === 'colors' ? colorSubTab : textureSubTab}</span>
+            Catalog <span className={styles.titleCategory}>{mainTab === 'furniture' ? filter : mainTab}</span>
           </span>
           <FiChevronUp
             size={18}

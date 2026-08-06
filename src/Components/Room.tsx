@@ -1,14 +1,14 @@
 import { useMemo } from 'react';
 import { useFrame, useThree } from '@react-three/fiber';
 import { Grid } from '@react-three/drei';
-import { Shape, MeshStandardMaterial, TextureLoader, RepeatWrapping, ShapeGeometry, Float32BufferAttribute } from 'three';
+import { Shape, MeshStandardMaterial, TextureLoader, RepeatWrapping } from 'three';
 import { usePlannerStore } from '../store/plannerStore';
 import { buildWallSegments, type WallOpening } from './wallSegments';
 import { createClippedMaterial } from './createClippedMaterial';
 import { createGlassMaterial } from './createGlassMaterial';
 import { computeEdges, offsetPolygon, boundingBox } from './polygonGeometry';
 import { getDoorStyle, getWindowStyle } from '../Data/OpeningStyles';
-import type { RoomOpening, RoomVertex } from '../Data/RoomShape';
+import type { RoomOpening, RoomVertex, RoomShape } from '../Data/RoomShape';
 
 const BASEBOARD_COLOR = '#e8e2d4';
 const BASEBOARD_HEIGHT = 0.05;
@@ -73,10 +73,10 @@ export function Room({ disableClipping = false, roomOverride }: RoomProps) {
     return computeRoomLightingGrid(vertices);
   }, [vertices]);
 
-  const floorScaleX = room.floorTextureScaleX ?? room.floorTextureScale ?? 3;
-  const floorScaleY = room.floorTextureScaleY ?? room.floorTextureScale ?? 3;
-  const wallScaleX = room.wallTextureScaleX ?? room.wallTextureScale ?? 2;
-  const wallScaleY = room.wallTextureScaleY ?? room.wallTextureScale ?? 2;
+  const floorScaleX = room.floorTextureScaleX ?? 3;
+  const floorScaleY = room.floorTextureScaleY ?? 3;
+  const wallScaleX = room.wallTextureScaleX ?? 2;
+  const wallScaleY = room.wallTextureScaleY ?? 2;
 
   const floorMap = useMemo(() => {
     if (!floorTexture) return null;
@@ -112,29 +112,6 @@ export function Room({ disableClipping = false, roomOverride }: RoomProps) {
     return shape;
   }, [vertices]);
 
-  const floorGeo = useMemo(() => {
-    const geo = new ShapeGeometry(floorShape);
-    const pos = geo.attributes.position;
-    let minX = Infinity, maxX = -Infinity, minY = Infinity, maxY = -Infinity;
-    for (let i = 0; i < pos.count; i++) {
-      const x = pos.getX(i);
-      const y = pos.getY(i);
-      if (x < minX) minX = x;
-      if (x > maxX) maxX = x;
-      if (y < minY) minY = y;
-      if (y > maxY) maxY = y;
-    }
-    const rangeX = maxX - minX || 1;
-    const rangeY = maxY - minY || 1;
-    const uvs = new Float32Array(pos.count * 2);
-    for (let i = 0; i < pos.count; i++) {
-      uvs[i * 2] = (pos.getX(i) - minX) / rangeX;
-      uvs[i * 2 + 1] = (pos.getY(i) - minY) / rangeY;
-    }
-    geo.setAttribute('uv', new Float32BufferAttribute(uvs, 2));
-    geo.attributes.uv.needsUpdate = true;
-    return geo;
-  }, [floorShape]);
 
   const ceilingShape = useMemo(() => {
     const maxTh = Math.max(wallThickness, ...edgeThicknesses);
@@ -273,7 +250,8 @@ export function Room({ disableClipping = false, roomOverride }: RoomProps) {
 
   return (
     <group>
-      <mesh rotation={[-Math.PI / 2, 0, 0]} geometry={floorGeo} receiveShadow>
+      <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
+        <shapeGeometry args={[floorShape]} />
         <meshStandardMaterial color={effectiveFloorColor} map={floorMap} roughness={0.8} />
       </mesh>
 

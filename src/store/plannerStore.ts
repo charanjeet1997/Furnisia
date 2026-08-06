@@ -36,7 +36,7 @@ interface PlannerState {
   updateItemTransform: (id: string, position: [number, number, number], rotationY: number) => void;
   updateItemScale: (id: string, scale: number) => void;
   removeItem: (id: string) => void;
-  setRoom: (room: RoomShape) => void;
+  removeSelected: () => void;
   updateRoom: (room: RoomShape) => void;
   setGizmoMode: (mode: GizmoMode) => void;
   updateLightIntensity: (val: number) => void;
@@ -69,7 +69,7 @@ export const usePlannerStore = create<PlannerState>((set) => ({
   savedRoomName: null,
 
   setRoom: (room) => set((state) => ({ room, placedItems: [], selectedId: null, savedRoomId: state.savedRoomId, savedRoomName: state.savedRoomName })),
-  updateRoom: (room) => set((state) => ({ room })),
+  updateRoom: (room) => set({ room }),
   updateLightIntensity: (val) =>
     set((state) => ({
       room: { ...state.room, lightIntensity: val },
