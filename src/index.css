@@ -133,3 +133,13 @@ canvas {
 ::-webkit-scrollbar-thumb:hover {
   background: var(--color-text-muted);
 }
+
+/* Placeholder shimmer for texture thumbnails still waiting in the sequential load queue. */
+@keyframes furnisiaShimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}

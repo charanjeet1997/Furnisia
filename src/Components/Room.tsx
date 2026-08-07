@@ -73,10 +73,10 @@ export function Room({ disableClipping = false, roomOverride }: RoomProps) {
     return computeRoomLightingGrid(vertices);
   }, [vertices]);
 
-  const floorScaleX = room.floorTextureScaleX ?? 3;
-  const floorScaleY = room.floorTextureScaleY ?? 3;
-  const wallScaleX = room.wallTextureScaleX ?? 2;
-  const wallScaleY = room.wallTextureScaleY ?? 2;
+  const floorScaleX = room.floorTextureScaleX ?? 1;
+  const floorScaleY = room.floorTextureScaleY ?? 1;
+  const wallScaleX = room.wallTextureScaleX ?? 1;
+  const wallScaleY = room.wallTextureScaleY ?? 1;
 
   const floorMap = useMemo(() => {
     if (!floorTexture) return null;
@@ -252,7 +252,10 @@ export function Room({ disableClipping = false, roomOverride }: RoomProps) {
     <group>
       <mesh rotation={[-Math.PI / 2, 0, 0]} receiveShadow>
         <shapeGeometry args={[floorShape]} />
-        <meshStandardMaterial color={effectiveFloorColor} map={floorMap} roughness={0.8} />
+        {/* `key` forces a fresh material whenever the texture is swapped or cleared. Mutating
+            `map` in place would leave the compiled shader without its USE_MAP define, so the
+            floor would keep rendering as flat colour until something else forced a recompile. */}
+        <meshStandardMaterial key={floorTexture ?? 'no-texture'} color={effectiveFloorColor} map={floorMap} roughness={0.8} />
       </mesh>
 
       {showGrid && (

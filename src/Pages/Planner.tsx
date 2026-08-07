@@ -1,4 +1,5 @@
 import { Scene } from '../Components/Scene';
+import { TextureLoadingBar } from '../Components/TextureLoadingBar';
 import { Room } from '../Components/Room';
 import { FurnitureModel } from '../Components/FurnitureModel';
 import { CatalogPanel } from '../Components/UI/CatalogPanel';
@@ -97,6 +98,7 @@ export function Planner() {
             <FurnitureModel key={item.id} item={item} />
           ))}
         </Scene>
+        <TextureLoadingBar />
       </div>
       <CatalogPanel />
 

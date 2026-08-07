@@ -67,6 +67,9 @@ export const SNAP_DISTANCE = 0.3;
 export const ENDPOINT_SNAP_DISTANCE = 0.5;
 export const WALL_HOVER_DISTANCE = 0.26;
 export const HOVER_MENU_RADIUS = 0.6;
+// How long a click on a wall waits before committing to "start drawing", leaving room for a
+// second click to arrive and mean "select this wall" instead.
+export const DOUBLE_CLICK_MS = 250;
 
 export const snapDraw = (v: number) => Math.round(v * 10) / 10;
 

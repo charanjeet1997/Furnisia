@@ -1,6 +1,6 @@
-import { useRef } from 'react';
+import { useEffect, useRef } from 'react';
 import type { InteriorWall, RoomVertex } from '../../../../Data/RoomShape';
-import type { SnapTarget, DragState } from '../../types/floorPlanTypes';
+import { DOUBLE_CLICK_MS, type SnapTarget, type DragState } from '../../types/floorPlanTypes';
 
 interface InteriorWallsLayerProps {
   interiorWalls: InteriorWall[];
@@ -70,8 +70,16 @@ export function InteriorWallsLayer({
   flashRejection,
 }: InteriorWallsLayerProps) {
   const WALL_STROKE = 0.18;
-  const lastPointerTypeRef = useRef<string>('mouse');
   const clickTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
+
+  // Clear any armed draw timers on unmount so a pending click can't fire into a dead tree.
+  useEffect(() => {
+    const timers = clickTimers.current;
+    return () => {
+      timers.forEach(clearTimeout);
+      timers.clear();
+    };
+  }, []);
 
   return (
     <>
@@ -154,7 +162,6 @@ export function InteriorWallsLayer({
                   touchAction: 'none',
                 }}
                 onPointerDown={(e) => {
-                  lastPointerTypeRef.current = e.pointerType;
                   if (drawStart || !onInteriorWallDrag) {
                     return;
                   }
@@ -195,17 +202,17 @@ export function InteriorWallsLayer({
                     return;
                   }
 
+                  // First click only *arms* the draw — a second click inside the double-click
+                  // window cancels it and selects the wall instead, which is the only way to
+                  // reach the thickness editor now that a plain click starts drawing.
                   const clientX = e.clientX;
                   const clientY = e.clientY;
-                  const isTouch = lastPointerTypeRef.current !== 'mouse';
-
-                  if (isTouch) {
-                    // Touch/tablet: single tap triggers wall drawing start
+                  const wallId = wall.id;
+                  const timer = setTimeout(() => {
+                    clickTimers.current.delete(wallId);
                     onWallClickStartDraw(clientX, clientY);
-                  } else {
-                    // Desktop mouse: single click immediately starts wall drawing
-                    onWallClickStartDraw(clientX, clientY);
-                  }
+                  }, DOUBLE_CLICK_MS);
+                  clickTimers.current.set(wallId, timer);
                 }}
               />
             )}

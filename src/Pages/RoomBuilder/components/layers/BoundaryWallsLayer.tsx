@@ -1,6 +1,6 @@
-import React, { useRef } from 'react';
+import React, { useEffect, useRef } from 'react';
 import type { WallEdge } from '../../../../Components/polygonGeometry';
-import { edgeCursor, type DragState } from '../../types/floorPlanTypes';
+import { DOUBLE_CLICK_MS, edgeCursor, type DragState } from '../../types/floorPlanTypes';
 
 interface BoundaryWallsLayerProps {
   edges: WallEdge[];
@@ -43,8 +43,16 @@ export function BoundaryWallsLayer({
   flashRejection,
 }: BoundaryWallsLayerProps) {
   const WALL_STROKE = 0.18;
-  const lastPointerTypeRef = useRef<string>('mouse');
   const clickTimers = useRef<Map<number, ReturnType<typeof setTimeout>>>(new Map());
+
+  // Clear any armed draw timers on unmount so a pending click can't fire into a dead tree.
+  useEffect(() => {
+    const timers = clickTimers.current;
+    return () => {
+      timers.forEach(clearTimeout);
+      timers.clear();
+    };
+  }, []);
 
   return (
     <>
@@ -78,7 +86,6 @@ export function BoundaryWallsLayer({
                 strokeWidth={0.65}
                 style={{ cursor: drawStart ? 'crosshair' : onEdgeDrag ? edgeCursor(edge.normal) : 'pointer', touchAction: 'none' }}
                 onPointerDown={(e) => {
-                  lastPointerTypeRef.current = e.pointerType;
                   if (drawStart || !onEdgeDrag) return;
                   beginDrag(e, { kind: 'edge', index: i, startX: e.clientX, startY: e.clientY, scale: pxScale(), normal: edge.normal });
                   onEdgeDragStart?.(i);
@@ -109,17 +116,16 @@ export function BoundaryWallsLayer({
                     return;
                   }
 
+                  // First click only *arms* the draw — a second click inside the double-click
+                  // window cancels it and selects the edge instead, which is the only way to
+                  // reach the thickness editor now that a plain click starts drawing.
                   const clientX = e.clientX;
                   const clientY = e.clientY;
-                  const isTouch = lastPointerTypeRef.current !== 'mouse';
-
-                  if (isTouch) {
-                    // Touch/tablet: single tap triggers wall drawing start
+                  const timer = setTimeout(() => {
+                    clickTimers.current.delete(i);
                     onWallClickStartDraw(clientX, clientY);
-                  } else {
-                    // Desktop mouse: single click immediately starts wall drawing
-                    onWallClickStartDraw(clientX, clientY);
-                  }
+                  }, DOUBLE_CLICK_MS);
+                  clickTimers.current.set(i, timer);
                 }}
               />
             )}

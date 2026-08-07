@@ -26,6 +26,7 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
     onVertexDrag,
     onVertexDragEnd,
     onInteriorWallDrag,
+    onInteriorWallDragStart,
     onInteriorWallDragEnd,
     onOpeningDrag,
     onOpeningDragEnd,
@@ -208,7 +209,7 @@ export function useFloorPlanState(props: FloorPlanPreviewProps) {
         scale: pointer.pxScale(),
         normal,
       });
-      onInteriorWallDrag?.(snapped.wallId, 0, 0);
+      onInteriorWallDragStart?.(snapped.wallId);
     }
   }
 

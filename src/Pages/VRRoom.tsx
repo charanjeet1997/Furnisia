@@ -13,6 +13,7 @@ import { Room } from '../Components/Room';
 import { FurnitureModel } from '../Components/FurnitureModel';
 import { FPSController } from '../Components/FPSController';
 import { VRController } from '../Components/VRController';
+import { TextureLoadingBar } from '../Components/TextureLoadingBar';
 import styles from './VRRoom.module.css';
 
 type Atmosphere = 'day' | 'sunset' | 'night';
@@ -280,6 +281,7 @@ export function VRRoom() {
             <FurnitureModel key={item.id} item={item} />
           ))}
         </Canvas>
+        <TextureLoadingBar />
       </div>
 
       <div id="tour-vr-banner" className={styles.vrBanner}>

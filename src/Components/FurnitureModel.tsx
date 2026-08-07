@@ -346,4 +346,11 @@ export function FurnitureModel({ item }: FurnitureModelProps) {
   );
 }
 
-furnitureCatalog.forEach((entry) => useGLTF.preload(entry.modelPath));
+// Models are deliberately NOT preloaded in bulk. A `furnitureCatalog.forEach(useGLTF.preload)`
+// used to run here at module scope, which queued ~2GB across 81 requests the moment this file
+// was imported. Browsers open only ~6 connections per origin, so those downloads held every
+// slot and starved the rest of the page — the room builder's texture thumbnails sat blank for
+// over a minute waiting for a free connection, despite totalling well under a megabyte.
+//
+// `FurnitureModelContent` loads each model through `useGLTF` inside `<Suspense>`, so a model
+// is fetched when it is actually selected and placed, and drei caches it from then on.
