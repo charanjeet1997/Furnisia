@@ -1,0 +1,5516 @@
+{
+  "pack": "Furnisia_Furniture",
+  "generated": "2026-11-27",
+  "units": "metres (1 unit = 1 m), Y-up, dimensions measured from the transformed GLB geometry bounding box",
+  "model_count": 60,
+  "models": [
+    {
+      "id": "nova_arched_metal_king_bed",
+      "name": "Nova Modern Arched Metal King Bed",
+      "category": "Beds",
+      "subcategory": "King bed",
+      "file": "Beds/nova_arched_metal_king_bed.glb",
+      "width_m": 2.016,
+      "height_m": 1.174,
+      "depth_m": 2.152,
+      "file_size_bytes": 329628,
+      "triangle_count": 28420,
+      "description": "Elevate your bedroom with this distinctive gold-finished metal platform bed. It can be played up or down to either be a focal point of an otherwise neutral room or paired with glam-inspired furnishings.",
+      "features": [
+        "King size; 85\"L x 79.5\"W x 46\"H",
+        "Sturdy metal with elegant gold finish. 15-slat wood mattress support",
+        "Modern elegance with an arched headboard, simple rounded spindles and beautifully-tapered legs in a brushed gold finish.",
+        "Tall legs leave plenty of room underneath for storage",
+        "Assemble in 30 minutes to 1 hour. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Nova Modern King Bed Frame with Arched Headboard, 79.5\"W, Gold Finished Metal",
+      "brand": "Rivet",
+      "color": "Gold",
+      "material": "Metal",
+      "style": null,
+      "product_type": "BED",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 79.5,
+          "unit": "inches",
+          "metres": 2.019
+        },
+        "width": {
+          "value": 85,
+          "unit": "inches",
+          "metres": 2.159
+        },
+        "height": {
+          "value": 46,
+          "unit": "inches",
+          "metres": 1.168
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -1.0082,
+        0.0,
+        -1.0762
+      ],
+      "bounds_max_m": [
+        1.0082,
+        1.1744,
+        1.0762
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "12cf62ac9715deb1e1effe478fba887312db8601f3f5abdfb6028356234abaf2",
+      "geometry_sha256": "6401bfff7d23b335ae45a492a111493ff7399a14481a72e8f591212940873b2f",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QDV397/B075QDV397.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/beds",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075QDV397",
+      "amazon_item_ids": [
+        "B075QDV397"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "ventura_louvered_queen_bed",
+      "name": "Ventura Mid-Century Louvered Queen Bed",
+      "category": "Beds",
+      "subcategory": "Queen bed",
+      "file": "Beds/ventura_louvered_queen_bed.glb",
+      "width_m": 1.6,
+      "height_m": 1.27,
+      "depth_m": 2.184,
+      "file_size_bytes": 454032,
+      "triangle_count": 23184,
+      "description": "A warm cherry finish and striking louvered design will ensure enjoyment for years to come. Clean, simple lines are the hallmark of the casual Mid-century modern Ventura collection. Slat-roll construction means that a box spring is not required.",
+      "features": [
+        "63\" W x 86\"L x 50\" H",
+        "Solid hardwoods with mid-tone cherry finish",
+        "A clean Mid-century modern style",
+        "Sturdy mortise-and-tenon construction; slat roll makes box spring optional",
+        "Assemble in 30 minutes or less. Wipe with soft, dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Ventura Mid-Century Louvered Queen Bed, 86\"L, Cherry",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "hardwoods",
+      "style": "Queen Bed",
+      "product_type": "BED",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 63,
+          "unit": "inches",
+          "metres": 1.6
+        },
+        "width": {
+          "value": 86,
+          "unit": "inches",
+          "metres": 2.184
+        },
+        "height": {
+          "value": 50,
+          "unit": "inches",
+          "metres": 1.27
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.8,
+        0.0,
+        -1.0922
+      ],
+      "bounds_max_m": [
+        0.8,
+        1.27,
+        1.0922
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "85a2b0ed39e38b121acd2cdac117e2722a8015196f30734c5e43d91c68cd202f",
+      "geometry_sha256": "8355b0f548500f04e6d6daf7dd20edc9d7ac004fe10b53f30bda2c7710895e52",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072PWGSZL/B072PWGSZL.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/beds",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072PWGSZL",
+      "amazon_item_ids": [
+        "B072PWGSZL"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "clifton_upholstered_king_bed",
+      "name": "Clifton Modern Upholstered King Bed",
+      "category": "Beds",
+      "subcategory": "King bed",
+      "file": "Beds/clifton_upholstered_king_bed.glb",
+      "width_m": 2.145,
+      "height_m": 1.471,
+      "depth_m": 2.293,
+      "file_size_bytes": 465092,
+      "triangle_count": 20194,
+      "description": "Clean, modern lines combined with classic fabric upholstery allow this lovely piece to work with any style bedroom. A low-profile headboard and footboard help it blend with smaller rooms. Side rails are upholstered in the same pleasing neutral color.",
+      "features": [
+        "89.75\"L x 84.25\"W x 57.9\"H",
+        "Hardwood frame coverd by polyester fabric",
+        "Modern design with classic fabric upholstery helps it blend with most styles",
+        "No boxspring required; mattress sold separately",
+        "Minor assembly required"
+      ],
+      "listing_title": "Stone & Beam Clifton Modern Upholstered King Bed with Headboard, 84.25\"W, Cream",
+      "brand": "Stone & Beam",
+      "color": "Infinitey Natural",
+      "material": "stone",
+      "style": "Standard",
+      "product_type": "HEADBOARD",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 84.25,
+          "unit": "inches",
+          "metres": 2.14
+        },
+        "width": {
+          "value": 89.75,
+          "unit": "inches",
+          "metres": 2.28
+        },
+        "height": {
+          "value": 57.88,
+          "unit": "inches",
+          "metres": 1.47
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -1.0701,
+        0.0,
+        -1.1464
+      ],
+      "bounds_max_m": [
+        1.0747,
+        1.471,
+        1.1464
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "7804a1e7ac9318898ae8d9d3e461fdd8f70b6cc467340256042d19edf1495271",
+      "geometry_sha256": "7def1e0dc9d37f8ecee3cfedd417ce3f56ee1444d867e38319ce5106038e6b55",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QBL1V8/B075QBL1V8.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/beds",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075QBL1V8",
+      "amazon_item_ids": [
+        "B075QBL1V8"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "gwyneth_velvet_queen_bed",
+      "name": "Gwyneth Mid-Century Velvet Queen Bed",
+      "category": "Beds",
+      "subcategory": "Queen bed",
+      "file": "Beds/gwyneth_velvet_queen_bed.glb",
+      "width_m": 1.676,
+      "height_m": 1.245,
+      "depth_m": 2.34,
+      "file_size_bytes": 1039160,
+      "triangle_count": 39612,
+      "description": "This bed's sumptuous upholstery will have you feeling like royalty. Both headboard and footboard have channel tufting, while the plush velvet fabric exudes glamour. Wooden legs with warm dark finish complete this mid-century modern look.",
+      "features": [
+        "92.1\"L x 66\"W x 49\"H",
+        "Velvet upholstery; wood legs.",
+        "Mid-century modern style with glam detailing and fabric",
+        "No boxspring required. Queen mattress sold separately.",
+        "Assemble in 30 minutes to 1 hour. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Rivet Gwyneth Mid-Century Velvet Queen Bed with Headboard, 92.1\" L, Steel Grey",
+      "brand": "Rivet",
+      "color": "Steel Grey",
+      "material": "Velvet",
+      "style": null,
+      "product_type": "BED",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 66,
+          "unit": "inches",
+          "metres": 1.676
+        },
+        "width": {
+          "value": 92.13,
+          "unit": "inches",
+          "metres": 2.34
+        },
+        "height": {
+          "value": 49,
+          "unit": "inches",
+          "metres": 1.245
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.8382,
+        0.0,
+        -1.1701
+      ],
+      "bounds_max_m": [
+        0.8382,
+        1.2446,
+        1.1701
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 2,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 0
+      },
+      "file_sha256": "bf23873eac2eeff5dfa57bdddf8bd8ede4a612fd935a00b52320f68bb56add1e",
+      "geometry_sha256": "7d776e0150add177318b6542b5af938e8fa60a5b556275b34700d234fc2fc56b",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QDGZX7/B075QDGZX7.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/beds",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075QDGZX7",
+      "amazon_item_ids": [
+        "B075QDGZX7"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "york_platform_queen_bed",
+      "name": "York Modern Extended Platform Queen Bed",
+      "category": "Beds",
+      "subcategory": "Platform bed",
+      "file": "Beds/york_platform_queen_bed.glb",
+      "width_m": 1.84,
+      "height_m": 1.067,
+      "depth_m": 2.368,
+      "file_size_bytes": 1131064,
+      "triangle_count": 19568,
+      "description": "Mid-century modern meets comfy in this platform bed. Clean lines, tapered wood feet and a low profile footboard are combined with sides that extend beyond the mattress for a very contemporary effect. Silver grey fabric adds extra appeal.",
+      "features": [
+        "90.2\"L x 72\"W x 42.3\"H",
+        "Upholstered with 100% polyester herringbone fabric. Tapered wood legs.",
+        "Mid-century modern headboard curves up and back for distinctive side silhouette",
+        "No boxspring required. Queen mattress sold separately.",
+        "Assembly required. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Rivet York Modern Extended Platform Queen Bed, 90.2\"L, Grey",
+      "brand": "Rivet",
+      "color": "Orly Silver",
+      "material": "polyester",
+      "style": null,
+      "product_type": "BED",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 72,
+          "unit": "inches",
+          "metres": 1.829
+        },
+        "width": {
+          "value": 90.17,
+          "unit": "inches",
+          "metres": 2.29
+        },
+        "height": {
+          "value": 42.33,
+          "unit": "inches",
+          "metres": 1.075
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.9214,
+        0.0,
+        -1.2093
+      ],
+      "bounds_max_m": [
+        0.9188,
+        1.0669,
+        1.1583
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "e9d4822a6f4572bb57700b073bda9ff9433cee6effc06d83831ec07bb8042590",
+      "geometry_sha256": "71234764494fba013c7b35fc521215f3b9bc54c57161fe7c3e0ef06fe1372ac9",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QFCHM9/B075QFCHM9.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/beds",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075QFCHM9",
+      "amazon_item_ids": [
+        "B075QFCHM9"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "ian_round_wood_dining_table",
+      "name": "Ian Modern Wood Round Dining Table",
+      "category": "Tables",
+      "subcategory": "Dining table",
+      "file": "Tables/ian_round_wood_dining_table.glb",
+      "width_m": 1.055,
+      "height_m": 0.757,
+      "depth_m": 1.055,
+      "file_size_bytes": 1022352,
+      "triangle_count": 9790,
+      "description": "Retro style meets practicality in this round kitchen table with inward slanted legs and a warm butterscotch finish. The minimalist silhouette is the epitome of mid-century modern style and perfect for small dining spaces.",
+      "features": [
+        "42\"L x 42\"W x 30\"H",
+        "Sturdy hardwoods with acacia veneer",
+        "A casual transitional table for a small space or kitchen nook",
+        "Comfortable seating for four",
+        "Assembly in 30 minutes or less; bolt on legs"
+      ],
+      "listing_title": "Amazon Brand – Rivet Ian Modern Wood Round Dining Room Kitchen Table, 42\"W, Brown",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "wood",
+      "style": null,
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 42,
+          "unit": "inches",
+          "metres": 1.067
+        },
+        "width": {
+          "value": 42,
+          "unit": "inches",
+          "metres": 1.067
+        },
+        "height": {
+          "value": 30,
+          "unit": "inches",
+          "metres": 0.762
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.5274,
+        -0.0,
+        -0.5274
+      ],
+      "bounds_max_m": [
+        0.5274,
+        0.7566,
+        0.5274
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "da5cdc18a7eac3e056ff55d17469209eee48d11ad4d81782509fb60e1a04ce83",
+      "geometry_sha256": "8831f4b0a3aa4761f15a15efa0ea415607cba4f559191ea1ba625113803e6f5a",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B78LZQC/B07B78LZQC.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07B78LZQC",
+      "amazon_item_ids": [
+        "B07B78LZQC"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "hayes_wood_steel_dining_table",
+      "name": "Hayes Solid Wood Dining Table with Steel Base",
+      "category": "Tables",
+      "subcategory": "Dining table",
+      "file": "Tables/hayes_wood_steel_dining_table.glb",
+      "width_m": 1.8,
+      "height_m": 0.75,
+      "depth_m": 0.9,
+      "file_size_bytes": 661532,
+      "triangle_count": 1080,
+      "description": "Dimensions: 180 x 90 x 75 cm",
+      "features": [
+        "Made from solid wild oak with a durable, natural oiled finish",
+        "Features durable metal stand",
+        "Stylish, modern design",
+        "30 minutes self-assembly; 2 people required",
+        "Made in Europe and FSC-certified to guarantee environmental and social responsibility"
+      ],
+      "listing_title": "Amazon Brand - Alkove Hayes Solid Wood Dining Table with Stainless Steel Base, Seats 6, 180 x 90 x 75cm, Wild Oak/Stainless Steel",
+      "brand": "Alkove",
+      "color": "Wild Oak",
+      "material": "Oak",
+      "style": "Modern",
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 70.86614166,
+          "unit": "inches",
+          "metres": 1.8
+        },
+        "width": {
+          "value": 35.43307083,
+          "unit": "inches",
+          "metres": 0.9
+        },
+        "height": {
+          "value": 29.527559025,
+          "unit": "inches",
+          "metres": 0.75
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.8999,
+        0.0,
+        -0.45
+      ],
+      "bounds_max_m": [
+        0.8999,
+        0.7498,
+        0.45
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "cd095fa1aced0f260d280addba5cf365ac71ebe609b0025c19571d84b6592287",
+      "geometry_sha256": "3fd95fc1782bcbaea0a83c849ae0cbb5b95f4bb4c2e5a52c464a19ddd22ee0bc",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07K7K25NM/B07K7K25NM.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07K7K25NM",
+      "amazon_item_ids": [
+        "B07K7K25NM"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "round_glass_gold_coffee_table",
+      "name": "Modern Round Glass and Gold Coffee Table",
+      "category": "Tables",
+      "subcategory": "Coffee table",
+      "file": "Tables/round_glass_gold_coffee_table.glb",
+      "width_m": 0.914,
+      "height_m": 0.47,
+      "depth_m": 0.914,
+      "file_size_bytes": 384852,
+      "triangle_count": 39240,
+      "description": "This beautiful, modern round table will add a touch of glam to your living room. Tempered glass is accented by a sleek gold-finished frame. This durable table will be a convenient place to set mugs, remote controls and magazines for years to come.",
+      "features": [
+        "36\"Diameter x 18.5\"H",
+        "Sleek modern frame with gold finish; tempered glass",
+        "A modern table with touches of glam",
+        "Tempered glass and metal frame are durable and easy to clean",
+        "Assembly required. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Modern Round Glass and Gold Coffee Table, 36\"W, Gold Finish",
+      "brand": "Rivet",
+      "color": "Gold",
+      "material": "glass",
+      "style": "Coffee Table",
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 36,
+          "unit": "inches",
+          "metres": 0.914
+        },
+        "width": {
+          "value": 36,
+          "unit": "inches",
+          "metres": 0.914
+        },
+        "height": {
+          "value": 18.5,
+          "unit": "inches",
+          "metres": 0.47
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.4572,
+        -0.0,
+        -0.4572
+      ],
+      "bounds_max_m": [
+        0.4572,
+        0.4699,
+        0.4572
+      ],
+      "rests_on_floor": true,
+      "material_count": 2,
+      "textures": {
+        "count": 4,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "cca3e529d96f123c93b5eecf7a62debc737b893e03690e42f4924487dca1fd57",
+      "geometry_sha256": "c0a0401b24a69b1ed165b66905e85499efecae88f23987377c1936674293035b",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B074KLRCPW/B074KLRCPW.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B074KLRCPW",
+      "amazon_item_ids": [
+        "B074KLRCPW"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "hairpin_wood_metal_coffee_table",
+      "name": "Hairpin Mid-Century Wood and Metal Coffee Table",
+      "category": "Tables",
+      "subcategory": "Coffee table",
+      "file": "Tables/hairpin_wood_metal_coffee_table.glb",
+      "width_m": 1.375,
+      "height_m": 0.468,
+      "depth_m": 0.637,
+      "file_size_bytes": 384260,
+      "triangle_count": 3604,
+      "description": "This modern coffee table appears to float on dark metal legs shaped much like hairpins. The wood top has walnut veneer for a classic touch that helps this piece blend with your existing styles.",
+      "features": [
+        "47.2\"L x 23.6\"W x 15.7\"H",
+        "Engineered wood with walnut veneer; dark painted metal legs",
+        "Contemporary",
+        "A convenient coffee table with simple style",
+        "Simple assembly in 15-30 minutes"
+      ],
+      "listing_title": "Amazon Brand – Rivet Hairpin Mid-Century Modern Wood and Metal Coffee Table, Walnut and Black",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "Metal",
+      "style": "Coffee Table",
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 47.2,
+          "unit": "inches",
+          "metres": 1.199
+        },
+        "width": {
+          "value": 15.7,
+          "unit": "inches",
+          "metres": 0.399
+        },
+        "height": {
+          "value": 23.6,
+          "unit": "inches",
+          "metres": 0.599
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.7018,
+        -0.0,
+        -0.3242
+      ],
+      "bounds_max_m": [
+        0.6733,
+        0.468,
+        0.3128
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "e085af44f0f7a055f4773312c8eef38a8a6f356b85dd3ae3c1a27174721cea91",
+      "geometry_sha256": "c1ac37350473cc7e6cc35237fbf9169b0af618d9292591b512d2edad2f20d8b4",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072ZMVR53/B072ZMVR53.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072ZMVR53",
+      "amazon_item_ids": [
+        "B072ZMVR53"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "molly_round_marble_side_table",
+      "name": "Molly Round Marble and Steel Side Table",
+      "category": "Tables",
+      "subcategory": "Side table",
+      "file": "Tables/molly_round_marble_side_table.glb",
+      "width_m": 0.445,
+      "height_m": 0.479,
+      "depth_m": 0.445,
+      "file_size_bytes": 278276,
+      "triangle_count": 24120,
+      "description": "This retro piece will give a fashionable twist to any room where a side table is needed. Along with being a great conversation piece, it's a handy place for you and your friends to leave keys, phones and coffee cups.",
+      "features": [
+        "17.7\"L x 17.7\"W x 19.7\"H",
+        "White marble top and bottom, brushed stainless steel",
+        "Retro and fashionable",
+        "Convenient side table for living room, bedroom or even bathroom",
+        "No assembly required"
+      ],
+      "listing_title": "Amazon Brand – Rivet Molly Round Marble and Stainless Steel Side End Table",
+      "brand": "Rivet",
+      "color": "Grey",
+      "material": "Metal",
+      "style": "Traditional",
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 17.7,
+          "unit": "inches",
+          "metres": 0.45
+        },
+        "width": {
+          "value": 19.7,
+          "unit": "inches",
+          "metres": 0.5
+        },
+        "height": {
+          "value": 17.7,
+          "unit": "inches",
+          "metres": 0.45
+        }
+      },
+      "dimension_check": {
+        "status": "match (listing lists the axes in a different order)",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2225,
+        0,
+        -0.2225
+      ],
+      "bounds_max_m": [
+        0.2225,
+        0.4792,
+        0.2225
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "268717c22a88f4ecd1ae06d0a736cc51b3cae33da1e3e2d7f645fe7033985631",
+      "geometry_sha256": "05e73eca4466bf58cb058a4885785bca8e036b68e6b588cbd052d5cefc20ac77",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072ZMSBQT/B072ZMSBQT.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072ZMSBQT",
+      "amazon_item_ids": [
+        "B072ZMSBQT"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "north_end_exposed_wood_sofa",
+      "name": "North End Exposed Wood Modern Sofa",
+      "category": "Sofas",
+      "subcategory": "Three-seater sofa",
+      "file": "Sofas/north_end_exposed_wood_sofa.glb",
+      "width_m": 1.978,
+      "height_m": 0.892,
+      "depth_m": 0.969,
+      "file_size_bytes": 2699576,
+      "triangle_count": 27684,
+      "description": "This smart-looking sofa has clean lines and an exposed solid wood base that is sure to turn heads. With comfortable cushions and soft, durable fabric, it's also built to withstand wear and tear from your many visitors.",
+      "features": [
+        "Sturdy hardwood construction, solid beech legs, stain-resistant polyester fabric",
+        "Contemporary and comfortable",
+        "At home in your living room",
+        "Simple assembly; just attach legs",
+        "37.8''D x 78.3\"W x 34.6\"H"
+      ],
+      "listing_title": "Amazon Brand – Rivet North End Exposed Wood Modern Sofa, 78\"W, Grey Weave",
+      "brand": "Rivet",
+      "color": "Grey Weave",
+      "material": "Hardwood Construction/ Polyester Fabric",
+      "style": "Transitional",
+      "product_type": "SOFA",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 78.3,
+          "unit": "inches",
+          "metres": 1.989
+        },
+        "width": {
+          "value": 37.8,
+          "unit": "inches",
+          "metres": 0.96
+        },
+        "height": {
+          "value": 34.6,
+          "unit": "inches",
+          "metres": 0.879
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.9892,
+        0.0,
+        -0.4746
+      ],
+      "bounds_max_m": [
+        0.9892,
+        0.8919,
+        0.4949
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "146558d206494fd80a9b55036991ae65ce6fd0e05ae9261cdc8b6803507ceffb",
+      "geometry_sha256": "bab934b55a3c5a9c31362372347f1b0a95bc285338aec7f55a68d42d6ac46ac7",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07124WMX5/B07124WMX5.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/sofas",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07124WMX5",
+      "amazon_item_ids": [
+        "B07124WMX5"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "bradbury_chesterfield_tufted_sofa",
+      "name": "Bradbury Chesterfield Tufted Sofa",
+      "category": "Sofas",
+      "subcategory": "Chesterfield sofa",
+      "file": "Sofas/bradbury_chesterfield_tufted_sofa.glb",
+      "width_m": 2.335,
+      "height_m": 0.836,
+      "depth_m": 1.046,
+      "file_size_bytes": 2066412,
+      "triangle_count": 36967,
+      "description": "An updated twist on a classic Chesterfield, this handsome tufted sofa is as comfortable as it is eye-catching. Its sturdy design and high performance upholstery will bring enduring style and durability to your home.",
+      "features": [
+        "Dimensions: 92.9''W x 39”D x 30.3”H",
+        "Solid and engineered hardwoods; polyester/nylon fabric",
+        "Timeless and functional",
+        "Refreshed design of a classic; extra wide seating capacity",
+        "Minimal assembly; just attach legs"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Bradbury Chesterfield Tufted Sofa Couch, 92.9\"W, Navy",
+      "brand": "Stone & Beam",
+      "color": "Navy",
+      "material": "Hardwoods/Polyester/Nylon Fabric",
+      "style": "Classic",
+      "product_type": "SOFA",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 92.91338583,
+          "unit": "inches",
+          "metres": 2.36
+        },
+        "width": {
+          "value": 38.97637795,
+          "unit": "inches",
+          "metres": 0.99
+        },
+        "height": {
+          "value": 30.31496063,
+          "unit": "inches",
+          "metres": 0.77
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -1.1692,
+        0.0,
+        -0.6217
+      ],
+      "bounds_max_m": [
+        1.1661,
+        0.836,
+        0.4246
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "651e7362f98b218758bd7c7dbe72902710b461423c3741f6b96726feecbf1b39",
+      "geometry_sha256": "8394646cf837d0e23e45ccf4c0857bcdc113032e11c6a40fbcbf7ac68325bec4",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072Q1BNCD/B072Q1BNCD.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/sofas",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072Q1BNCD",
+      "amazon_item_ids": [
+        "B072Q1BNCD"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "emerly_modern_sectional_sofa",
+      "name": "Emerly Modern Sectional Sofa",
+      "category": "Sofas",
+      "subcategory": "Sectional sofa",
+      "file": "Sofas/emerly_modern_sectional_sofa.glb",
+      "width_m": 2.438,
+      "height_m": 0.864,
+      "depth_m": 2.438,
+      "file_size_bytes": 1239072,
+      "triangle_count": 39928,
+      "description": "Hardwood frame with sturdy mortise-and-tenon joints, performance fabric, metal legs",
+      "features": [
+        "Overall: 96\"W x 35\"D x 34\"H; seat height: 19.5\"H; seat depth: 28\"D; seat back height: 27.5\"H; arm height: 27.5\"H; leg height: 6\"H",
+        "Wood, 100% polyester fabric, foam, metal",
+        "Contemporary",
+        "Reversible cushions double the lifespan of this piece",
+        "Simple assembly. Just attach the legs."
+      ],
+      "listing_title": "Amazon Brand – Rivet Emerly Modern Sectional Sofa, 96\"W, Pewter",
+      "brand": "Rivet",
+      "color": "Pewter",
+      "material": "Velvet, Hardwood frame, Metal legs",
+      "style": null,
+      "product_type": "SOFA",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 96,
+          "unit": "inches",
+          "metres": 2.438
+        },
+        "width": {
+          "value": 35,
+          "unit": "inches",
+          "metres": 0.889
+        },
+        "height": {
+          "value": 34,
+          "unit": "inches",
+          "metres": 0.864
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -1.2192,
+        -0.0,
+        -1.2192
+      ],
+      "bounds_max_m": [
+        1.2192,
+        0.8636,
+        1.2192
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "ee98b6f911fb196bfa3d6e401b38286a07f7491a35e65b19ce4c11df021b6a81",
+      "geometry_sha256": "633cb887b09316aa7429defa7eb7903f477d0df9d5071a408712701c3bef4b63",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072635HS4/B072635HS4.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/sofas",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072635HS4",
+      "amazon_item_ids": [
+        "B072635HS4"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "midtown_upholstered_sofa",
+      "name": "Midtown Contemporary Upholstered Sofa",
+      "category": "Sofas",
+      "subcategory": "Three-seater sofa",
+      "file": "Sofas/midtown_upholstered_sofa.glb",
+      "width_m": 2.312,
+      "height_m": 0.792,
+      "depth_m": 0.969,
+      "file_size_bytes": 2588648,
+      "triangle_count": 7024,
+      "description": "Nestle in for an evening of movie marathon on this modern, smartly designed sofa. With seating for three and removable side and back cushions, you'll have plenty of room for snuggling with your pet or significant other.",
+      "features": [
+        "37\"D x 92.1”W x 31.5\"H",
+        "Sturdy hardwood frame, resilient cushions and solid beech legs",
+        "Contemporary",
+        "Soft, removable cushions make sofa easier to move.",
+        "Simple assembly; just attach legs"
+      ],
+      "listing_title": "Amazon Brand – Rivet Midtown Contemporary Upholstered Sofa Couch, 92.1\"W, Charcoal",
+      "brand": "Rivet",
+      "color": "Charcoal",
+      "material": "Wood",
+      "style": "Transitional",
+      "product_type": "SOFA",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 92.1,
+          "unit": "inches",
+          "metres": 2.339
+        },
+        "width": {
+          "value": 37,
+          "unit": "inches",
+          "metres": 0.94
+        },
+        "height": {
+          "value": 31.5,
+          "unit": "inches",
+          "metres": 0.8
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -1.1549,
+        -0.0001,
+        -0.4624
+      ],
+      "bounds_max_m": [
+        1.1569,
+        0.7916,
+        0.5065
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "e12d1f99be1d34acd9afafdbb328618dbc3bea316a1fb57b3cfb5066bd7704e7",
+      "geometry_sha256": "2baa49e6a1b38469714fb1a65e8e009415622c2dabe5c25c7f76f9fe73a6a362",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072C8Q9RF/B072C8Q9RF.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/sofas",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072C8Q9RF",
+      "amazon_item_ids": [
+        "B072C8Q9RF"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "lauren_oversized_down_sofa",
+      "name": "Lauren Down-Filled Oversized Sofa",
+      "category": "Sofas",
+      "subcategory": "Oversized sofa",
+      "file": "Sofas/lauren_oversized_down_sofa.glb",
+      "width_m": 2.354,
+      "height_m": 0.98,
+      "depth_m": 0.962,
+      "file_size_bytes": 850384,
+      "triangle_count": 36258,
+      "description": "Dimensions: 89.4''W x 44.9”D x 37.4”H",
+      "features": [
+        "Get comfort you can literally sink into with this classically styled, overstuffed sofa. A clean and simple silhouette with track arms in a durable performance fabric, it's the perfect addition for your living room.",
+        "Solid hardwood frame with moisture repellent, stain resistant fabric",
+        "Timeless casual",
+        "Exceptional comfort with high performance fabric for heavy wear.",
+        "No assembly required"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Lauren Down-Filled Oversized Sofa Couch with Hardwood Frame, 89\"W, Slate",
+      "brand": "Stone & Beam",
+      "color": "Slate",
+      "material": "Hardwood frame; polyester/nylon",
+      "style": "Classic",
+      "product_type": "SOFA",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 89.37007874,
+          "unit": "inches",
+          "metres": 2.27
+        },
+        "width": {
+          "value": 44.88188976,
+          "unit": "inches",
+          "metres": 1.14
+        },
+        "height": {
+          "value": 37.4015748,
+          "unit": "inches",
+          "metres": 0.95
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -1.177,
+        0.0001,
+        -0.4809
+      ],
+      "bounds_max_m": [
+        1.1769,
+        0.9797,
+        0.4806
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "071d53ab4b86a8108d6f9a65caad65d1115212684ec3915b628800d0161c175d",
+      "geometry_sha256": "2d1c16486f9baa2cb488eb0bcda62b40ff5a92cc4f16fb982f8c5387bee2835d",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072M1W86Y/B072M1W86Y.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/sofas",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072M1W86Y",
+      "amazon_item_ids": [
+        "B072M1W86Y"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "swivel_office_chair",
+      "name": "Office Chair",
+      "category": "Chairs",
+      "subcategory": "Office chair",
+      "file": "Chairs/swivel_office_chair.glb",
+      "width_m": 0.61,
+      "height_m": 0.972,
+      "depth_m": 0.61,
+      "file_size_bytes": 1820468,
+      "triangle_count": 35871,
+      "description": "Ergonomic task chair upholstered in black fabric",
+      "features": [
+        "Padded seat and back for all-day comfort and support",
+        "Pneumatic seat-height adjustment; 360-degree swivel;",
+        "110 kg maximum weight capacity; assembly instructions included",
+        "Fitted with pressure rollers which do not allow the chair to move if not sitting"
+      ],
+      "listing_title": "AmazonBasics Office Chair",
+      "brand": "AmazonBasics",
+      "color": "Black",
+      "material": "fabric",
+      "style": "Single",
+      "product_type": "CHAIR",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 24,
+          "unit": "inches",
+          "metres": 0.61
+        },
+        "width": {
+          "value": 19.25,
+          "unit": "inches",
+          "metres": 0.489
+        },
+        "height": {
+          "value": 38.25,
+          "unit": "inches",
+          "metres": 0.972
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.3048,
+        0,
+        -0.3048
+      ],
+      "bounds_max_m": [
+        0.3048,
+        0.9715,
+        0.3048
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "029f8dfcdb77396a0cb9593a409bcccd598d8c36a6bf07eddd3085e418a6b305",
+      "geometry_sha256": "e8fc1be612672cc611bc76ff1f6a8f38c9ca7bda5499065ab9438f05d7b8e696",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B016ID34BO/B016ID34BO.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/chairs",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B016ID34BO",
+      "amazon_item_ids": [
+        "B016ID34BO"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "huxley_mid_century_accent_chair",
+      "name": "Huxley Mid-Century Modern Accent Chair",
+      "category": "Chairs",
+      "subcategory": "Accent chair",
+      "file": "Chairs/huxley_mid_century_accent_chair.glb",
+      "width_m": 0.719,
+      "height_m": 0.864,
+      "depth_m": 0.889,
+      "file_size_bytes": 1806836,
+      "triangle_count": 11100,
+      "description": "This mid-century modern chair is reminiscent of the Mad Men era. The curved solid wood frame and comfortable seating make this chair ideal for the living room or home office.",
+      "features": [
+        "35”D x 28.3”W x 33.9”H",
+        "Solid wood frame and polyester/linen/cotton fabric",
+        "Mid-century modern",
+        "Handsome, practical design",
+        "No assembly required."
+      ],
+      "listing_title": "Amazon Brand – Rivet Huxley Mid-Century Modern Accent Chair, 28.3\"W, Marine Blue",
+      "brand": "Rivet",
+      "color": "Marine Blue",
+      "material": "Textile",
+      "style": "Rustic",
+      "product_type": "CHAIR",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 37,
+          "unit": "inches",
+          "metres": 0.94
+        },
+        "width": {
+          "value": 25,
+          "unit": "inches",
+          "metres": 0.635
+        },
+        "height": {
+          "value": 36,
+          "unit": "inches",
+          "metres": 0.914
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.3594,
+        -0.0,
+        -0.4445
+      ],
+      "bounds_max_m": [
+        0.3594,
+        0.8636,
+        0.4445
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "77b1fcf4eeb96669fa85623851f254201584e733d03b08962c3071c4cc0634f5",
+      "geometry_sha256": "452d9ed9e994f5dcb74761e613510b685a6a465dd89747fb32901ea8620fb43a",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07124WN69/B07124WN69.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/chairs",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07124WN69",
+      "amazon_item_ids": [
+        "B07124WN69"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "sascha_wingback_accent_chair",
+      "name": "Sascha Wingback Accent Chair",
+      "category": "Chairs",
+      "subcategory": "Wingback chair",
+      "file": "Chairs/sascha_wingback_accent_chair.glb",
+      "width_m": 0.982,
+      "height_m": 1.056,
+      "depth_m": 1.04,
+      "file_size_bytes": 1734928,
+      "triangle_count": 15836,
+      "description": "Bring quality and comfort with a contemporary twist to your living room or family room with this modern wingback chair. This piece features removable back and seat cushions covered in a linen-look fabric and a complementary lumbar pillow for extra support.",
+      "features": [
+        "34.6\"W x 41.3\"D x 39.4\"H",
+        "Asian hardwood covered in polyester fabric",
+        "Contemporary",
+        "Highly functional arm chair",
+        "Minimal assembly. Just remove the legs from the zippered compartment beneath the seat and attach."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Sascha Removable Cushion Wingback Accent Chair, 34.6\"W, Ivory",
+      "brand": "Stone & Beam",
+      "color": "Ivory",
+      "material": "hardwood covered in polyester fabric",
+      "style": null,
+      "product_type": "CHAIR",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 34.6,
+          "unit": "inches",
+          "metres": 0.879
+        },
+        "width": {
+          "value": 41.3,
+          "unit": "inches",
+          "metres": 1.049
+        },
+        "height": {
+          "value": 39.4,
+          "unit": "inches",
+          "metres": 1.001
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.4909,
+        0,
+        -0.5335
+      ],
+      "bounds_max_m": [
+        0.4909,
+        1.0561,
+        0.5064
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "4489d62bfbdb0593976451cfbabf8a2643601c93c4773a6db01368616482574d",
+      "geometry_sha256": "99d19e677e63c16a4a053c0dbcabe1218e7f02db0757ca27ca0319f44563df99",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07124WCH8/B07124WCH8.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/chairs",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07124WCH8",
+      "amazon_item_ids": [
+        "B07124WCH8"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "summit_leather_steel_accent_chair",
+      "name": "Summit Mid-Century Leather and Steel Accent Chair",
+      "category": "Chairs",
+      "subcategory": "Accent chair",
+      "file": "Chairs/summit_leather_steel_accent_chair.glb",
+      "width_m": 0.651,
+      "height_m": 0.777,
+      "depth_m": 0.801,
+      "file_size_bytes": 1824048,
+      "triangle_count": 26216,
+      "description": "High design meets amazing comfort in this living room chair. Soft 100% top-grain leather is combined with a brushed steel base and arms for a sturdy, durable piece. Modern, industrial and mid-century influences will blend with most any modern style.",
+      "features": [
+        "27\"W x 35”D x 27.6”H",
+        "Soft top-grain leather; sturdy brushed steel base and arms.",
+        "Foam padding and elastic webbing make the back and seat resilient and comfortable.",
+        "No assembly required. Wipe with a soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Summit Mid-Century Modern Top-Grain Leather Steel Armed Accent Chair 27\"W, Cognac",
+      "brand": "Rivet",
+      "color": "Cognac",
+      "material": "Steel",
+      "style": "Industrial",
+      "product_type": "CHAIR",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 35,
+          "unit": "inches",
+          "metres": 0.889
+        },
+        "width": {
+          "value": 27.2,
+          "unit": "inches",
+          "metres": 0.691
+        },
+        "height": {
+          "value": 27.6,
+          "unit": "inches",
+          "metres": 0.701
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.3258,
+        -0.0,
+        -0.3733
+      ],
+      "bounds_max_m": [
+        0.3254,
+        0.7772,
+        0.4274
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "7dbe87c9ce2c30a4596b31aa868bff0a9117ab929fa6bd65af349cb8ebbd1ebe",
+      "geometry_sha256": "166c6193ad6370cd2e95250f711f9f0b2d3fdc39a0b33ff61d24cf250d0f525f",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B071J7Q9WN/B071J7Q9WN.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/chairs",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B071J7Q9WN",
+      "amazon_item_ids": [
+        "B071J7Q9WN"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "mid_century_microfiber_dining_chair",
+      "name": "Mid-Century Modern Microfiber Dining Chair",
+      "category": "Chairs",
+      "subcategory": "Dining chair",
+      "file": "Chairs/mid_century_microfiber_dining_chair.glb",
+      "width_m": 0.479,
+      "height_m": 0.819,
+      "depth_m": 0.56,
+      "file_size_bytes": 2881272,
+      "triangle_count": 21780,
+      "description": "18.5\"W x 20.9\"D x 30.5\"H",
+      "features": [
+        "Microfiber fabric over hardwood frame; metal legs have black finish",
+        "Along with seating, these chairs bring retro fun to a dining table, living room or desk",
+        "Assemble in 15 minutes. Wipe with soft dry cloth.",
+        "Simple sloped seats are paired with tall black metal bases for a classic Mid-century style. The microfiber has a distressed finish to give these bar stools a hint of vintage style -- but with the modern conveniences of easy cleaning and durability."
+      ],
+      "listing_title": "Amazon Brand – Rivet Mid-Century Modern Microfiber Dining Chair, 30.5\"H, 2-Pack, Brown",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "Microfiber fabric; Hardwood frame; Metal legs",
+      "style": null,
+      "product_type": "STOOL_SEATING",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 20.87,
+          "unit": "inches",
+          "metres": 0.53
+        },
+        "width": {
+          "value": 18.5,
+          "unit": "inches",
+          "metres": 0.47
+        },
+        "height": {
+          "value": 30.51,
+          "unit": "inches",
+          "metres": 0.775
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2398,
+        0,
+        -0.3225
+      ],
+      "bounds_max_m": [
+        0.2395,
+        0.8194,
+        0.238
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "3e1664e489ec887d9681f4c8afe17c8c3e1f1c7b9d9fb11328e068bd08a60b74",
+      "geometry_sha256": "5c9efcd3f09043a38f60a471894d2272cd8b28ce066ebef879aa62cba8715cae",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z8THZJ/B075Z8THZJ.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/stools",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075Z8THZJ",
+      "amazon_item_ids": [
+        "B075Z8THZJ"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "avondale_wood_metal_desk",
+      "name": "Avondale Wood and Metal Computer Desk",
+      "category": "Desks",
+      "subcategory": "Computer desk",
+      "file": "Desks/avondale_wood_metal_desk.glb",
+      "width_m": 1.538,
+      "height_m": 0.753,
+      "depth_m": 0.617,
+      "file_size_bytes": 1010584,
+      "triangle_count": 7340,
+      "description": "60\"W x 24\"D x 30.25\"H",
+      "features": [
+        "Durable metal frame and solid pine wood with distressed walnut finish",
+        "Multipurpose desk with fixed, open shelves on each side for extra display or storage space",
+        "The classic writing desk meets industrial influence in this simply styled piece. It features two-toned wood mixed with dark brown metal and two fixed shelves on each side. This sleek, airy piece can be used as a desk or craft table.",
+        "Easy assembly in 15-30 minutes. Wipe with a soft, dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Avondale Wood and Metal Office Computer Desk, 60\"W, Walnut",
+      "brand": "Stone & Beam",
+      "color": "Brown / Metal",
+      "material": "walnut",
+      "style": "Desk",
+      "product_type": "DESK",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 24,
+          "unit": "inches",
+          "metres": 0.61
+        },
+        "width": {
+          "value": 60,
+          "unit": "inches",
+          "metres": 1.524
+        },
+        "height": {
+          "value": 30.25,
+          "unit": "inches",
+          "metres": 0.768
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.7691,
+        -0.0,
+        -0.3083
+      ],
+      "bounds_max_m": [
+        0.7691,
+        0.753,
+        0.3083
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "99937dba872698bf59149bdd70aadb5bf358c5cd7069a10ddf1ede44d07782f2",
+      "geometry_sha256": "71c4ad5a7d10023441d7a80c8e0b105b098592d6cb6eb36e7f32b4f43693e917",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z8KXDK/B075Z8KXDK.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/desks",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075Z8KXDK",
+      "amazon_item_ids": [
+        "B075Z8KXDK"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "ventura_mid_century_writing_desk",
+      "name": "Ventura Mid-Century Small Writing Desk",
+      "category": "Desks",
+      "subcategory": "Writing desk",
+      "file": "Desks/ventura_mid_century_writing_desk.glb",
+      "width_m": 1.277,
+      "height_m": 0.758,
+      "depth_m": 0.612,
+      "file_size_bytes": 337396,
+      "triangle_count": 5494,
+      "description": "A minimalist design is the hallmark of this classic mid-century influenced desk, which can be reversed to accommodate left-handed or right-handed users. The drawers glide easily in and out, thanks to concealed, self-closing, ball-bearing extension guides.",
+      "features": [
+        "50\"W x 24\"D x 30\"H",
+        "Solid hardwoods with mid-tone cherry finish",
+        "Reversible to accommodate right- and left-handers.",
+        "Wipe with a soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Ventura Mid-Century Small Reversible Writing Home Office Computer Desk with File Drawer, 50\"W, Cherry",
+      "brand": "Rivet",
+      "color": "Cherry",
+      "material": "hardwoods",
+      "style": "Desk",
+      "product_type": "DESK",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 24,
+          "unit": "inches",
+          "metres": 0.61
+        },
+        "width": {
+          "value": 50,
+          "unit": "inches",
+          "metres": 1.27
+        },
+        "height": {
+          "value": 30,
+          "unit": "inches",
+          "metres": 0.762
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.6339,
+        0.0,
+        -0.3043
+      ],
+      "bounds_max_m": [
+        0.6428,
+        0.7575,
+        0.3079
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "3c6ffaadb0bbf3538b1d63e4f448611055bd0b652661f454dcbd05bf568d9d95",
+      "geometry_sha256": "847f4da5797dd57ef7f4bdf0a019b7bafea65efefc4952630c5406a8bc862272",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075ZBW1SN/B075ZBW1SN.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/desks",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075ZBW1SN",
+      "amazon_item_ids": [
+        "B075ZBW1SN"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "fairbank_l_shaped_executive_desk",
+      "name": "Fairbank L-Shaped Executive Desk",
+      "category": "Desks",
+      "subcategory": "L-shaped desk",
+      "file": "Desks/fairbank_l_shaped_executive_desk.glb",
+      "width_m": 1.524,
+      "height_m": 0.759,
+      "depth_m": 1.199,
+      "file_size_bytes": 204144,
+      "triangle_count": 10040,
+      "description": "Includes a convenient lateral file drawer to help keep you organized",
+      "features": [
+        "Two medium drawers to extra storage space",
+        "Comes in a smooth, glossy white quality lacquer finish for protection",
+        "Crafted from quality engineered wood with precision and care",
+        "Adjustable shelves at the end of right wing of Fairbank desk",
+        "Made of thicker MDF board and metal legs"
+      ],
+      "listing_title": "2L Lifestyle Fairbank L-Shaped Executive Desk White Finish, Large",
+      "brand": "2L Lifestyle",
+      "color": "White",
+      "material": "Wood",
+      "style": "Contemporary",
+      "product_type": "DESK",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 60.0,
+          "unit": "inches",
+          "metres": 1.524
+        },
+        "width": {
+          "value": 47.2,
+          "unit": "inches",
+          "metres": 1.199
+        },
+        "height": {
+          "value": 29.9,
+          "unit": "inches",
+          "metres": 0.759
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.762,
+        -0.0,
+        -0.5995
+      ],
+      "bounds_max_m": [
+        0.762,
+        0.7595,
+        0.5995
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 1,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 0
+      },
+      "file_sha256": "79b5c2cb67aab2ec41e64c842916fcce7f711bba21cbcccc35b265e8b16a9408",
+      "geometry_sha256": "03fe5b3773f3d13d7ddc7ec6c851146b669addf4cc6b3c210cbede18f85d38a0",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07DMLG8Y4/B07DMLG8Y4.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/desks",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07DMLG8Y4",
+      "amazon_item_ids": [
+        "B07DMLG8Y4"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "industrial_metal_computer_desk",
+      "name": "Industrial Metal Office Computer Desk",
+      "category": "Desks",
+      "subcategory": "Computer desk",
+      "file": "Desks/industrial_metal_computer_desk.glb",
+      "width_m": 1.543,
+      "height_m": 0.725,
+      "depth_m": 0.784,
+      "file_size_bytes": 1010260,
+      "triangle_count": 12256,
+      "description": "You'll love this sawhorse desk that adjusts for sitting or standing, thanks to a motorized lift top. A rustic wood top is mounted on industrial metal with an antiqued finish. Two USB ports allow you to charge devices while working.",
+      "features": [
+        "30\"L x 60\"W x 30\"H",
+        "Wood composites with Mindi wood veneer; metal legs with antiqued finish",
+        "Will work with modern, industrial or farmhouse styles",
+        "Lift top has memory and automatic lock features",
+        "Assembly in an hour or less; assemble base, then bolt to top"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Industrial Metal Office Computer Desk, 60\"W, Power Sit to Standing Table, Brown/Black",
+      "brand": "Stone & Beam",
+      "color": "Brown/Black",
+      "material": "Metal",
+      "style": "Industrial",
+      "product_type": "DESK",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 30,
+          "unit": "inches",
+          "metres": 0.762
+        },
+        "width": {
+          "value": 60,
+          "unit": "inches",
+          "metres": 1.524
+        },
+        "height": {
+          "value": 30,
+          "unit": "inches",
+          "metres": 0.762
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.7715,
+        0.0,
+        -0.3832
+      ],
+      "bounds_max_m": [
+        0.7715,
+        0.7252,
+        0.4004
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "128c992bedbab6d498da73e8d12beed7fc0d5f6b8a07ce50f324c01434e861d2",
+      "geometry_sha256": "f45b2a2dbb29f09c594106e836ba9bfbb1961410eb7192bf8db9ea036fee306e",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B7DFS3S/B07B7DFS3S.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/desks",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07B7DFS3S",
+      "amazon_item_ids": [
+        "B07B7DFS3S"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "hairpin_wood_metal_small_desk",
+      "name": "Modern Wood and Metal Hairpin Small Desk",
+      "category": "Desks",
+      "subcategory": "Small desk",
+      "file": "Desks/hairpin_wood_metal_small_desk.glb",
+      "width_m": 1.2,
+      "height_m": 0.854,
+      "depth_m": 0.565,
+      "file_size_bytes": 1303224,
+      "triangle_count": 13482,
+      "description": "47.2\"W x 22.2\"D x 30.9\"H",
+      "features": [
+        "Metal legs with warm walnut wood veneer",
+        "Highly functional with large work space and three storage compartments on the back edge",
+        "Add industrial style to your home office or study space with this practical desk. Featuring a mix of engineered wood, walnut veneer, and metal, it provides ample storage and work space. The uniquely designed hairpin legs are both sturdy and sleek.",
+        "Easy assembly in 15-30 minutes. Wipe with a soft, dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Modern Wood and Metal Hairpin Small Table Desk, 47.2\"W, Walnut",
+      "brand": "Rivet",
+      "color": "Walnut",
+      "material": "walnut veneer",
+      "style": "Desk",
+      "product_type": "DESK",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 22.2,
+          "unit": "inches",
+          "metres": 0.564
+        },
+        "width": {
+          "value": 47.2,
+          "unit": "inches",
+          "metres": 1.199
+        },
+        "height": {
+          "value": 30.9,
+          "unit": "inches",
+          "metres": 0.785
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.5999,
+        -0.0,
+        -0.2826
+      ],
+      "bounds_max_m": [
+        0.5999,
+        0.8537,
+        0.2826
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "e8c39ce166f27385b1e92fc37459c2ab507d52a70d56dd09618ea1776ac1639d",
+      "geometry_sha256": "92177b5dd99818116b80248bc362ccab9a8b25ef5436a5fc6af3dd88b4f352f8",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z6YS29/B075Z6YS29.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/desks",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075Z6YS29",
+      "amazon_item_ids": [
+        "B075Z6YS29"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "ian_mid_century_bar_credenza",
+      "name": "Ian Mid-Century Modern Buffet Bar Credenza",
+      "category": "Cabinets",
+      "subcategory": "Credenza",
+      "file": "Cabinets/ian_mid_century_bar_credenza.glb",
+      "width_m": 1.363,
+      "height_m": 0.802,
+      "depth_m": 0.477,
+      "file_size_bytes": 1460392,
+      "triangle_count": 41101,
+      "description": "This mid-century buffet is as functional as it is stylish. With four adjustable inside shelves and a lower slatted shelf perfect for laying wine bottles, this piece will enhance your dining room but could also enhance your living space or hallway.",
+      "features": [
+        "18\"L x 54\"W x 32\"H",
+        "Sturdy hardwoods with acacia veneer",
+        "Strong modular design with minimalist hardware is classic mid-century modern",
+        "Interior shelves are adjustable and removable",
+        "Assembly in 30 minutes or less; bolt on legs and lower shelf"
+      ],
+      "listing_title": "Amazon Brand – Rivet Ian Mid-Century Modern Wood Buffet Bar Cabinet Credenza, Brown",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "Wood",
+      "style": "Mid-Century Modern",
+      "product_type": "CABINET",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 18,
+          "unit": "inches",
+          "metres": 0.457
+        },
+        "width": {
+          "value": 54,
+          "unit": "inches",
+          "metres": 1.372
+        },
+        "height": {
+          "value": 32,
+          "unit": "inches",
+          "metres": 0.813
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.6821,
+        -0.0,
+        -0.2174
+      ],
+      "bounds_max_m": [
+        0.6812,
+        0.8022,
+        0.2595
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "3eb7804cedd095f569507e34b4c5b1f565be8d0203954df8b3354b1a92110f3a",
+      "geometry_sha256": "cf9c867b2c861a241895d45058775ef7fa55563109f4870ab90c302dc969558f",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B78G1BW/B07B78G1BW.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/cabinets",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07B78G1BW",
+      "amazon_item_ids": [
+        "B07B78G1BW"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "fremont_slatted_two_door_cabinet",
+      "name": "Fremont Slatted 2-Door Cabinet",
+      "category": "Cabinets",
+      "subcategory": "Storage cabinet",
+      "file": "Cabinets/fremont_slatted_two_door_cabinet.glb",
+      "width_m": 0.796,
+      "height_m": 0.785,
+      "depth_m": 0.412,
+      "file_size_bytes": 920820,
+      "triangle_count": 18788,
+      "description": "31.5”W x 15.75”D x 31.7”H",
+      "features": [
+        "Solid ash frame and legs are complemented by hardwood doors with ash veneer",
+        "A handsome piece that can anchor a modern, rustic or transitional style room or hallway",
+        "Display photos or a vase of flowers on top; store books or other items inside",
+        "Assembly in 15 minutes or less. Wipe with soft dry cloth.",
+        "This simple, beautifully designed cabinet provides storage space as well as a handsome complement to modern, transitional or rustic décor. The vertical pieces of solid ashwood on the front of the drawer and doors add visual interest."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Fremont Slatted 2-Door Cabinet, 31.5\"W, Ash",
+      "brand": "Stone & Beam",
+      "color": "Ash",
+      "material": "Wood",
+      "style": "2 Door Cabinet",
+      "product_type": "CABINET",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 15.75,
+          "unit": "inches",
+          "metres": 0.4
+        },
+        "width": {
+          "value": 31.5,
+          "unit": "inches",
+          "metres": 0.8
+        },
+        "height": {
+          "value": 31.7,
+          "unit": "inches",
+          "metres": 0.805
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.3979,
+        -0.0,
+        -0.207
+      ],
+      "bounds_max_m": [
+        0.3979,
+        0.7854,
+        0.2045
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "8785db4337a2150c48669e2485d2e63a9006b518f82a90dce613fddc78f22e94",
+      "geometry_sha256": "81d8c4e2ce3542e25c11404e7158656ba2d646ac85b3f162a5d6c8e134e33234",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B074KLJQKV/B074KLJQKV.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/cabinets",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B074KLJQKV",
+      "amazon_item_ids": [
+        "B074KLJQKV"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "hulio_two_door_wardrobe",
+      "name": "Hulio 2-Door Wardrobe",
+      "category": "Cabinets",
+      "subcategory": "Wardrobe",
+      "file": "Cabinets/hulio_two_door_wardrobe.glb",
+      "width_m": 0.76,
+      "height_m": 1.7,
+      "depth_m": 0.47,
+      "file_size_bytes": 182176,
+      "triangle_count": 24886,
+      "description": "Product Colour: White",
+      "features": [
+        "Product Size: H 170 x W 76 x D 47 Cm Approx.",
+        "Product Material: Composite Wood",
+        "Product Cleaning Instructions: Wipe With A Dry Cloth"
+      ],
+      "listing_title": "Amazon Brand - Movian Hulio 2 Door Wardrobe, High Gloss, White, 170 x 76 x 47 cm",
+      "brand": "Vida Designs",
+      "color": "White",
+      "material": "Engineered Wood",
+      "style": "Single",
+      "product_type": "CABINET",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 18.503936989,
+          "unit": "inches",
+          "metres": 0.47
+        },
+        "width": {
+          "value": 29.921259812,
+          "unit": "inches",
+          "metres": 0.76
+        },
+        "height": {
+          "value": 66.92913379,
+          "unit": "inches",
+          "metres": 1.7
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.38,
+        0,
+        -0.235
+      ],
+      "bounds_max_m": [
+        0.38,
+        1.7,
+        0.235
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "a5500e73536bea8cdb4fcb482557f81c1d712d31b250fb40249575d7af31995e",
+      "geometry_sha256": "f56c7acace4b800083edbcc07f4e64e2750027094db0c552c34d53f434cf6fb8",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B079TYF1GK/B079TYF1GK.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/cabinets",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B079TYF1GK",
+      "amazon_item_ids": [
+        "B079TYF1GK"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "ventura_louvered_dresser",
+      "name": "Ventura Mid-Century Louvered Dresser",
+      "category": "Cabinets",
+      "subcategory": "Dresser",
+      "file": "Cabinets/ventura_louvered_dresser.glb",
+      "width_m": 1.609,
+      "height_m": 0.971,
+      "depth_m": 0.499,
+      "file_size_bytes": 797908,
+      "triangle_count": 19249,
+      "description": "60\"W x 19\"D x 35\"H",
+      "features": [
+        "Solid hardwoods with mid-tone cherry finish",
+        "A clean Mid-century modern style",
+        "No assembly needed. Wipe with soft dry cloth.",
+        "Clean, simple lines are the hallmark of this casual Mid-century modern dresser. A warm cherry finish and striking louvered design will ensure enjoyment for years to come. Six sleek drawers open with finger pulls, and concealed glides ensure they roll smoothly.",
+        "Drawers are suspended on easy opening, concealed, self-closing extension guides"
+      ],
+      "listing_title": "Amazon Brand – Rivet Ventura Mid-Century Louvered Dresser, 60\"W, Cherry",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "Wood",
+      "style": "Dresser",
+      "product_type": "DRESSER",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 60,
+          "unit": "inches",
+          "metres": 1.524
+        },
+        "width": {
+          "value": 19,
+          "unit": "inches",
+          "metres": 0.483
+        },
+        "height": {
+          "value": 35,
+          "unit": "inches",
+          "metres": 0.889
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.8046,
+        0.0,
+        -0.2495
+      ],
+      "bounds_max_m": [
+        0.8046,
+        0.9709,
+        0.2495
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "56de7ea2e2a627f7cac087c7caca56263901f5299db837befec53ee25c30cab6",
+      "geometry_sha256": "cbffa9811c575ffaa034e7389730e565c2be62219491a711672f21378d429dc4",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B0725Z23G4/B0725Z23G4.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/cabinets",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B0725Z23G4",
+      "amazon_item_ids": [
+        "B0725Z23G4"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "high_gloss_three_drawer_bedside_cabinet",
+      "name": "High Gloss 3-Drawer Bedside Cabinet",
+      "category": "Cabinets",
+      "subcategory": "Bedside cabinet",
+      "file": "Cabinets/high_gloss_three_drawer_bedside_cabinet.glb",
+      "width_m": 0.4,
+      "height_m": 0.56,
+      "depth_m": 0.36,
+      "file_size_bytes": 459156,
+      "triangle_count": 16764,
+      "description": "Colour: Black, Walnut",
+      "features": [
+        "Size: H 56 x W 40 x D 36 Cm Approx.",
+        "Material: Composite Wood",
+        "Product Cleaning Instructions: Wipe With A Dry Cloth"
+      ],
+      "listing_title": "Amazon Brand - Movian High Gloss 3 Drawer Bedside Cabinet, Black and Walnut, 56 x 40 x 36 cm",
+      "brand": "Movian",
+      "color": "Walnut & Black",
+      "material": "Engineered Wood",
+      "style": "3 Drawer",
+      "product_type": "DRESSER",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 14.173228332,
+          "unit": "inches",
+          "metres": 0.36
+        },
+        "width": {
+          "value": 15.74803148,
+          "unit": "inches",
+          "metres": 0.4
+        },
+        "height": {
+          "value": 22.047244072,
+          "unit": "inches",
+          "metres": 0.56
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2,
+        0,
+        -0.18
+      ],
+      "bounds_max_m": [
+        0.2,
+        0.56,
+        0.18
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 2,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 0
+      },
+      "file_sha256": "4da54c82d0ab8903a9245056af91e171042590a9920b7448d0cfd161e66abe4f",
+      "geometry_sha256": "852c5af4bbda790ffbb5216e2e4e6f566724860066862094b5f5056cebb6ba4d",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B079VNKB6Z/B079VNKB6Z.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/cabinets",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B079VNKB6Z",
+      "amazon_item_ids": [
+        "B079VNKB6Z"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "larson_industrial_four_shelf_bookcase",
+      "name": "Larson Industrial Wood and Metal 4-Shelf Bookcase",
+      "category": "Shelves",
+      "subcategory": "Bookcase",
+      "file": "Shelves/larson_industrial_four_shelf_bookcase.glb",
+      "width_m": 0.874,
+      "height_m": 1.86,
+      "depth_m": 0.359,
+      "file_size_bytes": 1554048,
+      "triangle_count": 6084,
+      "description": "34\"W x 14\"D x 73.25\"H",
+      "features": [
+        "Solid pine wood shelves and top; metal legs",
+        "Industrial and rustic touches allow this bookshelf to blend with many styles.",
+        "Four fixed distressed wood shelves with a walnut finish",
+        "Easy assembly in 15-30 minutes. Wipe with soft dry cloth.",
+        "This bookcase has a natural distressed finish, while the metal legs and trim have a darker brown matte finish. With four fixed shelves to provide a display area to for books and photos, this bookshelf will make a simple statement in any room."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Larson Industrial Wood and Metal 4-Shelf Bookcase, 73\"H, Walnut",
+      "brand": "Stone & Beam",
+      "color": "Walnut + Metal",
+      "material": null,
+      "style": "73\" Bookcase",
+      "product_type": "SHELF",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 14,
+          "unit": "inches",
+          "metres": 0.356
+        },
+        "width": {
+          "value": 34,
+          "unit": "inches",
+          "metres": 0.864
+        },
+        "height": {
+          "value": 73.25,
+          "unit": "inches",
+          "metres": 1.861
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.4368,
+        0,
+        -0.1792
+      ],
+      "bounds_max_m": [
+        0.4367,
+        1.8605,
+        0.1794
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "222a5033b0dac998a3d418c2b5a7b0aeb8b617ea09d3cc242a995ec2e4e41a84",
+      "geometry_sha256": "b288f603e8f0396f2871bd5cabff64fd5c1dc7832389a7d1d45979dd3155605b",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z6YS1Z/B075Z6YS1Z.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/shelves",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075Z6YS1Z",
+      "amazon_item_ids": [
+        "B075Z6YS1Z"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "bryson_a_frame_bookcase",
+      "name": "Bryson A-Frame Bookcase",
+      "category": "Shelves",
+      "subcategory": "Bookcase",
+      "file": "Shelves/bryson_a_frame_bookcase.glb",
+      "width_m": 1.746,
+      "height_m": 1.808,
+      "depth_m": 0.508,
+      "file_size_bytes": 2834556,
+      "triangle_count": 2988,
+      "description": "With its wood shelves supported by metal rods, this A-frame bookcase has industrial style with touches of modern rustic. Three substantial shelves provide plenty of display space for books, photos and other treasures.",
+      "features": [
+        "70.1\"W x 20.5''D x 71.7''H",
+        "Reclaimed hardwoods and metal",
+        "Industrial metal and classic wood make this piece work in modern or transitional décor.",
+        "Book-end your favorite books or display photos and other treasures",
+        "Assembly required. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Bryson A-Frame Bookcase Shelf Stand, 70.7\"W, Wood and Iron",
+      "brand": "Stone & Beam",
+      "color": "Light Wood",
+      "material": "stone",
+      "style": null,
+      "product_type": "SHELF",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 71.9,
+          "unit": "inches",
+          "metres": 1.826
+        },
+        "width": {
+          "value": 20.5,
+          "unit": "inches",
+          "metres": 0.521
+        },
+        "height": {
+          "value": 73.2,
+          "unit": "inches",
+          "metres": 1.859
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.8732,
+        0,
+        -0.254
+      ],
+      "bounds_max_m": [
+        0.8732,
+        1.8077,
+        0.254
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "379c005478d209168eaabaedcb93b8e773cbd3eb96c0279e38d2144a23c948dd",
+      "geometry_sha256": "28fb370a457e5a79e68ab416602329d15980e24b1fbc2ae7a6574224e2879ab1",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z7SQND/B075Z7SQND.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/shelves",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075Z7SQND",
+      "amazon_item_ids": [
+        "B075Z7SQND"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "mid_century_low_wood_metal_bookcase",
+      "name": "Mid-Century Modern Wood and Metal Low Bookcase",
+      "category": "Shelves",
+      "subcategory": "Low bookcase",
+      "file": "Shelves/mid_century_low_wood_metal_bookcase.glb",
+      "width_m": 1.201,
+      "height_m": 0.765,
+      "depth_m": 0.361,
+      "file_size_bytes": 713368,
+      "triangle_count": 5570,
+      "description": "A bi-level shelf adds architectural interest to this modern industrial bookcase. Tall and narrow, it's perfect against a wall or behind a sofa, and for holding books, photos and even electronics. Wood and metal give it modern industrial style.",
+      "features": [
+        "14.2\"W x 47.2\"D x 31.5\"H",
+        "Fiberboard with elm and metal finish",
+        "Wood and iron together create a modern industrial piece with hints of rustic",
+        "Compact design for small spaces",
+        "No assembly required"
+      ],
+      "listing_title": "Amazon Brand – Rivet Mid-Century Modern Wood and Metal Bookcase, 14\"W, Wood and Dark Metal",
+      "brand": "Rivet",
+      "color": "Elm",
+      "material": "metal",
+      "style": null,
+      "product_type": "SHELF",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 47.2,
+          "unit": "inches",
+          "metres": 1.199
+        },
+        "width": {
+          "value": 31.5,
+          "unit": "inches",
+          "metres": 0.8
+        },
+        "height": {
+          "value": 14.2,
+          "unit": "inches",
+          "metres": 0.361
+        }
+      },
+      "dimension_check": {
+        "status": "match (listing lists the axes in a different order)",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.6004,
+        -0.0,
+        -0.1803
+      ],
+      "bounds_max_m": [
+        0.6008,
+        0.7649,
+        0.1803
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "4f8d73457a4934a35efc83e396eda784dd490823e1035a9c9535aafc6f9da253",
+      "geometry_sha256": "34f34dcd4d1dbafcf790bffb7bf6d53bebb2d772199139c5ec080bdb9ed9845c",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B7J8GGS/B07B7J8GGS.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/shelves",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07B7J8GGS",
+      "amazon_item_ids": [
+        "B07B7J8GGS"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "wood_metal_floating_wall_shelves",
+      "name": "Modern Wood and Metal Floating Wall Shelves",
+      "category": "Shelves",
+      "subcategory": "Wall shelf",
+      "file": "Shelves/wood_metal_floating_wall_shelves.glb",
+      "width_m": 0.946,
+      "height_m": 0.921,
+      "depth_m": 0.183,
+      "file_size_bytes": 979904,
+      "triangle_count": 57752,
+      "description": "These iron and wood shelves add function as well as a modern décor touch to your home. They're ideal for holding dishes in a kitchen or photos and other treasures in a living space or hallway. They arrive ready to hang, all hardware included.",
+      "features": [
+        "7.25\"D x 37.25\"W x 36.25\"H",
+        "Fir wood, engineered wood, iron",
+        "Wipe with soft damp cloth"
+      ],
+      "listing_title": "Amazon Brand – Rivet Modern Wood and Metal Floating Wall Storage Shelves - 37.25\"W x 36.25\"H, Natural and Black",
+      "brand": "Rivet",
+      "color": null,
+      "material": "Wood",
+      "style": null,
+      "product_type": "SHELF",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 37.25,
+          "unit": "inches",
+          "metres": 0.946
+        },
+        "width": {
+          "value": 7.25,
+          "unit": "inches",
+          "metres": 0.184
+        },
+        "height": {
+          "value": 36.25,
+          "unit": "inches",
+          "metres": 0.921
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.4729,
+        -0.4604,
+        0.0
+      ],
+      "bounds_max_m": [
+        0.4729,
+        0.4604,
+        0.1825
+      ],
+      "rests_on_floor": false,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "6fa26fc6f1273536026d24ce6fa01b1294b9ee622e1bc7a1ab21ec422629968a",
+      "geometry_sha256": "10071d067917e0047a3a2ddc322d95039f39a46114e444aa2060aafd30084c54",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B078JM1J41/B078JM1J41.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/shelves",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B078JM1J41",
+      "amazon_item_ids": [
+        "B078JM1J41"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "glenwood_bookcase",
+      "name": "Glenwood Bookcase",
+      "category": "Shelves",
+      "subcategory": "Bookcase",
+      "file": "Shelves/glenwood_bookcase.glb",
+      "width_m": 0.539,
+      "height_m": 1.732,
+      "depth_m": 0.395,
+      "file_size_bytes": 1075384,
+      "triangle_count": 15584,
+      "description": "22\"W x 14\"D x 72\"H",
+      "features": [
+        "Hardwood with quarter-sawn oak veneer for a handsome grain; metal drawer handles and base",
+        "Simple, sleek design and classic oak veneer combine for a transitional style",
+        "Two easy gliding, self-closing drawers and two shelves",
+        "Wipe with soft dry cloth",
+        "Use this piece as a stand-alone bookcase or alongside an entertainment console. Two shelves will hold and display your games, movies, and books, and two sliding drawers with brushed metal(?) handles can will hide your extra chargers."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Glenwood Bookcase, 72\"H, Oak",
+      "brand": "Stone & Beam",
+      "color": "Oak",
+      "material": "oak /metal",
+      "style": "Media Tower",
+      "product_type": "SHELF",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 14,
+          "unit": "inches",
+          "metres": 0.356
+        },
+        "width": {
+          "value": 22,
+          "unit": "inches",
+          "metres": 0.559
+        },
+        "height": {
+          "value": 72,
+          "unit": "inches",
+          "metres": 1.829
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2694,
+        0,
+        -0.1975
+      ],
+      "bounds_max_m": [
+        0.2694,
+        1.7323,
+        0.1975
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "ebfc4270e023885901834d02d35022b10631333c4c9b42500060a0e44b4bbada",
+      "geometry_sha256": "248aac72998869f75e02cbee5d8ca17f2e443128ec297619f0c97ce9fa667ece",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B074KKXLK1/B074KKXLK1.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/shelves",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B074KKXLK1",
+      "amazon_item_ids": [
+        "B074KKXLK1"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "malida_open_back_swivel_bar_stool",
+      "name": "Malida Mid-Century Open Back Swivel Bar Stool",
+      "category": "Stools",
+      "subcategory": "Bar stool",
+      "file": "Stools/malida_open_back_swivel_bar_stool.glb",
+      "width_m": 0.548,
+      "height_m": 1.012,
+      "depth_m": 0.558,
+      "file_size_bytes": 1894040,
+      "triangle_count": 17486,
+      "description": "Dimensions: 22\"W x 21\"D x41\"H | Seat height is 30\".",
+      "features": [
+        "Polyester fabric on wood frame, solid hardwood base",
+        "Foam padding and elastic suspension system keep back and seat firm and springy",
+        "This barstool's substantial arms, back and padded seat, and swivel seat make it easy to settle comfortably in the perfect spot. The unique shape of the seat back makes this a Mid-century style statement piece in your home.",
+        "No assembly required. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Malida Mid-Century Modern Open Back Swivel Kitchen Bar Stool, 41\"H, Canary",
+      "brand": "Rivet",
+      "color": "Canary",
+      "material": "Polyester fabric on wood frame, solid hardwood base",
+      "style": "Bar Stool",
+      "product_type": "STOOL_SEATING",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 23,
+          "unit": "inches",
+          "metres": 0.584
+        },
+        "width": {
+          "value": 21,
+          "unit": "inches",
+          "metres": 0.533
+        },
+        "height": {
+          "value": 41,
+          "unit": "inches",
+          "metres": 1.041
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2739,
+        0,
+        -0.3119
+      ],
+      "bounds_max_m": [
+        0.2741,
+        1.0121,
+        0.2457
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "8edd4fee368106b08c0b9932af14844112dc16ecd2b943105ea2b98745743413",
+      "geometry_sha256": "d64af007638ccb532c54b728d70a6b96949a05201302a3306f2179e68775adac",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075YMN19P/B075YMN19P.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/stools",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075YMN19P",
+      "amazon_item_ids": [
+        "B075YMN19P"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "elden_nailhead_saddle_backless_stool",
+      "name": "Elden Nailhead-Trim Saddle Backless Bar Stool",
+      "category": "Stools",
+      "subcategory": "Backless stool",
+      "file": "Stools/elden_nailhead_saddle_backless_stool.glb",
+      "width_m": 0.509,
+      "height_m": 0.768,
+      "depth_m": 0.363,
+      "file_size_bytes": 2405296,
+      "triangle_count": 15040,
+      "description": "The brushed brass nailhead trim adds a handsome accent to this modern farmhouse bar stool. Tall sturdy wood legs provide stability, and performance fabric holds up to a busy family's wear and tear.",
+      "features": [
+        "19.6\"W x 14.1\"D x 29.9\"H",
+        "95% polyester/5% nylon performance fabric on wood frame, solid wood legs",
+        "Foam padding and elastic suspension system keeps upholstery firm and resilient",
+        "No assembly required. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Elden Nailhead-Trim Saddle Kitchen Counter Backless Bar Stool, 30\"H, Hemp",
+      "brand": "Stone & Beam",
+      "color": "Hemp",
+      "material": "stone",
+      "style": "Bar Stool",
+      "product_type": "STOOL_SEATING",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 14,
+          "unit": "inches",
+          "metres": 0.356
+        },
+        "width": {
+          "value": 20,
+          "unit": "inches",
+          "metres": 0.508
+        },
+        "height": {
+          "value": 30,
+          "unit": "inches",
+          "metres": 0.762
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2546,
+        0,
+        -0.1817
+      ],
+      "bounds_max_m": [
+        0.2546,
+        0.7676,
+        0.1817
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "add1a77551fbf87c56607a6f1bde4226fb5d66fed17ce6d10b56bca7de49c0b6",
+      "geometry_sha256": "ff6799a9690d9bfafb0b42bc1c6b9e152105142717800bec0f299c920194e8b9",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075YNL272/B075YNL272.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/stools",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075YNL272",
+      "amazon_item_ids": [
+        "B075YNL272"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "industrial_wood_metal_counter_stool",
+      "name": "Modern Industrial Wood and Metal Counter Stool",
+      "category": "Stools",
+      "subcategory": "Counter stool",
+      "file": "Stools/industrial_wood_metal_counter_stool.glb",
+      "width_m": 0.48,
+      "height_m": 0.679,
+      "depth_m": 0.401,
+      "file_size_bytes": 423384,
+      "triangle_count": 21616,
+      "description": "This modern counter-height stool has a curved seat for extra comfort. A seat of solid oak has a metal base with a black finish for sturdiness and durability. With both classic and modern touches, this stool is stylishly versatile.",
+      "features": [
+        "19.75''W x 19.75''D x 25.6\"H",
+        "Solid oak seat with metal base",
+        "Curved seat for added comfort; compact size makes it work in small environments",
+        "No assembly required. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Modern Industrial Wood and Metal Kitchen Counter Bar Stool, 25.6\"H, Oak, Black",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "Wood; metal base",
+      "style": null,
+      "product_type": "STOOL_SEATING",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 19.69,
+          "unit": "inches",
+          "metres": 0.5
+        },
+        "width": {
+          "value": 19.69,
+          "unit": "inches",
+          "metres": 0.5
+        },
+        "height": {
+          "value": 25.6,
+          "unit": "inches",
+          "metres": 0.65
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2401,
+        0,
+        -0.199
+      ],
+      "bounds_max_m": [
+        0.2401,
+        0.6788,
+        0.2021
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 2,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 0
+      },
+      "file_sha256": "02b959fa596812189c0a85c6a6aef15f918367e0e91c528a8107659f2dd66185",
+      "geometry_sha256": "89a7e48e08d440db44d986a85d3810c23ec53fda959b749211ad9b0fe6e4b8a7",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075YPTF1L/B075YPTF1L.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/stools",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075YPTF1L",
+      "amazon_item_ids": [
+        "B075YPTF1L"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "stevie_velvet_low_stool",
+      "name": "Stevie Velvet Mid-Century Modern Stool",
+      "category": "Stools",
+      "subcategory": "Low stool",
+      "file": "Stools/stevie_velvet_low_stool.glb",
+      "width_m": 0.409,
+      "height_m": 0.508,
+      "depth_m": 0.409,
+      "file_size_bytes": 717024,
+      "triangle_count": 31890,
+      "description": "These fun velvet stools will add a cheerful pop of color to any room. Flared modern metal legs are topped by velvet cushions for a plush, sturdy feel and a touch of glam. Move them around to any room where you need an extra seat.",
+      "features": [
+        "15.75\" Diameter x 20.9\" H",
+        "Velvet fabric over a hardwood frame; metal legs with black finish",
+        "Brighten up a room and add extra seating with these stools",
+        "Assemble in less than 10 minutes. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Stevie Velvet Mid-Century Modern Kitchen Bar Stools, Set of 2, 20.9 Inch Height, Yellow Green",
+      "brand": "Rivet",
+      "color": "Yellow Green",
+      "material": "Velvet /Metal",
+      "style": null,
+      "product_type": "STOOL_SEATING",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 15.75,
+          "unit": "inches",
+          "metres": 0.4
+        },
+        "width": {
+          "value": 15.75,
+          "unit": "inches",
+          "metres": 0.4
+        },
+        "height": {
+          "value": 20.87,
+          "unit": "inches",
+          "metres": 0.53
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2046,
+        0,
+        -0.2046
+      ],
+      "bounds_max_m": [
+        0.2046,
+        0.5076,
+        0.2046
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "31b182a81814b93b3d582e105cc140aa36e5412f5f541a152eb0208e3056b582",
+      "geometry_sha256": "3e07987090f7f8b647ec1cd33efc6f8dbd7173891b2bcb4818f13121e49a8846",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075ZCLPHP/B075ZCLPHP.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/stools",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075ZCLPHP",
+      "amazon_item_ids": [
+        "B075ZCLPHP"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "burke_wood_counter_stool",
+      "name": "Burke Modern Wood Counter-Height Stool",
+      "category": "Stools",
+      "subcategory": "Counter stool",
+      "file": "Stools/burke_wood_counter_stool.glb",
+      "width_m": 0.512,
+      "height_m": 1.009,
+      "depth_m": 0.531,
+      "file_size_bytes": 2320076,
+      "triangle_count": 11680,
+      "description": "22.1\"W x 16.5\"D x 40\"H. Seat height is 26\".",
+      "features": [
+        "Solid wood legs and performance fabric",
+        "Foam padding and elastic suspension system keeps upholstery firm and resilient",
+        "No assembly required. Vacuum and wipe with soft dry cloth.",
+        "This simple, cleanly designed counter-height bar stool features a handsome wood panel accent across the back. Four solid wood legs offer stability and sturdiness, while foam padding and performance fabric help it hold up to a busy family's wear and tear."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Burke Modern Wood Kitchen Counter-Height Bar Stool, 40\"H, Slate Grey",
+      "brand": "Stone & Beam",
+      "color": "Slate",
+      "material": "Fabric",
+      "style": null,
+      "product_type": "STOOL_SEATING",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 22,
+          "unit": "inches",
+          "metres": 0.559
+        },
+        "width": {
+          "value": 19,
+          "unit": "inches",
+          "metres": 0.483
+        },
+        "height": {
+          "value": 40,
+          "unit": "inches",
+          "metres": 1.016
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2539,
+        0,
+        -0.273
+      ],
+      "bounds_max_m": [
+        0.2579,
+        1.0086,
+        0.2576
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "bf87dea9a561125158533fe5ed3c4c63963e5b65334887c189d1467e2952d72c",
+      "geometry_sha256": "4d00524e71bfbdecc8adff6e7a0820b189bb0ba66473624df5ce32b6feb1db95",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075YMN1VY/B075YMN1VY.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/stools",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075YMN1VY",
+      "amazon_item_ids": [
+        "B075YMN1VY"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "madison_round_storage_tray_ottoman",
+      "name": "Madison Round Lift-Top Storage Tray Ottoman",
+      "category": "Ottomans",
+      "subcategory": "Storage ottoman",
+      "file": "Ottomans/madison_round_storage_tray_ottoman.glb",
+      "width_m": 0.52,
+      "height_m": 0.43,
+      "depth_m": 0.52,
+      "file_size_bytes": 2220808,
+      "triangle_count": 10376,
+      "description": "It's a footstool, a storage space, an end table, an extra seat for company. Turn over the lid and voila -- it's an extra tray for snacks! An ottoman couldn't be more clever and multi-tasking than this.",
+      "features": [
+        "19.7\"W x 19.7\"D x 16.5\"H",
+        "Wood frame",
+        "Modern, round design",
+        "Perfect for any room where a storage space or footstool is needed.",
+        "Simple assembly; just attach four legs"
+      ],
+      "listing_title": "Amazon Brand – Rivet Madison Modern Round Lift-Top Storage Tray Ottoman Pouf, 19.7\"W, Caviar",
+      "brand": "Rivet",
+      "color": "Caviar",
+      "material": "Wood frame",
+      "style": null,
+      "product_type": "OTTOMAN",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 19.7,
+          "unit": "inches",
+          "metres": 0.5
+        },
+        "width": {
+          "value": 19.7,
+          "unit": "inches",
+          "metres": 0.5
+        },
+        "height": {
+          "value": 16.5,
+          "unit": "inches",
+          "metres": 0.419
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.26,
+        0.0,
+        -0.26
+      ],
+      "bounds_max_m": [
+        0.26,
+        0.4297,
+        0.26
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "31c358a1edd3f45343020acae2e4a92cb587626adc1731ec92154b0025225b85",
+      "geometry_sha256": "b3789b46e2c2a12170d9f195cce8fa1f35a914830c8f46859d48dda9778030f3",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B0728NWFGY/B0728NWFGY.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/ottomans",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B0728NWFGY",
+      "amazon_item_ids": [
+        "B0728NWFGY"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "bradbury_chesterfield_leather_ottoman",
+      "name": "Bradbury Chesterfield Leather Ottoman",
+      "category": "Ottomans",
+      "subcategory": "Leather ottoman",
+      "file": "Ottomans/bradbury_chesterfield_leather_ottoman.glb",
+      "width_m": 0.71,
+      "height_m": 0.48,
+      "depth_m": 0.533,
+      "file_size_bytes": 1485272,
+      "triangle_count": 35624,
+      "description": "Enhance your lounge-worthy living room with this classic Chesterfield ottoman. Rich leather upholstery, button detail trim and sturdy build will let you kick up your heels, or offer an extra seat, for years to come.",
+      "features": [
+        "Dimensions: 30.3 ”W x 22.4”D x 19.7”H",
+        "Engineered wood frame and 100% leather",
+        "Modern and classic touches",
+        "Restyled classic design with durable leather.",
+        "Easy-to-attach legs"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Bradbury Chesterfield Leather Ottoman, 30.3\"W, Cognac",
+      "brand": "Stone & Beam",
+      "color": "Cognac",
+      "material": "stone",
+      "style": null,
+      "product_type": "OTTOMAN",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 30.31496063,
+          "unit": "inches",
+          "metres": 0.77
+        },
+        "width": {
+          "value": 22.44094488,
+          "unit": "inches",
+          "metres": 0.57
+        },
+        "height": {
+          "value": 19.68503937,
+          "unit": "inches",
+          "metres": 0.5
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.3489,
+        -0.0,
+        -0.2683
+      ],
+      "bounds_max_m": [
+        0.3608,
+        0.4797,
+        0.2651
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "d06b12086180e66fa1ae13f15ad55739c5f9d248a776604996dd8f1c88763a09",
+      "geometry_sha256": "ab9ed228b9e97d37664805674291932234ca3de780f4e1f0b0441081958bc79c",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B071J7Q343/B071J7Q343.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/ottomans",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B071J7Q343",
+      "amazon_item_ids": [
+        "B071J7Q343"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "benton_square_ottoman",
+      "name": "Benton Square Ottoman",
+      "category": "Ottomans",
+      "subcategory": "Square ottoman",
+      "file": "Ottomans/benton_square_ottoman.glb",
+      "width_m": 0.889,
+      "height_m": 0.411,
+      "depth_m": 0.89,
+      "file_size_bytes": 1838816,
+      "triangle_count": 6844,
+      "description": "A perfect combination of style and practicality, this modern square ottoman is a great addition to any seating area. Its generous size and sturdy build allow it to work as a comfy footrest or a place to rest a tray of snacks.",
+      "features": [
+        "35\"W x 35\"D x 16\"H",
+        "Solid pine frame and legs with linen/cotton blend fabric",
+        "Modern casual",
+        "Practical design for use as extra seating or a footrest",
+        "Minimal assembly required",
+        "Made-to-order"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Benton Square Ottoman, 35\"W, Damask Taupe",
+      "brand": "Stone & Beam",
+      "color": "Taupe",
+      "material": "stone",
+      "style": null,
+      "product_type": "OTTOMAN",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 35,
+          "unit": "inches",
+          "metres": 0.889
+        },
+        "width": {
+          "value": 35,
+          "unit": "inches",
+          "metres": 0.889
+        },
+        "height": {
+          "value": 16,
+          "unit": "inches",
+          "metres": 0.406
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.4443,
+        0.0,
+        -0.4442
+      ],
+      "bounds_max_m": [
+        0.4444,
+        0.4115,
+        0.4456
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "6835c3a57cd0e9d4c5659372ba34b5f94d69c934ef96913c387e5e110b532843",
+      "geometry_sha256": "a0cc1cf6eec5a9ef5a663e5d58bf5c7bfd30de4d24c59d27c2d29562f9bafc95",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073G8Q63T/B073G8Q63T.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/ottomans",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B073G8Q63T",
+      "amazon_item_ids": [
+        "B073G8Q63T"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "six_sided_modern_ottoman",
+      "name": "Six-Sided Modern Ottoman",
+      "category": "Ottomans",
+      "subcategory": "Pouf ottoman",
+      "file": "Ottomans/six_sided_modern_ottoman.glb",
+      "width_m": 0.444,
+      "height_m": 0.507,
+      "depth_m": 0.499,
+      "file_size_bytes": 2377144,
+      "triangle_count": 5504,
+      "description": "This six-sided ottoman is shaped to fit into tight spaces. It's an attractive landing spot for your feet after a busy day, an extra seat for company, and a place to perch a tray of snacks.",
+      "features": [
+        "19\"W x 17\"D x 19\"H",
+        "Solid pine frame with polyester fabric",
+        "Modern and compact",
+        "A great piece for anywhere you need an extra seat or footstool",
+        "No assembly required.",
+        "Made-to-order"
+      ],
+      "listing_title": "Amazon Brand – Rivet Six-Sided Modern Ottoman, 19\"W, Emerald",
+      "brand": "Rivet",
+      "color": "Emerald",
+      "material": null,
+      "style": null,
+      "product_type": "OTTOMAN",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 19,
+          "unit": "inches",
+          "metres": 0.483
+        },
+        "width": {
+          "value": 17,
+          "unit": "inches",
+          "metres": 0.432
+        },
+        "height": {
+          "value": 19,
+          "unit": "inches",
+          "metres": 0.483
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2218,
+        0,
+        -0.2494
+      ],
+      "bounds_max_m": [
+        0.2218,
+        0.5072,
+        0.2493
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "dfa6212410e6a7c805e9358241cc65f2562859517978fa76cb76020f431eb502",
+      "geometry_sha256": "298f9269a0f84c4830965e8f14b9330dd64e4075cebef97f07069199f3f49fa4",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073G94FRB/B073G94FRB.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/ottomans",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B073G94FRB",
+      "amazon_item_ids": [
+        "B073G94FRB"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "ava_mid_century_upholstered_ottoman",
+      "name": "Ava Mid-Century Modern Upholstered Ottoman",
+      "category": "Ottomans",
+      "subcategory": "Upholstered ottoman",
+      "file": "Ottomans/ava_mid_century_upholstered_ottoman.glb",
+      "width_m": 0.655,
+      "height_m": 0.399,
+      "depth_m": 0.648,
+      "file_size_bytes": 1481440,
+      "triangle_count": 5262,
+      "description": "This handsome ottoman can serve as a footstool, an extra place to put a tray of snacks, or a comfortable seat for a friend. The tapered solid wood legs and low profile give this a classic mid-century modern style.",
+      "features": [
+        "25.6\"W x 25.6\"D x15.7\"H",
+        "Solid wood frame and tapered beech legs",
+        "A retro-looking addition for your living room",
+        "Simple assembly; just attach legs from the zippered compartment underneath"
+      ],
+      "listing_title": "Amazon Brand – Rivet Ava Mid-Century Modern Upholstered Ottoman, 25.6\"W, Light Grey",
+      "brand": "Rivet",
+      "color": "Light Grey",
+      "material": "fabric , Wood frame",
+      "style": null,
+      "product_type": "OTTOMAN",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 25.6,
+          "unit": "inches",
+          "metres": 0.65
+        },
+        "width": {
+          "value": 25.6,
+          "unit": "inches",
+          "metres": 0.65
+        },
+        "height": {
+          "value": 15.7,
+          "unit": "inches",
+          "metres": 0.399
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.3277,
+        -0.0,
+        -0.3241
+      ],
+      "bounds_max_m": [
+        0.3277,
+        0.3986,
+        0.3241
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "6057c5864396520d8893ac43c429078809d5f422b535f40bc4e3ee937d37f797",
+      "geometry_sha256": "954090c5e7d289d958f267ddeec0e3b0d1a2edf53640d4400ee8ce9d1fb4e30c",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B071PDYXKC/B071PDYXKC.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/ottomans",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B071PDYXKC",
+      "amazon_item_ids": [
+        "B071PDYXKC"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "martin_velvet_storage_bench",
+      "name": "Martin Modern Storage Bench",
+      "category": "Benches",
+      "subcategory": "Storage bench",
+      "file": "Benches/martin_velvet_storage_bench.glb",
+      "width_m": 1.016,
+      "height_m": 0.471,
+      "depth_m": 0.492,
+      "file_size_bytes": 1585380,
+      "triangle_count": 15456,
+      "description": "You're having friends over, but didn't have time to clean first. No problem - this storage ottoman is a great place to quickly stash clutter. In addition to its functionality, it's a stylish piece when closed.",
+      "features": [
+        "NOTE: This item is made-to-order, please expect an increased shipping time.",
+        "39” W x 19” D x 19” H",
+        "Solid pine wood with polyester fabric",
+        "Contemporary but classic",
+        "A great ottoman for the living room or storage for blankets in a bedroom",
+        "Simple assembly; just attach legs"
+      ],
+      "listing_title": "Amazon Brand – Rivet Martin Modern Storage Bench, 39\"W, Sundried Velvet",
+      "brand": "Rivet",
+      "color": "Sundried Velvet",
+      "material": "velvet",
+      "style": null,
+      "product_type": "BENCH",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 39,
+          "unit": "inches",
+          "metres": 0.991
+        },
+        "width": {
+          "value": 19,
+          "unit": "inches",
+          "metres": 0.483
+        },
+        "height": {
+          "value": 19,
+          "unit": "inches",
+          "metres": 0.483
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.508,
+        -0.0,
+        -0.2454
+      ],
+      "bounds_max_m": [
+        0.5079,
+        0.4708,
+        0.2464
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 2
+      },
+      "file_sha256": "1c8492dc5ebeb11e61ecbf6fd827cbae9aa017b2a16f0bde11aa4d6f6772be75",
+      "geometry_sha256": "bac870a8a1ec23b02db8cc309c2871b0d5a291400306de475808cb283169d8e5",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073G7BVBP/B073G7BVBP.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/benches",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B073G7BVBP",
+      "amazon_item_ids": [
+        "B073G7BVBP"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "rylee_acacia_dining_bench",
+      "name": "Rylee Modern Farmhouse Acacia Wood Dining Bench",
+      "category": "Benches",
+      "subcategory": "Dining bench",
+      "file": "Benches/rylee_acacia_dining_bench.glb",
+      "width_m": 1.698,
+      "height_m": 0.431,
+      "depth_m": 0.378,
+      "file_size_bytes": 1269620,
+      "triangle_count": 1624,
+      "description": "Add a contemporary touch to your dining room, kitchen or entryway with this beautiful bench. Made from solid acacia with a subtle gray-washed finish, this bench perfectly complements most home-décor styles.",
+      "features": [
+        "Acacia solid wood with Acacia veneer",
+        "Low height profile with sturdy wood legs for dining seating or an entryway.",
+        "Avoid moisture. Wipes clean with soft, dry cloth.",
+        "18.5\"L x 70.87\"W x 9.84\"H"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Rylee Modern Farmhouse Acacia Wood Dining Bench, 71\"W, Gray-Wash Acacia",
+      "brand": "Stone & Beam",
+      "color": "Gray",
+      "material": "Stone",
+      "style": "Modern",
+      "product_type": "BENCH",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 66.9,
+          "unit": "inches",
+          "metres": 1.699
+        },
+        "width": {
+          "value": 14.6,
+          "unit": "inches",
+          "metres": 0.371
+        },
+        "height": {
+          "value": 17.7,
+          "unit": "inches",
+          "metres": 0.45
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.8492,
+        -0.0,
+        -0.1889
+      ],
+      "bounds_max_m": [
+        0.8492,
+        0.4307,
+        0.1889
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 2,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "0b64fe0c97ff735d909342d9d1fd0b0b4eb99cbd1a9a748ca5d2a0962453c828",
+      "geometry_sha256": "22372b5a6cd0d6c2e5c3fc6b9babd6f169ea9b2a11c4d387d397fdccc73d38f1",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07HSBDCX8/B07HSBDCX8.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/benches",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07HSBDCX8",
+      "amazon_item_ids": [
+        "B07HSBDCX8"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "contemporary_metal_bedroom_bench",
+      "name": "Contemporary Metal Bedroom Bench with Cushion",
+      "category": "Benches",
+      "subcategory": "Bedroom bench",
+      "file": "Benches/contemporary_metal_bedroom_bench.glb",
+      "width_m": 1.488,
+      "height_m": 0.488,
+      "depth_m": 0.479,
+      "file_size_bytes": 476084,
+      "triangle_count": 14168,
+      "description": "A great accent piece, this modern upholstered bench will fit just right at the foot of your bed or in an entryway. With a plush ivory tufted cushion and oiled bronze metal legs, its open, airy design adds seating without making the room feel crowded.",
+      "features": [
+        "58\"L x 18\"W x 19\"H",
+        "Metal and fabric (65% rayon; 35% linen)",
+        "Simple, transitional design with neutral cushion and metal base",
+        "Steel base provides sturdy support",
+        "Assemble in 15-30 minutes; attach seat to base"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Contemporary Metal Bedroom Bench with Cushion, 58\"W, Oatmeal",
+      "brand": "Stone & Beam",
+      "color": "Oatmeal",
+      "material": "Metal",
+      "style": "Contemporary",
+      "product_type": "BENCH",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 58,
+          "unit": "inches",
+          "metres": 1.473
+        },
+        "width": {
+          "value": 18,
+          "unit": "inches",
+          "metres": 0.457
+        },
+        "height": {
+          "value": 19,
+          "unit": "inches",
+          "metres": 0.483
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.7448,
+        -0.0,
+        -0.2396
+      ],
+      "bounds_max_m": [
+        0.7433,
+        0.4881,
+        0.2396
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "8451f0bde2ca079530269443c762535eb19a4e4abadfb80b280b3f3f9b1866b4",
+      "geometry_sha256": "4489e9c1d4290811825c2d7b8a954d97b5c835baddd6d9cb556bf44aa14b677e",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B4SC9RP/B07B4SC9RP.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/benches",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07B4SC9RP",
+      "amazon_item_ids": [
+        "B07B4SC9RP"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "glam_tufted_gold_leg_bench",
+      "name": "Glam Tufted Upholstered Bench with Gold Legs",
+      "category": "Benches",
+      "subcategory": "Upholstered bench",
+      "file": "Benches/glam_tufted_gold_leg_bench.glb",
+      "width_m": 1.473,
+      "height_m": 0.484,
+      "depth_m": 0.457,
+      "file_size_bytes": 1374104,
+      "triangle_count": 39292,
+      "description": "This simple upholstered bench can be played up or down, depending on your taste. The gold finish is handsome but not too shiny. Use it at the foot of your bed or anywhere else you'd like to add a touch of glam.",
+      "features": [
+        "58\"L X 18\"W X 19\"D",
+        "Metal with gold finish, polyester fabric",
+        "Modern and simple yet distinctive design",
+        "Perfect as a comfortable bench or a place to lay an extra blanket",
+        "Assemble in 15-30 minutes. Wipe with soft dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Glam Tufted Seat Upholstered Bench with Gold Legs , 58\"L, Gold Finish",
+      "brand": "Rivet",
+      "color": "Gold",
+      "material": "Metal",
+      "style": null,
+      "product_type": "OTTOMAN",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 18,
+          "unit": "inches",
+          "metres": 0.457
+        },
+        "width": {
+          "value": 58,
+          "unit": "inches",
+          "metres": 1.473
+        },
+        "height": {
+          "value": 19,
+          "unit": "inches",
+          "metres": 0.483
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.7366,
+        0.0,
+        -0.2286
+      ],
+      "bounds_max_m": [
+        0.7366,
+        0.4842,
+        0.2286
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "fc57129577fc2248ec364e7e7d12a65a88c9ba00c8ddea570d1d7c19cf1b96c0",
+      "geometry_sha256": "bc6764f048b47b6132a7eb4dba1f07e7040f7e746e55bf5a5e2dfa2f694af8b7",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QDV39B/B075QDV39B.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/ottomans",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075QDV39B",
+      "amazon_item_ids": [
+        "B075QDV39B"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "classic_lift_top_shoe_bench",
+      "name": "Classic Shoe Bench with Lift-Top Compartment",
+      "category": "Benches",
+      "subcategory": "Shoe bench",
+      "file": "Benches/classic_lift_top_shoe_bench.glb",
+      "width_m": 0.905,
+      "height_m": 0.501,
+      "depth_m": 0.401,
+      "file_size_bytes": 720736,
+      "triangle_count": 9240,
+      "description": "Storage bench for shoes, boots, accessories, and more",
+      "features": [
+        "Includes 3 open-front cubby holes, for shoes or bin storage and a lift-top",
+        "Removable bench cushion for comfort",
+        "Sturdy hardwood and MDF construction with turned wood feet",
+        "Perfect for entryway, foyer, utility room, bedroom, and more",
+        "Stylish design fits in beautifully with existing home furniture and decor"
+      ],
+      "listing_title": "AmazonBasics Classic Shoe Bench with Lift-Top Compartment and 3 Storage Cubbies - Black Oak",
+      "brand": "AmazonBasics",
+      "color": "Black Oak",
+      "material": "Hardwood",
+      "style": null,
+      "product_type": "BENCH",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 35.43,
+          "unit": "inches",
+          "metres": 0.9
+        },
+        "width": {
+          "value": 19.69,
+          "unit": "inches",
+          "metres": 0.5
+        },
+        "height": {
+          "value": 15.75,
+          "unit": "inches",
+          "metres": 0.4
+        }
+      },
+      "dimension_check": {
+        "status": "match (listing lists the axes in a different order)",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.4517,
+        0.0,
+        -0.2007
+      ],
+      "bounds_max_m": [
+        0.4534,
+        0.501,
+        0.2008
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "6dfb3d1f8f27f804f08c2cd85c6b9fe2a7a004fc2615724e8473504581c809ee",
+      "geometry_sha256": "9e38f614198afe51163b5e16f17abc1ffe4decb8cd298d3b2069e42f13493201",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07P64ZJQG/B07P64ZJQG.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/benches",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07P64ZJQG",
+      "amazon_item_ids": [
+        "B07P64ZJQG"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "modern_arc_floor_lamp",
+      "name": "Modern Arc Floor Lamp",
+      "category": "Lamps",
+      "subcategory": "Floor lamp",
+      "file": "Lamps/modern_arc_floor_lamp.glb",
+      "width_m": 0.493,
+      "height_m": 1.927,
+      "depth_m": 1.425,
+      "file_size_bytes": 712252,
+      "triangle_count": 6620,
+      "description": "This modern arc-arm floor lamp will give you style as well as light. The black metal stand adjusts inward and outward to fit your space. It is paired with a white linen shade for a modern/classic combination that will blend with your existing style.",
+      "features": [
+        "Modern, graceful design",
+        "Metal base with linen shade",
+        "Arc arm allows you to swing the light in the direction you need it",
+        "76\"H x 56\"W (maximum width) x 10\"D",
+        "Assembly in 15-30 minutes (two people recommended)",
+        "For indoor use only. LED bulb and lampshade included."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Modern Arc Living Room Floor Lamp With Light Bulb And White Shade - 10 x 56 x 76 Inches, Black",
+      "brand": "Stone & Beam",
+      "color": "Black",
+      "material": "Metal",
+      "style": null,
+      "product_type": "LAMP",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 10,
+          "unit": "inches",
+          "metres": 0.254
+        },
+        "width": {
+          "value": 56,
+          "unit": "inches",
+          "metres": 1.422
+        },
+        "height": {
+          "value": 76,
+          "unit": "inches",
+          "metres": 1.93
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2466,
+        0,
+        -0.053
+      ],
+      "bounds_max_m": [
+        0.2466,
+        1.9268,
+        1.3715
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 4,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "9a680fd6e0779f441899e8ff71e74545eb24c1d4ce8526ce7239427befc3f416",
+      "geometry_sha256": "19eb17246f6bbc7aaaee33aedae4db74f62453edc066b3692bd9dda794e3ddbc",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073755HVS/B073755HVS.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/lamps",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B073755HVS",
+      "amazon_item_ids": [
+        "B073755HVS"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "adjustable_arm_mid_century_floor_lamp",
+      "name": "Adjustable Arm Mid-Century Modern Floor Lamp",
+      "category": "Lamps",
+      "subcategory": "Floor lamp",
+      "file": "Lamps/adjustable_arm_mid_century_floor_lamp.glb",
+      "width_m": 0.25,
+      "height_m": 1.526,
+      "depth_m": 0.431,
+      "file_size_bytes": 303440,
+      "triangle_count": 40130,
+      "description": "Modern style",
+      "features": [
+        "Brushed nickel finish from base to adjustable sleek metal shade",
+        "Provides ample light while fitting in a small space",
+        "10\"Wx17\"Dx59\"H",
+        "Easily assembled in 15 minutes",
+        "Curl up with a good book under this adjustable floor reading lamp, which shines highly focused light. The brushed nickel finish and simple, minimalist design will add just the right modern splash to your décor."
+      ],
+      "listing_title": "Amazon Brand – Rivet Adjustable Arm Mid-Century Modern Living Room Standing Floor Lamp - 59 Inches, Brushed Nickel",
+      "brand": "Rivet",
+      "color": "Brushed Nickel",
+      "material": "Metal",
+      "style": "Moderno/elegante",
+      "product_type": "LAMP",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 17,
+          "unit": "inches",
+          "metres": 0.432
+        },
+        "width": {
+          "value": 10,
+          "unit": "inches",
+          "metres": 0.254
+        },
+        "height": {
+          "value": 59,
+          "unit": "inches",
+          "metres": 1.499
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.125,
+        0,
+        -0.125
+      ],
+      "bounds_max_m": [
+        0.125,
+        1.526,
+        0.3057
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "57d2ecf1d00086a517c6518105a56a5f109f3b3b67b65ecfe3551839af4290d7",
+      "geometry_sha256": "988670479f7fca9981b221dae7596c8e5caea1b1ec569cbde16a1c3dea60a065",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07374SBFL/B07374SBFL.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/lamps",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07374SBFL",
+      "amazon_item_ids": [
+        "B07374SBFL"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "deco_metal_frame_floor_lamp",
+      "name": "Deco Metal Frame Floor Lamp",
+      "category": "Lamps",
+      "subcategory": "Floor lamp",
+      "file": "Lamps/deco_metal_frame_floor_lamp.glb",
+      "width_m": 0.457,
+      "height_m": 1.51,
+      "depth_m": 0.456,
+      "file_size_bytes": 213352,
+      "triangle_count": 17102,
+      "description": "This Art Deco-inspired lamp features a boldly designed four-legged base with a classic white linen shade. This piece will provide a handsome style addition to your room in addition to providing light wherever you need it.",
+      "features": [
+        "Art Deco-inspired",
+        "Metal legs with black finish and white linen shade",
+        "An attractive piece for a contemporary or transitional room",
+        "59.5\"H x 18\"W x 18\"D",
+        "Simple assembly",
+        "Intended for indoor use only"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Deco Metal Frame Living Room Standing Floor Lamp With Light Bulb and White Shade - 18 x 18 x 59.5 Inches, Black",
+      "brand": "Stone & Beam",
+      "color": "Black",
+      "material": "Metal+Fabric",
+      "style": "Floor Lamp",
+      "product_type": "LAMP",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 18,
+          "unit": "inches",
+          "metres": 0.457
+        },
+        "width": {
+          "value": 18,
+          "unit": "inches",
+          "metres": 0.457
+        },
+        "height": {
+          "value": 59.5,
+          "unit": "inches",
+          "metres": 1.511
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.2286,
+        0,
+        -0.2281
+      ],
+      "bounds_max_m": [
+        0.2286,
+        1.5098,
+        0.2281
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 4,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "a457c8ebb0bee1a6a076b2c8ec0fb1d9ef012c7fcb766e4e682565e7bc412e9b",
+      "geometry_sha256": "69ecde348f23f6a4d7393937d5160eecdca52e7e7bebf0869b9cce2fa802b7b9",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07376VCCW/B07376VCCW.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/lamps",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07376VCCW",
+      "amazon_item_ids": [
+        "B07376VCCW"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "copper_geometric_table_lamp",
+      "name": "Copper Geometric Bedside Table Lamp",
+      "category": "Lamps",
+      "subcategory": "Table lamp",
+      "file": "Lamps/copper_geometric_table_lamp.glb",
+      "width_m": 0.3,
+      "height_m": 0.431,
+      "depth_m": 0.3,
+      "file_size_bytes": 667352,
+      "triangle_count": 17142,
+      "description": "Glamorous, modern style",
+      "features": [
+        "Polyresin, multi-faceted base with a copper finish and smooth linen shade",
+        "Adds polish and high style to your room",
+        "11.5\"Wx11.5\"Dx16.75\"H",
+        "Fast & easy assembly",
+        "Add some glam to your room with this fashionable contemporary table lamp. The multi-faceted geometric base has a copper finish that pairs well with dark furniture for that modern look."
+      ],
+      "listing_title": "Amazon Brand – Rivet Copper Geometric Bedside Table Desk Lamp With Light Bulb - 16.75 Inches, Copper",
+      "brand": "Rivet",
+      "color": "Copper",
+      "material": "Polyresin+Metal+Fabric",
+      "style": "Copper",
+      "product_type": "LAMP",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 11.5,
+          "unit": "inches",
+          "metres": 0.292
+        },
+        "width": {
+          "value": 11.5,
+          "unit": "inches",
+          "metres": 0.292
+        },
+        "height": {
+          "value": 16.8,
+          "unit": "inches",
+          "metres": 0.427
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.1502,
+        0,
+        -0.1502
+      ],
+      "bounds_max_m": [
+        0.1503,
+        0.4314,
+        0.1503
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 4,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "4c23e4958a0bf463211c7a0adc07e7d204d3c3deb1f6ad09e31b1cffe2f72204",
+      "geometry_sha256": "578bdde9b526ecf7c94a69f0185e5d7ae921f01e077494ca41d0f86fcaf5d343",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07374VCVN/B07374VCVN.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/lamps",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07374VCVN",
+      "amazon_item_ids": [
+        "B07374VCVN"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "textured_teardrop_table_lamp",
+      "name": "Textured Teardrop Table Lamp",
+      "category": "Lamps",
+      "subcategory": "Table lamp",
+      "file": "Lamps/textured_teardrop_table_lamp.glb",
+      "width_m": 0.33,
+      "height_m": 0.521,
+      "depth_m": 0.33,
+      "file_size_bytes": 858744,
+      "triangle_count": 5342,
+      "description": "A metallic-look base gives this lamp a touch of glam along with sophisticated design. The rounded base has a textured, distressed finish. It's paired with a white linen shade for a modern but classic touch that will blend with your existing style.",
+      "features": [
+        "Contemporary with a glam touch",
+        "Polyresin base with metal hardware and linen shade",
+        "Modern, graceful design that will blend with your existing style",
+        "20\"H x 1.5\"W x 11.5\"D",
+        "Simple assembly",
+        "Intended for indoor use only"
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Textured Teardrop Table Lamp With Light Bulb And White Shade- 11.5 x 11.5 x 20 Inches, Silver",
+      "brand": "Stone & Beam",
+      "color": "Silver",
+      "material": "Polyresin+Metal+Fabric",
+      "style": null,
+      "product_type": "LAMP",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 11.5,
+          "unit": "inches",
+          "metres": 0.292
+        },
+        "width": {
+          "value": 11.5,
+          "unit": "inches",
+          "metres": 0.292
+        },
+        "height": {
+          "value": 20,
+          "unit": "inches",
+          "metres": 0.508
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.1639,
+        0,
+        -0.1652
+      ],
+      "bounds_max_m": [
+        0.1659,
+        0.5214,
+        0.1645
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 4,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "e8814c3a37f6b7d2d71712eb0654ce2cc524385e49e15d3ee9b5d910ab63eb29",
+      "geometry_sha256": "f371c687c56c1d96bee4cb8d45f3eed9a7961a55c333071c9128cd0f73dc7e7d",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073751DMM/B073751DMM.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/lamps",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B073751DMM",
+      "amazon_item_ids": [
+        "B073751DMM"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "industrial_metal_leg_tv_console",
+      "name": "Industrial Metal Leg TV Media Console",
+      "category": "TV Units",
+      "subcategory": "TV console",
+      "file": "TVUnits/industrial_metal_leg_tv_console.glb",
+      "width_m": 1.796,
+      "height_m": 0.415,
+      "depth_m": 0.467,
+      "file_size_bytes": 693188,
+      "triangle_count": 17910,
+      "description": "This industrial modern stand incorporates a wood base with metal legs. A long top will hold a wide screen TV and three compartments in the console can house other equipment.",
+      "features": [
+        "70.9\"L x 15.7\"W x 17.5\"H",
+        "Base is engineered wood with walnut veneer; legs are metal",
+        "Industrial modern with classic walnut veneer",
+        "Two drawers and one open compartment provide storage",
+        "Easy assembly and care"
+      ],
+      "listing_title": "Amazon Brand – Rivet Industrial Metal Leg TV Media Console, Walnut",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "Engineered Wood",
+      "style": null,
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 70.8,
+          "unit": "inches",
+          "metres": 1.798
+        },
+        "width": {
+          "value": 17.5,
+          "unit": "inches",
+          "metres": 0.445
+        },
+        "height": {
+          "value": 15.7,
+          "unit": "inches",
+          "metres": 0.399
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.8979,
+        -0.0,
+        -0.2334
+      ],
+      "bounds_max_m": [
+        0.898,
+        0.4154,
+        0.2334
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "58be70202c32b505c49368294b6d2e72ab3761f8d187c3f573c06243244af3fb",
+      "geometry_sha256": "14d88990de6530a4890c7a050dace86e21136e1345249995351a36179c6c27c8",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072ZNBRR6/B072ZNBRR6.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072ZNBRR6",
+      "amazon_item_ids": [
+        "B072ZNBRR6"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "six_compartment_tv_media_console",
+      "name": "Modern Six-Compartment TV Media Console",
+      "category": "TV Units",
+      "subcategory": "TV console",
+      "file": "TVUnits/six_compartment_tv_media_console.glb",
+      "width_m": 1.482,
+      "height_m": 0.409,
+      "depth_m": 0.366,
+      "file_size_bytes": 1871444,
+      "triangle_count": 19267,
+      "description": "Enjoy years of watching TV on this modern stand. The top is long enough for a wide screen, and six handy compartments will store your other equipment. The walnut veneer provides a classic touch that allows this piece to blend with existing styles.",
+      "features": [
+        "59\"L x 13.8\"W x 15.75\"H",
+        "Engineered wood with walnut veneer",
+        "Modern yet understated enough to blend with other styles",
+        "Three open compartments and three drawers allow ample storage",
+        "Easy assembly and care"
+      ],
+      "listing_title": "Amazon Brand – Rivet Modern Six-Compartment TV Media Console, Walnut",
+      "brand": "Rivet",
+      "color": "Brown",
+      "material": "Engineered Wood",
+      "style": null,
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 59,
+          "unit": "inches",
+          "metres": 1.499
+        },
+        "width": {
+          "value": 13.8,
+          "unit": "inches",
+          "metres": 0.351
+        },
+        "height": {
+          "value": 15.75,
+          "unit": "inches",
+          "metres": 0.4
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.7409,
+        -0.0,
+        -0.1828
+      ],
+      "bounds_max_m": [
+        0.7409,
+        0.4092,
+        0.1831
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "bf094ef0430bb184834966e3734edf7e4d509c75bb0377c9b61becadb55ab826",
+      "geometry_sha256": "39789934723a2578e8cc98ec2f990720b0762ceb4b79630d46397042de5c9f0f",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072ZRPFJL/B072ZRPFJL.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B072ZRPFJL",
+      "amazon_item_ids": [
+        "B072ZRPFJL"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "ferndale_rustic_tv_console",
+      "name": "Ferndale Rustic Media TV Console Stand",
+      "category": "TV Units",
+      "subcategory": "TV console",
+      "file": "TVUnits/ferndale_rustic_tv_console.glb",
+      "width_m": 1.866,
+      "height_m": 0.615,
+      "depth_m": 0.471,
+      "file_size_bytes": 691828,
+      "triangle_count": 14628,
+      "description": "71\"W x 18”D x 24”H",
+      "features": [
+        "Durable, sustainably sourced solid pine and metal",
+        "Modern rustic with weathered espresso finish",
+        "Openings in the back make it easy to organize wires and cables",
+        "Easy assembly in 15 minutes. Wipe with soft dry cloth.",
+        "Made of solid reclaimed pine, this console will add a warm rustic touch to your home. Place a TV on top, gaming consoles on the lower shelf, and remote controls and cables in the four storage drawers. The natural wood grain makes each piece unique."
+      ],
+      "listing_title": "Amazon Brand – Stone & Beam Ferndale Rustic Media TV Console Stand, 71\"W, Espresso",
+      "brand": "Stone & Beam",
+      "color": "Espresso",
+      "material": "Pine",
+      "style": "Transitional",
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 71,
+          "unit": "inches",
+          "metres": 1.803
+        },
+        "width": {
+          "value": 18,
+          "unit": "inches",
+          "metres": 0.457
+        },
+        "height": {
+          "value": 24,
+          "unit": "inches",
+          "metres": 0.61
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.9339,
+        0.0,
+        -0.2185
+      ],
+      "bounds_max_m": [
+        0.9319,
+        0.6148,
+        0.2528
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "de8bd5d819fa53a64bf334e0afd608961b641ae29f68735107598755e0dba6b0",
+      "geometry_sha256": "81ade8b60aa172b3eac20f90afab3c2d414221be06d946f916ab74c6cae28ada",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z6YRWQ/B075Z6YRWQ.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B075Z6YRWQ",
+      "amazon_item_ids": [
+        "B075Z6YRWQ"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "mid_century_wood_media_console",
+      "name": "Mid-Century Modern Wood Media TV Console",
+      "category": "TV Units",
+      "subcategory": "TV console",
+      "file": "TVUnits/mid_century_wood_media_console.glb",
+      "width_m": 1.119,
+      "height_m": 0.464,
+      "depth_m": 0.49,
+      "file_size_bytes": 242396,
+      "triangle_count": 14472,
+      "description": "This two-toned media console will bring striking mid-century style to your room along with handy storage space. The top is ideal for a TV, while One??two? shelves and two?three?drawers provide plenty of room for tucking away electronic devices.",
+      "features": [
+        "18.9\"W x 47.2\"D x 18.9\"H",
+        "Acacia veneer with rubberwood legs",
+        "Minimalist design and angled legs are hallmarks of mid-century design",
+        "Holes on back will accommodate wiring",
+        "Assembly in 30 minutes or less; just screw in legs"
+      ],
+      "listing_title": "Amazon Brand – Rivet Mid-Century Modern Wood Media TV Console Coffee Table, 47\"D, Walnut & Black",
+      "brand": "Rivet",
+      "color": null,
+      "material": "wood",
+      "style": "Coffee Table",
+      "product_type": "TABLE",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 47.2,
+          "unit": "inches",
+          "metres": 1.199
+        },
+        "width": {
+          "value": 18.9,
+          "unit": "inches",
+          "metres": 0.48
+        },
+        "height": {
+          "value": 18.9,
+          "unit": "inches",
+          "metres": 0.48
+        }
+      },
+      "dimension_check": {
+        "status": "match",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.5536,
+        0.0,
+        -0.2547
+      ],
+      "bounds_max_m": [
+        0.5658,
+        0.4641,
+        0.2348
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "00e7c40517c28d4611b6b53cc6ff450865f32ee19d1f07a02f838b001881f7b1",
+      "geometry_sha256": "2328f4c257957e53b91999e0dcbb573cf186a1cca08a52105e099c0a397aec18",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B7DPKRJ/B07B7DPKRJ.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/tables",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07B7DPKRJ",
+      "amazon_item_ids": [
+        "B07B7DPKRJ"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    },
+    {
+      "id": "stevens_wood_media_cabinet",
+      "name": "Stevens Modern Wood TV Media Center Cabinet",
+      "category": "TV Units",
+      "subcategory": "TV cabinet",
+      "file": "TVUnits/stevens_wood_media_cabinet.glb",
+      "width_m": 1.3,
+      "height_m": 0.495,
+      "depth_m": 0.4,
+      "file_size_bytes": 1330824,
+      "triangle_count": 6556,
+      "description": "Update your home décor with this gorgeous modern-style media center. Made from solid acacia, this media center is highly durable, and its brushed tundra-gray finish blends well with most home-décor themes. Its 2 flip doors with shelves behind them and single niche offer helpful organization options.",
+      "features": [
+        "51.18\"W x 17.72\"D x 19.69\"H",
+        "Solid acacia with MDF acacia veneer",
+        "Clean lines and rich gray finish create a modern design that's perfect for any contemporary-style home.",
+        "This stylish media center has 2 flip doors concealing shelves and 1 niche for storing electronics and accessories.",
+        "No assembly required",
+        "Avoid moisture. Wipes clean with soft, dry cloth."
+      ],
+      "listing_title": "Amazon Brand – Rivet Stevens Modern Wood TV Media Center Cabinet, 51.18\"W, Brushed Tundra Gray",
+      "brand": "Rivet",
+      "color": null,
+      "material": null,
+      "style": "Media Cabinet",
+      "product_type": "SHELF",
+      "manufacturer_dimensions": {
+        "length": {
+          "value": 51.159,
+          "unit": "inches",
+          "metres": 1.299
+        },
+        "width": {
+          "value": 17.692,
+          "unit": "inches",
+          "metres": 0.449
+        },
+        "height": {
+          "value": 13.756,
+          "unit": "inches",
+          "metres": 0.349
+        }
+      },
+      "dimension_check": {
+        "status": "mismatch",
+        "tolerance": "8% or 3 cm"
+      },
+      "realism_flags": [],
+      "bounds_min_m": [
+        -0.6485,
+        0.0,
+        -0.1983
+      ],
+      "bounds_max_m": [
+        0.6511,
+        0.4946,
+        0.2018
+      ],
+      "rests_on_floor": true,
+      "material_count": 1,
+      "textures": {
+        "count": 3,
+        "formats": [
+          "image/webp"
+        ],
+        "max_size_px": 2048,
+        "embedded": true
+      },
+      "gltf_extensions": [
+        "EXT_meshopt_compression",
+        "EXT_texture_webp",
+        "KHR_mesh_quantization"
+      ],
+      "validation": {
+        "loadable": true,
+        "errors": 0,
+        "warnings": 1
+      },
+      "file_sha256": "cf057d59d319074eb8bf7134786244f33316cfbeec147cd600320898cf914c73",
+      "geometry_sha256": "b042f6760ef7df8512de944d350eb88f3bba22e7af7e89de54c4c826fabfe0d6",
+      "source_url": "https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07HSKW3D6/B07HSKW3D6.glb",
+      "catalog_page": "https://2dto3d.app/free-3d-models/shelves",
+      "source_dataset": "Amazon Berkeley Objects (ABO)",
+      "source_dataset_url": "https://amazon-berkeley-objects.s3.amazonaws.com/index.html",
+      "web_optimised_by": "codepawl/abo-glb",
+      "abo_model_id": "B07HSKW3D6",
+      "amazon_item_ids": [
+        "B07HSKW3D6"
+      ],
+      "creator": "Amazon.com",
+      "license": "CC BY 4.0",
+      "license_url": "https://creativecommons.org/licenses/by/4.0/"
+    }
+  ]
+}

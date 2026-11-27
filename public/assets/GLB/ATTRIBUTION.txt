@@ -1,0 +1,314 @@
+Furnisia_Furniture - Attribution
+================================
+
+All 60 models are by Amazon.com, from the Amazon Berkeley Objects (ABO) dataset,
+licensed under CC BY 4.0 (https://creativecommons.org/licenses/by/4.0/).
+Dataset: https://amazon-berkeley-objects.s3.amazonaws.com/index.html
+Dataset authors: Matthieu Guillaumin, Thomas Dideriksen, Kenan Deng, Himanshu Arora, Arnab Dhua, Xi (Brian) Zhang, Tomas Yago-Vicente (Amazon.com), Jasmine Collins, Shubham Goel and Jitendra Malik (UC Berkeley).
+
+Files obtained from https://2dto3d.app/free-3d-models, which serves the web-optimised copies at https://huggingface.co/datasets/codepawl/abo-glb.
+Changes: Web-optimised by CodePawl (codepawl/abo-glb): textures re-encoded to WebP at up to 2048 px and geometry compressed with EXT_meshopt_compression. The files in this pack are unchanged from that download.
+
+Brand and product names belong to their owners. Amazon does not endorse this pack.
+
+Models
+------
+"Nova Modern Arched Metal King Bed" (Beds/nova_arched_metal_king_bed.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075QDV397
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QDV397/B075QDV397.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Ventura Mid-Century Louvered Queen Bed" (Beds/ventura_louvered_queen_bed.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072PWGSZL
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072PWGSZL/B072PWGSZL.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Clifton Modern Upholstered King Bed" (Beds/clifton_upholstered_king_bed.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075QBL1V8
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QBL1V8/B075QBL1V8.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Gwyneth Mid-Century Velvet Queen Bed" (Beds/gwyneth_velvet_queen_bed.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075QDGZX7
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QDGZX7/B075QDGZX7.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"York Modern Extended Platform Queen Bed" (Beds/york_platform_queen_bed.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075QFCHM9
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QFCHM9/B075QFCHM9.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Ian Modern Wood Round Dining Table" (Tables/ian_round_wood_dining_table.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07B78LZQC
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B78LZQC/B07B78LZQC.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Hayes Solid Wood Dining Table with Steel Base" (Tables/hayes_wood_steel_dining_table.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07K7K25NM
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07K7K25NM/B07K7K25NM.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Modern Round Glass and Gold Coffee Table" (Tables/round_glass_gold_coffee_table.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B074KLRCPW
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B074KLRCPW/B074KLRCPW.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Hairpin Mid-Century Wood and Metal Coffee Table" (Tables/hairpin_wood_metal_coffee_table.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072ZMVR53
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072ZMVR53/B072ZMVR53.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Molly Round Marble and Steel Side Table" (Tables/molly_round_marble_side_table.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072ZMSBQT
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072ZMSBQT/B072ZMSBQT.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"North End Exposed Wood Modern Sofa" (Sofas/north_end_exposed_wood_sofa.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07124WMX5
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07124WMX5/B07124WMX5.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Bradbury Chesterfield Tufted Sofa" (Sofas/bradbury_chesterfield_tufted_sofa.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072Q1BNCD
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072Q1BNCD/B072Q1BNCD.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Emerly Modern Sectional Sofa" (Sofas/emerly_modern_sectional_sofa.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072635HS4
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072635HS4/B072635HS4.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Midtown Contemporary Upholstered Sofa" (Sofas/midtown_upholstered_sofa.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072C8Q9RF
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072C8Q9RF/B072C8Q9RF.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Lauren Down-Filled Oversized Sofa" (Sofas/lauren_oversized_down_sofa.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072M1W86Y
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072M1W86Y/B072M1W86Y.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Office Chair" (Chairs/swivel_office_chair.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B016ID34BO
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B016ID34BO/B016ID34BO.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Huxley Mid-Century Modern Accent Chair" (Chairs/huxley_mid_century_accent_chair.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07124WN69
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07124WN69/B07124WN69.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Sascha Wingback Accent Chair" (Chairs/sascha_wingback_accent_chair.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07124WCH8
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07124WCH8/B07124WCH8.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Summit Mid-Century Leather and Steel Accent Chair" (Chairs/summit_leather_steel_accent_chair.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B071J7Q9WN
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B071J7Q9WN/B071J7Q9WN.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Mid-Century Modern Microfiber Dining Chair" (Chairs/mid_century_microfiber_dining_chair.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075Z8THZJ
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z8THZJ/B075Z8THZJ.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Avondale Wood and Metal Computer Desk" (Desks/avondale_wood_metal_desk.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075Z8KXDK
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z8KXDK/B075Z8KXDK.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Ventura Mid-Century Small Writing Desk" (Desks/ventura_mid_century_writing_desk.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075ZBW1SN
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075ZBW1SN/B075ZBW1SN.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Fairbank L-Shaped Executive Desk" (Desks/fairbank_l_shaped_executive_desk.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07DMLG8Y4
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07DMLG8Y4/B07DMLG8Y4.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Industrial Metal Office Computer Desk" (Desks/industrial_metal_computer_desk.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07B7DFS3S
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B7DFS3S/B07B7DFS3S.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Modern Wood and Metal Hairpin Small Desk" (Desks/hairpin_wood_metal_small_desk.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075Z6YS29
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z6YS29/B075Z6YS29.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Ian Mid-Century Modern Buffet Bar Credenza" (Cabinets/ian_mid_century_bar_credenza.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07B78G1BW
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B78G1BW/B07B78G1BW.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Fremont Slatted 2-Door Cabinet" (Cabinets/fremont_slatted_two_door_cabinet.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B074KLJQKV
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B074KLJQKV/B074KLJQKV.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Hulio 2-Door Wardrobe" (Cabinets/hulio_two_door_wardrobe.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B079TYF1GK
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B079TYF1GK/B079TYF1GK.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Ventura Mid-Century Louvered Dresser" (Cabinets/ventura_louvered_dresser.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B0725Z23G4
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B0725Z23G4/B0725Z23G4.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"High Gloss 3-Drawer Bedside Cabinet" (Cabinets/high_gloss_three_drawer_bedside_cabinet.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B079VNKB6Z
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B079VNKB6Z/B079VNKB6Z.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Larson Industrial Wood and Metal 4-Shelf Bookcase" (Shelves/larson_industrial_four_shelf_bookcase.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075Z6YS1Z
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z6YS1Z/B075Z6YS1Z.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Bryson A-Frame Bookcase" (Shelves/bryson_a_frame_bookcase.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075Z7SQND
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z7SQND/B075Z7SQND.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Mid-Century Modern Wood and Metal Low Bookcase" (Shelves/mid_century_low_wood_metal_bookcase.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07B7J8GGS
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B7J8GGS/B07B7J8GGS.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Modern Wood and Metal Floating Wall Shelves" (Shelves/wood_metal_floating_wall_shelves.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B078JM1J41
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B078JM1J41/B078JM1J41.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Glenwood Bookcase" (Shelves/glenwood_bookcase.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B074KKXLK1
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B074KKXLK1/B074KKXLK1.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Malida Mid-Century Open Back Swivel Bar Stool" (Stools/malida_open_back_swivel_bar_stool.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075YMN19P
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075YMN19P/B075YMN19P.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Elden Nailhead-Trim Saddle Backless Bar Stool" (Stools/elden_nailhead_saddle_backless_stool.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075YNL272
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075YNL272/B075YNL272.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Modern Industrial Wood and Metal Counter Stool" (Stools/industrial_wood_metal_counter_stool.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075YPTF1L
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075YPTF1L/B075YPTF1L.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Stevie Velvet Mid-Century Modern Stool" (Stools/stevie_velvet_low_stool.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075ZCLPHP
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075ZCLPHP/B075ZCLPHP.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Burke Modern Wood Counter-Height Stool" (Stools/burke_wood_counter_stool.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075YMN1VY
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075YMN1VY/B075YMN1VY.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Madison Round Lift-Top Storage Tray Ottoman" (Ottomans/madison_round_storage_tray_ottoman.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B0728NWFGY
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B0728NWFGY/B0728NWFGY.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Bradbury Chesterfield Leather Ottoman" (Ottomans/bradbury_chesterfield_leather_ottoman.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B071J7Q343
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B071J7Q343/B071J7Q343.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Benton Square Ottoman" (Ottomans/benton_square_ottoman.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B073G8Q63T
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073G8Q63T/B073G8Q63T.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Six-Sided Modern Ottoman" (Ottomans/six_sided_modern_ottoman.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B073G94FRB
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073G94FRB/B073G94FRB.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Ava Mid-Century Modern Upholstered Ottoman" (Ottomans/ava_mid_century_upholstered_ottoman.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B071PDYXKC
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B071PDYXKC/B071PDYXKC.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Martin Modern Storage Bench" (Benches/martin_velvet_storage_bench.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B073G7BVBP
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073G7BVBP/B073G7BVBP.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Rylee Modern Farmhouse Acacia Wood Dining Bench" (Benches/rylee_acacia_dining_bench.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07HSBDCX8
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07HSBDCX8/B07HSBDCX8.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Contemporary Metal Bedroom Bench with Cushion" (Benches/contemporary_metal_bedroom_bench.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07B4SC9RP
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B4SC9RP/B07B4SC9RP.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Glam Tufted Upholstered Bench with Gold Legs" (Benches/glam_tufted_gold_leg_bench.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075QDV39B
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075QDV39B/B075QDV39B.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Classic Shoe Bench with Lift-Top Compartment" (Benches/classic_lift_top_shoe_bench.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07P64ZJQG
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07P64ZJQG/B07P64ZJQG.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Modern Arc Floor Lamp" (Lamps/modern_arc_floor_lamp.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B073755HVS
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073755HVS/B073755HVS.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Adjustable Arm Mid-Century Modern Floor Lamp" (Lamps/adjustable_arm_mid_century_floor_lamp.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07374SBFL
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07374SBFL/B07374SBFL.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Deco Metal Frame Floor Lamp" (Lamps/deco_metal_frame_floor_lamp.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07376VCCW
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07376VCCW/B07376VCCW.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Copper Geometric Bedside Table Lamp" (Lamps/copper_geometric_table_lamp.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07374VCVN
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07374VCVN/B07374VCVN.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Textured Teardrop Table Lamp" (Lamps/textured_teardrop_table_lamp.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B073751DMM
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B073751DMM/B073751DMM.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Industrial Metal Leg TV Media Console" (TVUnits/industrial_metal_leg_tv_console.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072ZNBRR6
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072ZNBRR6/B072ZNBRR6.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Modern Six-Compartment TV Media Console" (TVUnits/six_compartment_tv_media_console.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B072ZRPFJL
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B072ZRPFJL/B072ZRPFJL.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Ferndale Rustic Media TV Console Stand" (TVUnits/ferndale_rustic_tv_console.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B075Z6YRWQ
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B075Z6YRWQ/B075Z6YRWQ.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Mid-Century Modern Wood Media TV Console" (TVUnits/mid_century_wood_media_console.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07B7DPKRJ
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07B7DPKRJ/B07B7DPKRJ.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/
+
+"Stevens Modern Wood TV Media Center Cabinet" (TVUnits/stevens_wood_media_cabinet.glb)
+  Creator: Amazon.com | Source: Amazon Berkeley Objects (ABO), model B07HSKW3D6
+  Download: https://huggingface.co/datasets/codepawl/abo-glb/resolve/main/objects/B07HSKW3D6/B07HSKW3D6.glb
+  License: CC BY 4.0 - https://creativecommons.org/licenses/by/4.0/

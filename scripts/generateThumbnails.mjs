@@ -120,7 +120,7 @@ const server = http.createServer((req, res) => {
       fs.writeFileSync(srcCatalogPath, JSON.stringify(catalog, null, 2));
     }
 
-    console.log('\n✅ ALL 81 THUMBNAILS GENERATED AND SAVED SUCCESSFULLY!');
+    console.log(`\n✅ ALL ${missingItems.length} THUMBNAILS GENERATED AND SAVED SUCCESSFULLY!`);
     console.log(`Updated catalog databases at:\n - ${catalogPath}\n - ${srcCatalogPath}\n`);
 
     setTimeout(() => {
@@ -222,6 +222,7 @@ function getHtmlContent(items) {
   <script type="module">
     import * as THREE from 'three';
     import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js';
+    import { MeshoptDecoder } from 'three/examples/jsm/libs/meshopt_decoder.module.js';
 
     const items = ${JSON.stringify(items)};
     const canvas = document.getElementById('renderCanvas');
@@ -262,7 +263,7 @@ function getHtmlContent(items) {
 
     const camera = new THREE.PerspectiveCamera(35, 1, 0.1, 100);
 
-    const loader = new GLTFLoader();
+    const loader = new GLTFLoader().setMeshoptDecoder(MeshoptDecoder);
 
     async function processNext(index) {
       if (index >= items.length) {

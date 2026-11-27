@@ -1,6 +1,5 @@
-import { useEffect, useRef } from 'react';
 import type { InteriorWall, RoomVertex } from '../../../../Data/RoomShape';
-import { DOUBLE_CLICK_MS, type SnapTarget, type DragState } from '../../types/floorPlanTypes';
+import { type SnapTarget, type DragState } from '../../types/floorPlanTypes';
 
 interface InteriorWallsLayerProps {
   interiorWalls: InteriorWall[];
@@ -8,26 +7,21 @@ interface InteriorWallsLayerProps {
   endpointSnap: SnapTarget | null;
   endpointLive: RoomVertex | null;
   jointedEndpoints?: (wallId: string, end: 'start' | 'end') => { wallId: string; end: 'start' | 'end' }[];
-  drawStart: RoomVertex | null;
   selectedInteriorWallId: string | null;
   onInteriorWallRemove?: (id: string) => void;
   onInteriorWallClick?: (id: string) => string | void;
-  onWallClickStartDraw?: (clientX: number, clientY: number) => void;
   onInteriorWallDrag?: (id: string, dx: number, dz: number) => void;
   onInteriorWallDragStart?: (id: string) => void;
   isEndpointAttached?: (wallId: string, end: 'start' | 'end') => boolean;
-  onInteriorWallSplit?: (id: string) => void;
   onInteriorWallEndpointChange?: (wallId: string, end: 'start' | 'end', point: RoomVertex, attach: SnapTarget | null) => void;
   onInteriorWallEndpointDragStart?: (wallId: string, end: 'start' | 'end') => void;
   onInteriorWallEndpointDetach?: (wallId: string, end: 'start' | 'end') => void;
-  onFreeEndpointClick?: (wallId: string, end: 'start' | 'end', point: RoomVertex) => void;
   endpointPressRef: React.MutableRefObject<boolean>;
   setDraggingEndpoint: React.Dispatch<React.SetStateAction<{ wallId: string; end: 'start' | 'end'; origin: RoomVertex } | null>>;
   setEndpointLive: React.Dispatch<React.SetStateAction<RoomVertex | null>>;
   setEndpointSnap: React.Dispatch<React.SetStateAction<SnapTarget | null>>;
   clientToSvgPoint: (clientX: number, clientY: number) => { x: number; z: number };
   findSnap: (p: RoomVertex, excludeWallId?: string, excludeTips?: { wallId: string; end: 'start' | 'end' }[]) => SnapTarget | null;
-  startContinuousDraw: (wallId: string, end: 'start' | 'end', point: RoomVertex) => void;
   beginDrag: (e: React.PointerEvent<SVGElement>, state: DragState) => void;
   handlePointerMove: (e: React.PointerEvent<SVGElement>) => void;
   handlePointerUp: (e: React.PointerEvent<SVGElement>) => void;
@@ -42,26 +36,21 @@ export function InteriorWallsLayer({
   endpointSnap,
   endpointLive,
   jointedEndpoints,
-  drawStart,
   selectedInteriorWallId,
   onInteriorWallRemove,
   onInteriorWallClick,
-  onWallClickStartDraw,
   onInteriorWallDrag,
   onInteriorWallDragStart,
   isEndpointAttached,
-  onInteriorWallSplit,
   onInteriorWallEndpointChange,
   onInteriorWallEndpointDragStart,
   onInteriorWallEndpointDetach,
-  onFreeEndpointClick,
   endpointPressRef,
   setDraggingEndpoint,
   setEndpointLive,
   setEndpointSnap,
   clientToSvgPoint,
   findSnap,
-  startContinuousDraw,
   beginDrag,
   handlePointerMove,
   handlePointerUp,
@@ -70,17 +59,6 @@ export function InteriorWallsLayer({
   flashRejection,
 }: InteriorWallsLayerProps) {
   const WALL_STROKE = 0.18;
-  const clickTimers = useRef<Map<string, ReturnType<typeof setTimeout>>>(new Map());
-
-  // Clear any armed draw timers on unmount so a pending click can't fire into a dead tree.
-  useEffect(() => {
-    const timers = clickTimers.current;
-    return () => {
-      timers.forEach(clearTimeout);
-      timers.clear();
-    };
-  }, []);
-
   return (
     <>
       {interiorWalls.map((wall) => {
@@ -99,7 +77,6 @@ export function InteriorWallsLayer({
         const midZ = (start.z + end.z) / 2;
 
         function beginEndpointDrag(e: React.PointerEvent<SVGElement>, end: 'start' | 'end') {
-          if (drawStart) return;
           e.stopPropagation();
           endpointPressRef.current = true;
           e.currentTarget.setPointerCapture(e.pointerId);
@@ -120,12 +97,9 @@ export function InteriorWallsLayer({
           e.currentTarget.releasePointerCapture(e.pointerId);
           if (draggingEndpoint) {
             const finalPoint = endpointSnap?.point ?? endpointLive;
-            const attached = isEndpointAttached?.(wall.id, draggingEndpoint.end) ?? false;
             const rawPoint = endpointLive ?? draggingEndpoint.origin;
             const moved = Math.hypot(rawPoint.x - draggingEndpoint.origin.x, rawPoint.z - draggingEndpoint.origin.z) > 0.12;
-            if (!moved && !attached && onFreeEndpointClick) {
-              startContinuousDraw(wall.id, draggingEndpoint.end, draggingEndpoint.origin);
-            } else if (moved && finalPoint) {
+            if (moved && finalPoint) {
               onInteriorWallEndpointChange?.(wall.id, draggingEndpoint.end, finalPoint, endpointSnap);
             }
           }
@@ -154,17 +128,11 @@ export function InteriorWallsLayer({
                 stroke="transparent"
                 strokeWidth={0.5}
                 style={{
-                  cursor: drawStart
-                    ? 'crosshair'
-                    : onInteriorWallDrag
-                      ? 'move'
-                      : 'pointer',
+                  cursor: onInteriorWallDrag ? 'move' : 'pointer',
                   touchAction: 'none',
                 }}
                 onPointerDown={(e) => {
-                  if (drawStart || !onInteriorWallDrag) {
-                    return;
-                  }
+                  if (!onInteriorWallDrag) return;
                   const len = Math.hypot(dx, dz) || 1;
                   beginDrag(e, {
                     kind: 'interiorWall',
@@ -180,43 +148,16 @@ export function InteriorWallsLayer({
                 onPointerUp={handlePointerUp}
                 onPointerCancel={handlePointerUp}
                 onClick={(e) => {
-                  if (movedRef.current || drawStart) return;
+                  if (movedRef.current) return;
                   e.stopPropagation();
-
-                  if (!onWallClickStartDraw) {
-                    if (onInteriorWallClick) {
-                      const reason = onInteriorWallClick(wall.id);
-                      if (reason) flashRejection(undefined, reason);
-                    }
-                    return;
+                  if (onInteriorWallClick) {
+                    const reason = onInteriorWallClick(wall.id);
+                    if (reason) flashRejection(undefined, reason);
                   }
-
-                  const pending = clickTimers.current.get(wall.id);
-                  if (pending) {
-                    clearTimeout(pending);
-                    clickTimers.current.delete(wall.id);
-                    if (onInteriorWallClick) {
-                      const reason = onInteriorWallClick(wall.id);
-                      if (reason) flashRejection(undefined, reason);
-                    }
-                    return;
-                  }
-
-                  // First click only *arms* the draw — a second click inside the double-click
-                  // window cancels it and selects the wall instead, which is the only way to
-                  // reach the thickness editor now that a plain click starts drawing.
-                  const clientX = e.clientX;
-                  const clientY = e.clientY;
-                  const wallId = wall.id;
-                  const timer = setTimeout(() => {
-                    clickTimers.current.delete(wallId);
-                    onWallClickStartDraw(clientX, clientY);
-                  }, DOUBLE_CLICK_MS);
-                  clickTimers.current.set(wallId, timer);
                 }}
               />
             )}
-            {onInteriorWallRemove && !drawStart && (
+            {onInteriorWallRemove && (
               <g
                 transform={`translate(${midX - dz * 0.09} ${midZ + dx * 0.09})`}
                 style={{ cursor: 'pointer' }}
@@ -228,20 +169,6 @@ export function InteriorWallsLayer({
               >
                 <circle r={0.09} fill="var(--color-danger)" stroke="var(--color-surface)" strokeWidth={0.015} />
                 <path d="M-0.042,-0.042 L0.042,0.042 M0.042,-0.042 L-0.042,0.042" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
-              </g>
-            )}
-            {onInteriorWallSplit && !drawStart && (
-              <g
-                transform={`translate(${midX + dz * 0.09} ${midZ - dx * 0.09})`}
-                style={{ cursor: 'pointer' }}
-                onPointerDown={(e) => e.stopPropagation()}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onInteriorWallSplit(wall.id);
-                }}
-              >
-                <circle r={0.09} fill="var(--color-accent)" stroke="var(--color-surface)" strokeWidth={0.015} />
-                <path d="M-0.042,0 H0.042 M0,-0.042 V0.042" stroke="var(--color-surface)" strokeWidth={0.022} strokeLinecap="round" />
               </g>
             )}
             {onInteriorWallEndpointChange &&

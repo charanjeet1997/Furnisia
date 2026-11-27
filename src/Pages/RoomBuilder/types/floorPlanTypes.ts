@@ -24,11 +24,8 @@ export interface FloorPlanPreviewProps {
   onOpeningDragStart?: (openingIndex: number) => void;
   onOpeningDrag?: (openingIndex: number, delta: number) => void;
   onOpeningDragEnd?: () => void;
-  onWallAdd?: (edgeIndex: number) => void;
-  onVertexRemove?: (vertexIndex: number) => void;
   interiorWalls?: InteriorWall[];
   onInteriorWallRemove?: (id: string) => void;
-  onInteriorWallSplit?: (id: string) => void;
   onInteriorWallClick?: (id: string) => string | void;
   edgeThicknesses?: number[];
   selectedEdgeIndex?: number | null;
@@ -45,17 +42,7 @@ export interface FloorPlanPreviewProps {
   ) => void;
   isEndpointAttached?: (wallId: string, end: 'start' | 'end') => boolean;
   onInteriorWallEndpointDetach?: (wallId: string, end: 'start' | 'end') => void;
-  onFreeEndpointClick?: (wallId: string, end: 'start' | 'end', point: RoomVertex) => void;
   jointedEndpoints?: (wallId: string, end: 'start' | 'end') => { wallId: string; end: 'start' | 'end' }[];
-  onWallDrawComplete?: (
-    start: RoomVertex,
-    end: RoomVertex,
-    startSnap: SnapTarget | null,
-    endSnap: SnapTarget | null,
-  ) => void;
-  onWallDrawCancel?: () => void;
-  onWallDrawFinish?: () => void;
-  onDrawStateChange?: (state: { active: boolean; finish: () => void; cancel: () => void }) => void;
 }
 
 export const PAD = 1.1;
@@ -67,10 +54,6 @@ export const SNAP_DISTANCE = 0.3;
 export const ENDPOINT_SNAP_DISTANCE = 0.5;
 export const WALL_HOVER_DISTANCE = 0.26;
 export const HOVER_MENU_RADIUS = 0.6;
-// How long a click on a wall waits before committing to "start drawing", leaving room for a
-// second click to arrive and mean "select this wall" instead.
-export const DOUBLE_CLICK_MS = 250;
-
 export const snapDraw = (v: number) => Math.round(v * 10) / 10;
 
 export function formatLength(meters: number, units: PlanUnits): string {

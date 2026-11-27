@@ -2,10 +2,9 @@ import type React from 'react';
 import type { RoomVertex } from '../../../Data/RoomShape';
 import type { IWallTool, WallToolContext } from './WallTool';
 import { MoveWallTool } from './MoveWallTool';
-import { DrawWallTool } from './DrawWallTool';
 import { DeleteWallTool } from './DeleteWallTool';
 
-const REGISTERED_TOOLS: IWallTool[] = [MoveWallTool, DrawWallTool, DeleteWallTool];
+const REGISTERED_TOOLS: IWallTool[] = [MoveWallTool, DeleteWallTool];
 
 const ICON_SPACING = 0.24;
 const MENU_OFFSET = 0.32;

@@ -3,7 +3,6 @@ import { computeEdges, pointInPolygon, type WallEdge } from '../../../Components
 import { DEFAULT_WALL_THICKNESS, type InteriorWall, type RoomOpening, type RoomVertex } from '../../../Data/RoomShape';
 import type { PlanUnits } from '../types/floorPlanTypes';
 import {
-  MIN_EDGE,
   snap,
   edgesValid,
   insertEdgeThickness,
@@ -51,7 +50,6 @@ export function useStepDimensionsState({
     setAttachments,
     isEndpointAttached,
     shiftAttachmentsForInsert,
-    shiftAttachmentsForRemove,
     syncAttachedWalls: syncAttachedWallsCore,
   } = useWallAttachments();
 
@@ -103,7 +101,6 @@ export function useStepDimensionsState({
     openings,
     onOpeningsChange,
     edgeThicknesses,
-    onEdgeThicknessesChange,
     attachments,
     setAttachments,
     shiftAttachmentsForInsert,
@@ -112,7 +109,6 @@ export function useStepDimensionsState({
     leaveJoint,
     remapJointMember,
     pushHistory,
-    normalizedThicknesses,
   });
 
   function beginDrag() {
@@ -122,33 +118,6 @@ export function useStepDimensionsState({
 
   function endDrag() {
     dragStart.current = null;
-  }
-
-  function addWall(edgeIndex: number) {
-    const edge = computeEdges(vertices)[edgeIndex];
-    if (!edge || edge.length < MIN_EDGE * 2) return;
-    const mid = { x: snap(edge.midpoint.x), z: snap(edge.midpoint.z) };
-    const insertedAt = edgeIndex + 1;
-    const next = [...vertices.slice(0, insertedAt), mid, ...vertices.slice(insertedAt)];
-    pushHistory();
-    onVerticesChange(next);
-    shiftAttachmentsForInsert(insertedAt);
-    onOpeningsChange(remapOpeningsForEdgeSplit(openings, edge, edgeIndex, [mid]));
-    onEdgeThicknessesChange(insertEdgeThickness(normalizedThicknesses(), insertedAt));
-    setSelected(null);
-  }
-
-  function removeVertex(vertexIndex: number) {
-    if (vertices.length <= 3) return;
-    const next = vertices.filter((_, i) => i !== vertexIndex);
-    if (edgesValid(next)) {
-      pushHistory();
-      onVerticesChange(next);
-      shiftAttachmentsForRemove(vertexIndex);
-      onOpeningsChange(remapOpeningsForVertexRemove(openings, computeEdges(vertices), vertexIndex));
-      onEdgeThicknessesChange(removeEdgeThickness(normalizedThicknesses(), vertexIndex));
-      setSelected(null);
-    }
   }
 
   function handleEdgeDrag(edgeIndex: number, delta: number) {
@@ -355,8 +324,6 @@ export function useStepDimensionsState({
     normalizedThicknesses,
     beginDrag,
     endDrag,
-    addWall,
-    removeVertex,
     handleEdgeDrag,
     handleVertexDrag,
     handleEdgeLengthChange,

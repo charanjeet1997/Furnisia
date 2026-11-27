@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import type { RoomVertex, InteriorWall } from '../../../Data/RoomShape';
-import type { Attachments, WallAttachment } from '../utils/interiorWallGeometry';
+import type { Attachments } from '../utils/interiorWallGeometry';
 
 export function useWallAttachments() {
   const [attachments, setAttachments] = useState<Attachments>({});
@@ -17,19 +17,6 @@ export function useWallAttachments() {
           start: att.start ? { vertexIndex: att.start.vertexIndex >= insertedAt ? att.start.vertexIndex + count : att.start.vertexIndex } : undefined,
           end: att.end ? { vertexIndex: att.end.vertexIndex >= insertedAt ? att.end.vertexIndex + count : att.end.vertexIndex } : undefined,
         };
-      }
-      return next;
-    });
-  }
-
-  function shiftAttachmentsForRemove(removedIndex: number) {
-    setAttachments((prev) => {
-      const next: typeof prev = {};
-      for (const [wallId, att] of Object.entries(prev)) {
-        const shift = (a?: WallAttachment) =>
-          !a || a.vertexIndex === removedIndex ? undefined : { vertexIndex: a.vertexIndex > removedIndex ? a.vertexIndex - 1 : a.vertexIndex };
-        const shifted = { start: shift(att.start), end: shift(att.end) };
-        if (shifted.start || shifted.end) next[wallId] = shifted;
       }
       return next;
     });
@@ -53,7 +40,6 @@ export function useWallAttachments() {
     setAttachments,
     isEndpointAttached,
     shiftAttachmentsForInsert,
-    shiftAttachmentsForRemove,
     syncAttachedWalls,
   };
 }

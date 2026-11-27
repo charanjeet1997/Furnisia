@@ -1,5 +1,5 @@
 
-import { FiCheck, FiRotateCcw, FiX } from 'react-icons/fi';
+import { FiRotateCcw } from 'react-icons/fi';
 import type { PlanUnits } from '../types/floorPlanTypes';
 import type { InteriorWall } from '../../../Data/RoomShape';
 import styles from '../RoomBuilder.module.css';
@@ -19,9 +19,6 @@ interface DimensionsSidebarProps {
   interiorWalls: InteriorWall[];
   onEdgeThicknessesChange: (thicknesses: number[]) => void;
   onInteriorWallsChange: (walls: InteriorWall[]) => void;
-  isDrawingWall?: boolean;
-  onFinishWall?: () => void;
-  onCancelWall?: () => void;
 }
 
 export function DimensionsSidebar({
@@ -39,9 +36,6 @@ export function DimensionsSidebar({
   interiorWalls,
   onEdgeThicknessesChange,
   onInteriorWallsChange,
-  isDrawingWall,
-  onFinishWall,
-  onCancelWall,
 }: DimensionsSidebarProps) {
   function applyThicknessCm(sel: NonNullable<typeof selected>, cm: number) {
     const meters = cm / 100;
@@ -75,19 +69,6 @@ export function DimensionsSidebar({
           <FiRotateCcw size={14} />
           <span>Undo</span>
         </button>
-
-        {isDrawingWall && (
-          <>
-            <button type="button" onClick={onFinishWall} className={styles.undoBtn} title="Finish wall">
-              <FiCheck size={14} />
-              <span>Finish Wall</span>
-            </button>
-            <button type="button" onClick={onCancelWall} className={styles.undoBtn} title="Cancel wall">
-              <FiX size={14} />
-              <span>Cancel</span>
-            </button>
-          </>
-        )}
 
         <div className={styles.unitToggle}>
           <button
@@ -190,18 +171,6 @@ export function DimensionsSidebar({
         </p>
       )}
 
-      {isDrawingWall && (
-        <div className={styles.mobileFloatingActionBar}>
-          <button type="button" onClick={onFinishWall} className={`${styles.mobileActionBtn} ${styles.mobileFinishBtn}`}>
-            <FiCheck size={16} />
-            <span>Finish Wall</span>
-          </button>
-          <button type="button" onClick={onCancelWall} className={`${styles.mobileActionBtn} ${styles.mobileCancelBtn}`}>
-            <FiX size={16} />
-            <span>Cancel</span>
-          </button>
-        </div>
-      )}
     </div>
   );
 }
