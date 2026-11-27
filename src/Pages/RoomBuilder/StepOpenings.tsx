@@ -44,24 +44,22 @@ export function StepOpenings({ vertices, openings, onOpeningsChange, interiorWal
     return edges[opening.edgeIndex]?.length ?? null;
   }
 
-  // Shared placement math for both a boundary wall and an interior wall — same rules either
-  // way: a wall can hold one door AND one window, but not two of the same kind; a second kind
-  // slots in right next to the first (whichever side fits).
+  // Shared placement math for both a boundary wall and an interior wall: a wall can hold any
+  // number of doors and windows as long as they fit. The new one is centred in the widest
+  // free stretch of the wall (between corners and existing openings).
   function computePlacement(hostLength: number, existingOnHost: RoomOpening[]): { offset: number; width: number } | string {
     const width = kind === 'door' ? 0.9 : 1.0;
-    if (existingOnHost.some((o) => o.kind === kind)) {
-      return `This wall already has a ${kind} — remove it first.`;
+    const sorted = [...existingOnHost].sort((a, b) => a.offset - b.offset);
+    let best: { start: number; end: number } | null = null;
+    let cursor = OPENING_END_MARGIN;
+    for (const stop of [...sorted.map((o) => ({ start: o.offset - OPENING_GAP, next: o.offset + o.width + OPENING_GAP })), { start: hostLength - OPENING_END_MARGIN, next: Infinity }]) {
+      if (!best || stop.start - cursor > best.end - best.start) best = { start: cursor, end: stop.start };
+      cursor = Math.max(cursor, stop.next);
     }
-    const other = existingOnHost[0];
-    if (!other) {
-      if (hostLength < width + OPENING_END_MARGIN * 2) return `Wall too small for this ${kind}.`;
-      return { offset: hostLength / 2 - width / 2, width }; // centered on the wall
+    if (!best || best.end - best.start < width) {
+      return existingOnHost.length ? `No room left on this wall for another ${kind}.` : `Wall too small for this ${kind}.`;
     }
-    const rightOffset = other.offset + other.width + OPENING_GAP;
-    const leftOffset = other.offset - OPENING_GAP - width;
-    if (rightOffset + width + OPENING_END_MARGIN <= hostLength) return { offset: rightOffset, width };
-    if (leftOffset >= OPENING_END_MARGIN) return { offset: leftOffset, width };
-    return `Wall too small to fit a ${kind} alongside the existing ${other.kind}.`;
+    return { offset: (best.start + best.end) / 2 - width / 2, width };
   }
 
   // Returns a rejection message on failure (FloorPlanPreview flashes the wall red and toasts
@@ -135,8 +133,8 @@ export function StepOpenings({ vertices, openings, onOpeningsChange, interiorWal
         </div>
 
         <p className={styles.hint}>
-          Click a wall — boundary or interior — to place a door or window; a wall can hold one door and one window if
-          it's big enough. Hover one on the plan to remove it, or drag it to slide along its wall.
+          Click a wall — boundary or interior — to place a door or window; click again to add more, as many as fit.
+          Hover one on the plan to remove it, or drag it to slide along its wall.
         </p>
       </div>
       <div className={styles.previewPane}>
@@ -159,18 +157,18 @@ export function StepOpenings({ vertices, openings, onOpeningsChange, interiorWal
             if (hostLength === null) return;
             let minOffset = OPENING_MARGIN;
             let maxOffset = Math.max(OPENING_MARGIN, hostLength - opening.width - OPENING_MARGIN);
-            // If this wall also has the other kind, clamp so the two can't be dragged into
-            // overlap — which side to cap is decided once at drag start (from the snapshot),
-            // not re-evaluated live, so the clamp doesn't jump around mid-drag.
-            const other = start.find((o, i) => i !== openingIndex && sameHost(o, opening));
-            if (other) {
+            // Stop at the nearest opening on each side so openings can't be dragged into each
+            // other. Neighbours come from the drag-start snapshot, so the limits don't jump
+            // around mid-drag.
+            for (const other of start) {
+              if (other === opening || !sameHost(other, opening)) continue;
               if (other.offset > opening.offset) {
                 maxOffset = Math.min(maxOffset, other.offset - OPENING_GAP - opening.width);
               } else {
                 minOffset = Math.max(minOffset, other.offset + other.width + OPENING_GAP);
               }
-              maxOffset = Math.max(minOffset, maxOffset); // guard a too-tight wall
             }
+            maxOffset = Math.max(minOffset, maxOffset); // guard a too-tight wall
             const newOffset = Math.max(minOffset, Math.min(maxOffset, opening.offset + delta));
             onOpeningsChange(start.map((o, i) => (i === openingIndex ? { ...o, offset: newOffset } : o)));
           }}

@@ -20,6 +20,7 @@ import { StepShape } from './StepShape';
 import { StepDimensions } from './StepDimensions';
 import { StepOpenings } from './StepOpenings';
 import { StepStyle } from './StepStyle';
+import type { ImportedRoom } from './floorPlanImport/planToRoom';
 import { Header } from '../../Components/UI/Header';
 import { Footer } from '../../Components/UI/Footer';
 import styles from './RoomBuilder.module.css';
@@ -69,6 +70,14 @@ export function RoomBuilder() {
     setEdgeThicknesses(next.map(() => wallThickness));
   }
 
+  function handleImportPlan(room: ImportedRoom) {
+    setVertices(room.vertices);
+    setEdgeThicknesses(room.edgeThicknesses);
+    setInteriorWalls(room.interiorWalls);
+    setOpenings([]);
+    setStep(1);
+  }
+
   function handleFinish() {
     const xs = vertices.map((v) => v.x);
     const zs = vertices.map((v) => v.z);
@@ -109,7 +118,7 @@ export function RoomBuilder() {
         </div>
 
         <div className={styles.stepBody}>
-          {step === 0 && <StepShape shapeType={shapeType} onSelect={handleShapeSelect} />}
+          {step === 0 && <StepShape shapeType={shapeType} onSelect={handleShapeSelect} onImportPlan={handleImportPlan} />}
           {step === 1 && (
             <StepDimensions
               vertices={vertices}

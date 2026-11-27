@@ -1,7 +1,9 @@
 import { useMemo, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
-import { OrbitControls, ContactShadows } from '@react-three/drei';
+import { ContactShadows } from '@react-three/drei';
 import { Room } from '../../Components/Room';
+import { RoomOrbitControls } from '../../Components/RoomOrbitControls';
+import { roomFraming } from '../../Components/roomFraming';
 import { TextureLoadingBar } from '../../Components/TextureLoadingBar';
 import type { RoomOpening, RoomVertex, InteriorWall, RoomShape } from '../../Data/RoomShape';
 import textureCatalog from '../../Data/textureCatalog.json';
@@ -96,6 +98,10 @@ export function StepStyle({
     [surface],
   );
   const thumbs = useSequentialImages(previewUrls);
+
+  // Contact shadows were a fixed 20 m square; cover the whole footprint for big rooms.
+  const { width: roomWidth, depth: roomDepth } = roomFraming(vertices, height, 48);
+  const shadowScale = Math.max(20, Math.max(roomWidth, roomDepth) + 4);
 
   // Transient Room Object for Realtime 3D Rendering in the Preview Canvas
   const roomOverride: RoomShape = useMemo(
@@ -492,8 +498,8 @@ export function StepStyle({
           <directionalLight position={[6, 9, 6]} intensity={0.95} castShadow />
           <directionalLight position={[-6, 4, -6]} intensity={0.35} />
           {/* Ambient Occlusion (Contact Shadows under room boundaries) */}
-          <ContactShadows position={[0, -0.005, 0]} opacity={0.7} scale={20} blur={2.5} far={4} color="#000000" />
-          <OrbitControls makeDefault minDistance={1.5} maxDistance={16} target={[0, 1, 0]} />
+          <ContactShadows position={[0, -0.005, 0]} opacity={0.7} scale={shadowScale} blur={2.5} far={4} color="#000000" />
+          <RoomOrbitControls vertices={roomOverride.vertices} height={roomOverride.height} />
           <Room roomOverride={roomOverride} />
         </Canvas>
         <TextureLoadingBar />
